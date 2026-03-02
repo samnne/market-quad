@@ -1,6 +1,6 @@
 'use client'
 
-import AuthForm from "@/components/AuthForm";
+import AuthForm from "@/components/AuthRelated/AuthForm";
 import { useType } from "@/app/store/zustand";
 
 const SignUp = () => {

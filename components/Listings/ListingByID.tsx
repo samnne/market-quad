@@ -9,7 +9,7 @@ import { BsThreeDots } from "react-icons/bs";
 
 import { IoClose, IoSearch } from "react-icons/io5";
 
-import StarRating from "./StarRating";
+import StarRating from "../StarRating";
 import ListingMap from "./ListingMap";
 
 const getRandomFirstMessage = (): string => {
@@ -81,7 +81,7 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
             opacity: 1,
           }}
           transition={{
-            duration: 0.4,
+            duration: 0.2,
           }}
           className="absolute flex flex-col min-h-screen h-fit w-screen inset-0 bg-white z-50"
         >

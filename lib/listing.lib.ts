@@ -11,6 +11,17 @@ export const getClientListings = async () => {
 
   return response.json();
 };
+export const getClientListingsNotUsers = async (uid: string) => {
+  const response = await fetch(`${BASEURL}/api/listings/`, {
+    cache: "no-store",
+    headers: {
+        'Authorization': uid
+    },
+    method: "GET"
+  });
+
+  return response.json();
+};
 export const newListingAction = async (
   newListing: listingFormData,
   sellerId: string,

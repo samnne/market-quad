@@ -1,5 +1,5 @@
-import Navbar from "@/components/Navbar";
-import TopNavbar from "../../components/TopNavbar";
+import Navbar from "@/components/Navbars/Navbar";
+import TopNavbar from "../../components/Navbars/TopNavbar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (

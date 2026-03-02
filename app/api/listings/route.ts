@@ -1,12 +1,21 @@
 
 import { NextRequest, NextResponse } from "next/server.js";
-import { createNewListing, getListings } from "@/db/listings.db";
+import { createNewListing, getListings, getOthersListings } from "@/db/listings.db";
 import { uploadImages } from "@/cloudinary/cloudinary";
 
 
 
 export async function GET(req: NextRequest){
+  const userId = req.headers.get('authorization');
+
+ 
   try {
+    if (userId){
+      return NextResponse.json({
+        listings: await getOthersListings(userId),
+        success: true
+      })
+    }
     const listings = await getListings();
     
 

@@ -3,11 +3,11 @@ import { cookies } from "next/headers";
 import { jwtVerify, SignJWT } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 import { BASEURL } from "@/app/server-utils/utils";
-
+import { User } from "@/src/generated/prisma/client";
 
 const key = new TextEncoder().encode(process.env.JWT_SECRET);
 
-const SECONDS = (60 * 60);
+const SECONDS = 60 * 60;
 
 export async function decrypt(input: string): Promise<any> {
   const { payload } = await jwtVerify(input, key, {
@@ -16,16 +16,35 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
-export async function getSession() {
-  try{
-    const session = (await cookies()).get("session")?.value;
-    if (!session) return;
-    return await decrypt(session);
+interface UserSession extends User {
+  expires: number;
+}
 
-  } catch (error){
+export async function deleteUserForReals(uid: string) {
+  const response = await fetch(`${BASEURL}/api/auth/`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ uid }),
+  }).then((res) => res.json());
+
+  if (response.success) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export async function getSession(): Promise<UserSession | null> {
+  try {
+    const session = (await cookies()).get("session")?.value;
+    if (!session) return null;
+    return await decrypt(session);
+  } catch (error) {
     console.log("Expired Token", error);
-    await logout()
-    return
+    await logout();
+    return null;
   }
 }
 
@@ -39,7 +58,7 @@ export async function encrypt(payload: any) {
 
 export async function createSession(user: SafeUser) {
   const expires = new Date(Date.now() + SECONDS * 1000);
-  const session = await encrypt({ userID: user.uid, ...user, expires });
+  const session = await encrypt({ ...user, expires });
 
   return session;
 }
@@ -65,14 +84,17 @@ export async function login(formData: FormData) {
         path: "/",
       });
 
-      return { ...response, session: "" };
+      return { ...response };
     } else {
       return {
-        message: "Failed to get User.",
+        message: "Sorry, User doesn't exist, please Sign Up!",
       };
     }
   } catch (error) {
     console.log(error);
+    return {
+      message: "We're very sorry, our service is failing.",
+    };
   }
 }
 export async function signup(formData: FormData) {
@@ -80,8 +102,7 @@ export async function signup(formData: FormData) {
     if (formData.get("email")?.toString().match("[\w.-]+@uvic\.ca")) {
       return { error: "Email must match @uvic" };
     }
-   
-    
+
     const response = await fetch(`${BASEURL}/api/auth/register`, {
       method: "post",
       headers: {
@@ -105,7 +126,7 @@ export async function signup(formData: FormData) {
         path: "/",
       });
 
-      return { ...response, session: "" };
+      return { ...response };
     } else {
       return {
         message: "Failed to get User.",

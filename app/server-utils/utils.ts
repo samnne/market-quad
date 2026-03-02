@@ -1,8 +1,10 @@
+import { UserInclude } from "@/src/generated/prisma/models";
 import { type User } from "../../src/generated/prisma/client";
 
 import bcrypt from "bcrypt";
+import { SafeUser } from "../types";
 
-export function simplifyUserData(user: User): SafeUser {
+export function simplifyUserData(user: User & UserInclude): SafeUser {
   return {
     uid: user.uid,
     email: user.email,

@@ -1,22 +1,34 @@
 "use client";
 
 import { useListings } from "@/app/store/zustand";
-import ListingModal from "@/components/ListingByID";
-import { getClientListings } from "@/lib/listing.lib";
+import ListingModal from "@/components/Listings/ListingByID";
+import {
+  getClientListings,
+  getClientListingsNotUsers,
+} from "@/lib/listing.lib";
 import { type Listing } from "@/src/generated/prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { getSession } from "@/lib/lib";
 
 const Listing = () => {
   const { listings, setListings, selectedListing, setSelectedListing } =
     useListings();
   const [loading, setLoading] = useState(true);
   const fetchListings = async () => {
-    const temp = await getClientListings();
-    setListings(temp?.listings);
+    const session = await getSession();
+    if (!session) {
+      const temp = await getClientListings();
+      setListings(temp?.listings);
 
-    return temp;
+      return temp;
+    } else {
+      const temp = await getClientListingsNotUsers(session?.uid);
+      setListings(temp?.listings);
+      
+      return temp;
+    }
   };
   useEffect(() => {
     try {
@@ -31,7 +43,6 @@ const Listing = () => {
     }
   }, []);
   function openListingModal(listing: Listing) {
-    
     setSelectedListing(listing);
   }
   return (
@@ -78,7 +89,7 @@ const Listing = () => {
                     transition={{
                       delay: 0.1,
                       type: "spring",
-                      stiffness: 200
+                      stiffness: 200,
                     }}
                     className="absolute top-3 right-5 font-bold bg-primary rounded-4xl px-2"
                   >

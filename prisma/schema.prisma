@@ -17,7 +17,7 @@ model Listing {
   imageUrls   String[]
 
   sellerId String @db.Uuid
-  seller   User   @relation(fields: [sellerId], references: [uid])
+  seller   User   @relation(fields: [sellerId], references: [uid], onDelete: Cascade)
   sold Boolean  @default(false)
   archived Boolean @default(false)
   condition String?
@@ -47,7 +47,7 @@ model Conversation {
   listingId String @db.Uuid
   
   userUid String @db.Uuid
-  user    User   @relation(fields: [userUid], references: [uid])
+  user    User   @relation(fields: [userUid], references: [uid], onDelete: Cascade)
 
   messages Message[]
 }
@@ -62,5 +62,5 @@ model Message {
   updated DateTime @default(now())
 
   conversationID String       @db.Uuid
-  conversation   Conversation @relation(fields: [conversationID], references: [cid])
+  conversation   Conversation @relation(fields: [conversationID], references: [cid], onDelete: Cascade)
 }

@@ -153,7 +153,7 @@ const NewListingPage = () => {
   }
 
   return (
-    <main className="overflow-auto h-[85vh]  overflow-auto">
+    <main className="overflow-auto h-[85vh]">
       {/* <div className="px-2 flex relative justify-end ">
       <button className="bg-primary  rounded-xl cursor-pointer text-white mt-4 font-bold px-4 py-2">
         Post Listing

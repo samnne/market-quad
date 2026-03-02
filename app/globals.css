@@ -160,4 +160,7 @@ body {
   body {
     @apply bg-white ;
   }
+  main {
+    @apply h-[85vh] overflow-auto;
+  }
 }

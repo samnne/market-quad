@@ -6,7 +6,8 @@ import { ChangeEvent, Ref, useRef, useState } from "react";
 
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
-import { useType } from "../app/store/zustand";
+import { useType } from "../../app/store/zustand";
+import ErrorMessage from "../Modals/ErrorMessage";
 
 interface LoginUserForm {
   email: string;
@@ -16,8 +17,9 @@ interface LoginUserForm {
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const [inputType, setInputType] = useState<"password" | "text">("password");
+  const [errorMessage, setErrorMessage] = useState({});
   const inputRef = useRef<HTMLInputElement>(null);
-  const {changeType} = useType();
+  const { changeType } = useType();
   const [formData, setFormData] = useState<LoginUserForm>({
     email: "",
     password: "",
@@ -27,13 +29,22 @@ const AuthForm = ({ type }: { type: FormType }) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   const handleLogin = async (formData: FormData) => {
-    await login(formData);
-    redirect("/listings");
+    const loginSession = await login(formData);
+    if (loginSession?.session) {
+      redirect("/listings");
+    } else {
+      setErrorMessage({
+        message: loginSession?.message
+      })
+    }
   };
   const handleSignUp = async (formData: FormData) => {
     const res = await signup(formData);
     console.log(res);
-    redirect("/listings");
+    if (res?.uid){
+
+      redirect("/listings");
+    }
   };
 
   const toggleShowPassword = (e: MouseEvent) => {
@@ -62,6 +73,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       className="mt-4 min-w-full space-y-4  flex flex-col  h-full"
       action={handleSubmit}
     >
+      <ErrorMessage message={errorMessage?.message} />
       {type === "sign-up" && (
         <>
           <div className="flex relative text-black flex-col">
@@ -129,10 +141,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
           {type === "sign-in" ? "Sign In" : "Sign Up"}
         </button>
 
-        <Link href={
-          type === "sign-in" ? "/sign-up" : "/sign-in"
-        } className="px-4 py-2 text-sm bg-secondary " onClick={()=> changeType(type === "sign-in" ? "sign-up" : "sign-in")}>
-          <span> {type === "sign-in" ? "Click to Sign Up" : "Sign In"}</span>
+        <Link
+          href={type === "sign-in" ? "/sign-up" : "/sign-in"}
+          className="px-4 py-2 text-sm bg-secondary "
+          onClick={() => changeType(type === "sign-in" ? "sign-up" : "sign-in")}
+        >
+          <span> {type === "sign-in" ? "Click to Sign Up" : "Click to Sign In"}</span>
         </Link>
       </div>
       <div className="w-full flex flex-col justify-center items-center">

@@ -1,3 +1,5 @@
+import { Conversation, Listing } from "@/src/generated/prisma/client";
+
 interface UserFormData{
   name: string;
   uid: string;
@@ -30,3 +32,4 @@ interface listingFormData {
 
 }
 type FormType = "sign-in" | "sign-up";
+interface UserSession extends SafeUser {}

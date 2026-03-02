@@ -1,7 +1,5 @@
-import Navbar from "@/components/Navbar";
-import TopNavbar from "../../components/TopNavbar";
-import { getSession } from "@/lib/lib";
-import { redirect } from "next/navigation";
+import Navbar from "@/components/Navbars/Navbar";
+import TopNavbar from "../../components/Navbars/TopNavbar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
  
