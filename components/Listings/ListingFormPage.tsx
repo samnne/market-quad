@@ -1,6 +1,6 @@
 "use client";
 import { condition } from "@/app/client-utils/constants";
-import { newListingAction } from "@/lib/listing.lib";
+import { editListingAction, newListingAction } from "@/lib/listing.lib";
 import {
   ChangeEvent,
   KeyboardEvent,
@@ -12,13 +12,15 @@ import {
 import * as z from "zod";
 
 import { MdAddToPhotos } from "react-icons/md";
-import { useListings, useUser } from "@/app/store/zustand";
-import { decrypt, getSession } from "@/lib/lib";
+import { useListings, useMessage, useUser } from "@/app/store/zustand";
+import { getSession } from "@/lib/lib";
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import { FaTimes } from "react-icons/fa";
+
 import { IoClose } from "react-icons/io5";
 import { cleanUP } from "@/app/client-utils/functions";
+import { listingFormData } from "@/app/types";
+import { motion } from "motion/react";
 
 const ListingForm = z.object({
   title: z.string().min(1, "Title Too Short"),
@@ -38,14 +40,15 @@ type ImageEntry = {
   preview: string;
 };
 
-const NewListingPage = () => {
-  const { user, setUser , reset: userReset} = useUser();
+const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
+  const { user, setUser, reset: userReset } = useUser();
   const [rows, setInputRows] = useState(1);
+  const { selectedListing, setSelectedListing, reset: lisReset } = useListings();
+  const { setError, setSuccess } = useMessage();
   const [selectedFiles, setSelectedFiles] = useState<ImageEntry[]>([]);
   // Listing form data inferred by ZOD
-  const [previews, setPreviews] = useState<string[]>([]);
+
  
-  const { reset: lisReset } = useListings();
   const [listingFormData, setListingFormData] = useState<
     z.infer<typeof ListingForm>
   >({
@@ -61,18 +64,35 @@ const NewListingPage = () => {
 
     if (!session) {
       cleanUP({ reset: lisReset }, { reset: userReset });
-
+      setError(true);
       redirect("/sign-in");
     }
-    setUser(session);
   }
   useEffect(() => {
     mountUser();
+    if (type === "edit" && selectedListing.imageUrls) {
+      const { title, price, description, condition, imageUrls } =
+        selectedListing;
+      console.log(selectedListing);
+      setListingFormData((prev) => ({
+        ...prev,
+        title,
+        description,
+        price,
+        condition,
+        imageUrls,
+      }));
+
+      const files = imageUrls;
+      const entries = files.map((url) => ({
+        file: null,
+        preview: url,
+      }));
+      setSelectedFiles((prev) => [...entries]);
+    }
   }, []);
 
-  useEffect(() => {
-    return () => previews.forEach(URL.revokeObjectURL);
-  }, [previews]);
+
 
   function emptyLine() {
     const lines = listingFormData.description.split("\n");
@@ -119,7 +139,7 @@ const NewListingPage = () => {
       return;
     } else {
       const { title, price, description, condition } = parseListingForm.data;
-      if (user) {
+      if (user && type === "new") {
         const newListing = await newListingAction(
           {
             title,
@@ -133,8 +153,41 @@ const NewListingPage = () => {
           },
           user?.uid,
         );
-        console.log(newListing);
-      } else {
+        if (newListing?.success) {
+          setSuccess(true);
+          redirect(`/listings/`);
+        } else {
+          setError(true);
+        }
+      } else if (user && type === "edit"){
+        const editListing = await editListingAction(
+          {
+            title,
+            price,
+            description,
+            condition,
+            lid: selectedListing.lid,
+            latitude: 0,
+            longitude: 0,
+            imageUrls: selectedFiles.map((img) => {
+              if (!img.file) return img.preview;
+
+              return img.file
+            }),
+            sellerId: user.uid,
+          },
+          user?.uid,
+        );
+        console.log(editListing)
+        if (editListing?.success) {
+          setSuccess(true);
+          redirect(`/listings/`);
+        } else {
+          setError(true);
+        }
+
+      } else  {
+        console.log("User No Exist");
         return;
       }
     }
@@ -166,11 +219,11 @@ const NewListingPage = () => {
       </div> */}
       <header className="flex gap-2 overflow-auto no-scrollbar p-2">
         {selectedFiles &&
-          selectedFiles.map(({ preview, file }, i) => {
+          selectedFiles.map(({preview, file}, i) => {
             return (
               <div
                 key={preview}
-                className="flex  w-full min-w-40 justify-center border border-secondary hover:bg-secondary/25  rounded-xl items-center h-40 relative"
+                className="flex  w-full min-w-80 justify-center border border-secondary hover:bg-secondary/25  rounded-xl items-center h-80 relative"
               >
                 <button
                   onClick={(e) => {
@@ -190,7 +243,7 @@ const NewListingPage = () => {
               </div>
             );
           })}
-        <div className="flex  w-full min-w-40 justify-center border border-secondary hover:bg-secondary/25  rounded-xl items-center h-40 relative">
+        <div className="flex  w-full min-w-80 justify-center border border-secondary hover:bg-secondary/25  rounded-xl items-center h-80 relative">
           <span className="flex flex-col items-center font-semibold  text-secondary">
             <MdAddToPhotos className="w-6 h-6" /> Add Photos / Video
           </span>
@@ -209,7 +262,7 @@ const NewListingPage = () => {
         </div>
       </header>
       <article className="pl-4 text-sm text-gray-400">
-        Photos: {previews?.length}/10
+        Photos: {selectedFiles?.length}/10
       </article>
       <section className="p-2">
         <form
@@ -247,7 +300,10 @@ const NewListingPage = () => {
           <ul className="flex gap-4 overflow-x-auto no-scrollbar">
             {condition.map((c) => {
               return (
-                <button
+                <motion.button
+                whileTap={{
+                  scale: 0.8
+                }}
                   key={c}
                   type="button"
                   onClick={() =>
@@ -258,7 +314,7 @@ const NewListingPage = () => {
                   className={`${c === listingFormData.condition ? "bg-secondary" : "bg-secondary/20"} bg-secondary cursor-pointer text-sm text-text font-semibold px-2 rounded-md py-1  text-nowrap`}
                 >
                   {c}
-                </button>
+                </motion.button>
               );
             })}
           </ul>
@@ -286,17 +342,20 @@ const NewListingPage = () => {
               value={listingFormData.location}
               placeholder="Location"
             />
-          </div>
-          <button
+          </div> 
+          <motion.button
+          whileTap={{
+            scale: 0.8
+          }}
             type="submit"
             className="bg-primary rounded-xl cursor-pointer text-white mt-4 font-bold w-full h-12"
           >
-            Post Listing
-          </button>
+            {type === "edit" ? "Edit" : "Post"} Listing
+          </motion.button>
         </form>
       </section>
     </main>
   );
 };
 
-export default NewListingPage;
+export default ListingFormPage;

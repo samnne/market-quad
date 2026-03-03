@@ -54,6 +54,7 @@ const ProfileSections = ({
       </li>
       {modals.userModal ? (
         <UserListings
+          setSelectedListing={props?.setSelectedListing}
           setModals={setModals}
           userListings={userListing}
           showModal={modals.userModal}

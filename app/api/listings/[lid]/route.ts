@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getListingByID, updateListing, deleteListing } from "@/db/listings.db"
+import { getListingByID, updateListing, deleteListing } from "@/db/listings.db";
 import { Listing } from "@/src/generated/prisma/client";
 import { ListingInclude } from "@/src/generated/prisma/models";
 
 import { ErrorMessage } from "@/app/server-utils/utils";
 import { getSession } from "@/lib/lib";
+import { deleteImages } from "@/cloudinary/cloudinary";
+import { cookies } from "next/headers";
 
 export async function GET(
   req: NextRequest,
@@ -27,7 +29,7 @@ export async function GET(
     return NextResponse.json({
       message: "Successfully found Listing",
       listing,
-      success: true
+      success: true,
     });
   } catch (error) {
     console.log(error);
@@ -41,14 +43,15 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: { lid: string } },
 ) {
-  const session = await getSession();
+  const session = req.headers.get("authorization");
+
   if (!session) {
     return NextResponse.json(ErrorMessage("Unauthorized", 401), {
       status: 401,
     });
   }
 
-  const { lid } = params;
+  const { lid } = await params;
   const listingFormData: listingFormData = await req.json();
   try {
     if (!lid) {
@@ -62,6 +65,7 @@ export async function PUT(
       {
         message: "Succesfully updated Listing",
         listing,
+        success: true,
       },
       { status: 200 },
     );
@@ -77,14 +81,15 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { lid: string } },
 ) {
-  const session = await getSession();
+  const session = req.headers.get("authorization");
+
   if (!session) {
     return NextResponse.json(ErrorMessage("Unauthorized", 401), {
       status: 401,
     });
   }
 
-  const { lid } = params;
+  const { lid } = await params;
 
   try {
     if (!lid) {
@@ -92,12 +97,16 @@ export async function DELETE(
         status: 500,
       });
     }
+
     const listing = await deleteListing(lid);
 
+    const val = await deleteImages(listing.imageUrls);
+    console.log(val);
     return NextResponse.json(
       {
         message: "Succesfully deleted Listing",
         listing,
+        success: true,
       },
       { status: 200 },
     );

@@ -39,8 +39,9 @@ export async function deleteUserForReals(uid: string) {
 export async function getSession(): Promise<UserSession | null> {
   try {
     const session = (await cookies()).get("session")?.value;
+    
     if (!session) return null;
-    return await decrypt(session);
+    return await decrypt(session)
   } catch (error) {
     console.log("Expired Token", error);
     await logout();

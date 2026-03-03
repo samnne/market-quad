@@ -1,12 +1,12 @@
 "use client";
-import { login, signup } from "@/lib/lib";
+import { decrypt, getSession, login, signup } from "@/lib/lib";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChangeEvent, Ref, useRef, useState } from "react";
+import { ChangeEvent, Ref, useEffect, useRef, useState } from "react";
 
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
-import { useType } from "../../app/store/zustand";
+import { useMessage, useType, useUser } from "../../app/store/zustand";
 import ErrorMessage from "../Modals/ErrorMessage";
 import { cleanUP } from "@/app/client-utils/functions";
 
@@ -20,30 +20,51 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [inputType, setInputType] = useState<"password" | "text">("password");
   const [errorMessage, setErrorMessage] = useState({});
   const inputRef = useRef<HTMLInputElement>(null);
+  const { setError, setSuccess } = useMessage();
+  const { user, setUser } = useUser();
   const { changeType } = useType();
   const [formData, setFormData] = useState<LoginUserForm>({
     email: "",
     password: "",
     name: "",
   });
+  const mountSession = async () => {
+    const session = await getSession();
+
+    if (session) {
+      setUser(session)
+      redirect("/home");
+    }
+  };
+  useEffect(() => {
+    mountSession();
+  }, []);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  // HANDLE LOGIN
   const handleLogin = async (formData: FormData) => {
     const loginSession = await login(formData);
     if (loginSession?.session) {
+      setSuccess(true);
+      // Sets the user session
+      mountSession();
       redirect("/listings");
     } else {
-      setErrorMessage({
-        message: loginSession?.message
-      })
+      // setErrorMessage({
+      //   message: loginSession?.message,
+      // });
     }
   };
+
+  // HANDLES SIGN UP
   const handleSignUp = async (formData: FormData) => {
     const res = await signup(formData);
     console.log(res);
-    if (res?.uid){
-      
+    if (res?.uid) {
+      setSuccess(true);
+      mountSession();
       redirect("/listings");
     }
   };
@@ -74,7 +95,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
       className="mt-4 min-w-full space-y-4  flex flex-col  h-full"
       action={handleSubmit}
     >
-      <ErrorMessage message={errorMessage?.message} />
       {type === "sign-up" && (
         <>
           <div className="flex relative text-black flex-col">
@@ -147,7 +167,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
           className="px-4 py-2 text-sm bg-secondary "
           onClick={() => changeType(type === "sign-in" ? "sign-up" : "sign-in")}
         >
-          <span> {type === "sign-in" ? "Click to Sign Up" : "Click to Sign In"}</span>
+          <span>
+            {" "}
+            {type === "sign-in" ? "Click to Sign Up" : "Click to Sign In"}
+          </span>
         </Link>
       </div>
       <div className="w-full flex flex-col justify-center items-center">

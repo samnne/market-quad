@@ -32,5 +32,6 @@ export const condition = [
     "Used - Good",
     "Used - Fair",
     "Used - Poor",
-    "Used - New"
+    "Used - New",
+    "Broken"
 ]

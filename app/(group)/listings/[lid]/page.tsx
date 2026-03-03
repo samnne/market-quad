@@ -2,16 +2,19 @@
 
 import { useListings } from "@/app/store/zustand";
 import ListingModal from "@/components/Listings/ListingByID";
+import { getListingByID } from "@/db/listings.db";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
-import NestedLayout from "./layout";
 
 const LID = () => {
-  const params = useParams();
-
+  const params: {lid: string} = useParams();
+  const fetchByID = async (id: string) => {
+    const listing = await getListingByID(id);
+    setSelectedListing(listing);
+  };
   const { selectedListing, setSelectedListing, listings } = useListings();
   useEffect(() => {
-    setSelectedListing(listings.find((l) => l.lid === params?.lid));
+    fetchByID(params.lid);
   }, []);
   return (
     <>
@@ -20,9 +23,8 @@ const LID = () => {
   );
 };
 
-
 export default LID;
 
-LID.getLayout = function getLayout(page) {
-return <NestedLayout>{page}</NestedLayout>;
-};
+// LID.getLayout = function getLayout(page) {
+// return <NestedLayout>{page}</NestedLayout>;
+// };

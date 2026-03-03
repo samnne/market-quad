@@ -1,9 +1,0 @@
-@reference "tailwindcss"
-
-@layer components {
-  .form {
-    input {
-      @apply p-4 focus:outline-1 focus:outline-secondary w-full rounded-2xl outline outline-black/50;
-    }
-  }
-}

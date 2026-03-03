@@ -14,34 +14,32 @@ import { MdOutlinePrivacyTip } from "react-icons/md";
 import { useListings, useUser } from "../store/zustand";
 
 import { cleanUP } from "../client-utils/functions";
-import { SafeUser } from "../types";
 
 const Profile = () => {
-  const [session, setSession] = useState<SafeUser>({});
   const [deleteUser, setDeleteUser] = useState(false);
-  const { userListings, setUserListings, reset: userReset } = useUser();
-  const { reset: lisReset } = useListings();
+  const { user, userListings, setUserListings, setUser, reset: userReset } = useUser();
+  const { reset: lisReset, setSelectedListing } = useListings();
 
   async function mountSession() {
     const serverSession = await getSession();
+ 
     if (!serverSession) {
       cleanUP({ reset: lisReset }, { reset: userReset });
 
       redirect("/sign-in");
     }
-
-    setSession(serverSession);
+    setUser(serverSession)
   }
   async function mountUserListings() {
-    if (userListings.length !== 0) return;
+    // if (userListings.length !== 0) return;
     try {
-      const tempListings = await getUserListings(session?.uid);
+      const tempListings = await getUserListings(user?.uid);
       if (!tempListings) {
         // TODO: Set Error Message
         return;
       }
 
-      if (session?.uid) {
+      if (user?.uid) {
         setUserListings(tempListings);
       }
     } catch (error) {
@@ -52,10 +50,10 @@ const Profile = () => {
     mountSession();
   }, []);
   useEffect(() => {
-    if (session) {
+    if (user) {
       mountUserListings();
     }
-  }, [session]);
+  }, [user]);
 
   const handleLogout = async () => {
     await logout();
@@ -73,15 +71,15 @@ const Profile = () => {
       <main className="p-4 ">
         <header className="flex items-center shadow shadow-black/20 rounded-4xl ">
           <div className="p-2 ">
-            {session?.profileURL ? (
+            {user?.profileURL ? (
               <div className="w-14 h-14 bg-primary/50 rounded-full"></div>
             ) : (
               <div className="w-14 h-14 bg-primary/50 rounded-full"></div>
             )}
           </div>
           <div className="flex flex-col">
-            <h1 className="font-bold text-xl ">Welcome {session?.name}</h1>
-            <span className="text-sm text-gray-400">{session?.email}</span>
+            <h1 className="font-bold text-xl ">Welcome {user?.name}</h1>
+            <span className="text-sm text-gray-400">{user?.email}</span>
           </div>
         </header>
         <h2 className="mt-5 p-2 text-2xl">Your Market</h2>
@@ -90,7 +88,11 @@ const Profile = () => {
             <ProfileSections
               sideIcon={<CiViewList />}
               displayText="Your Listings"
-              props={{ userListings, type: "ulist" }}
+              props={{
+                userListings,
+                type: "ulist",
+                setSelectedListing: setSelectedListing,
+              }}
             />
             <ProfileSections
               sideIcon={<IoChatbubbleOutline />}
@@ -138,7 +140,7 @@ const Profile = () => {
 
         {deleteUser && (
           <DeleteModal
-            session={session}
+            session={user}
             lisReset={lisReset}
             userReset={userReset}
             setDeleteUser={setDeleteUser}

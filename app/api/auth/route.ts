@@ -1,3 +1,4 @@
+import { deleteImages } from "@/cloudinary/cloudinary";
 import { prisma } from "@/db/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,13 +10,21 @@ export async function DELETE(req: NextRequest) {
         success: false,
       });
     }
+
     const deletedUser = await prisma.user.delete({
       where: {
         uid: uid,
-      },      
+      },   
+      include: {
+        listings: true
+      }   
     });
 
-    console.log(deletedUser)
+
+
+    for (const listing of deletedUser.listings){
+      await deleteImages(listing.imageUrls);
+    }
 
     return NextResponse.json({
       success: true,

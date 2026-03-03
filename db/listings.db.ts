@@ -38,6 +38,7 @@ export async function getOthersListings(uid: string): Promise<Listing[]> {
   return listings
 }
 export async function getUserListings(uid: string): Promise<Listing[]> {
+  
   const listings = await prisma.listing.findMany({
     orderBy: {
       createdAt: "asc",

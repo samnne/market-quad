@@ -18,17 +18,21 @@ type ListingStore = {
   setListings: Function;
   selectedListing: Listing | object;
   setSelectedListing: Function;
-  reset: () => Function;
+  reset: Function;
 };
-export const useListings: UseBoundStore<StoreApi<ListingStore>> = create((set) => {
-  return {
-    listings: [],
-    setListings: (listings: Listing[]) => set({ listings: listings }),
-    selectedListing: {},
-    setSelectedListing: (listing: Listing) => set({ selectedListing: listing }),
-    reset: () => set({ listings: [], selectedListing: {} }),
-  };
-});
+
+export const useListings: UseBoundStore<StoreApi<ListingStore>> = create(
+  (set) => {
+    return {
+      listings: [],
+      setListings: (listings: Listing[]) => set({ listings: listings }),
+      selectedListing: {},
+      setSelectedListing: (listing: Listing) =>
+        set({ selectedListing: listing }),
+      reset: () => set({ listings: [], selectedListing: {} }),
+    };
+  },
+);
 
 type UserState = {
   user: SafeUser | object;
@@ -39,10 +43,36 @@ type UserState = {
 };
 export const useUser: UseBoundStore<StoreApi<UserState>> = create((set) => {
   return {
-    user: {},
+    user: {
+      name: "",
+      createdAt: "",
+      email: "",
+      isVerified: false,
+      session: "",
+      profileURL: "",
+      uid: "",
+    },
     setUser: (user: SafeUser) => set({ user: user }),
     userListings: [],
     setUserListings: (listings: Listing[]) => set({ userListings: listings }),
-    reset: () => set({ user: {} }),
+    reset: () => set({ user: {}, userListings: [] }),
   };
 });
+
+type MessagePopUp = {
+  error: boolean;
+  success: boolean;
+  setSuccess: Function;
+  setError: Function;
+};
+
+export const useMessage: UseBoundStore<StoreApi<MessagePopUp>> = create(
+  (set) => {
+    return {
+      error: false,
+      success: false,
+      setSuccess: (success: boolean) => set({ success: success }),
+      setError: (error: boolean) => set({ error: error }),
+    };
+  },
+);
