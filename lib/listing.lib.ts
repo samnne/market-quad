@@ -29,14 +29,12 @@ export const newListingAction = async (
   newListing: listingFormData,
   sellerId: string,
 ) => {
-  const uploadedUrls = await uploadImages(newListing.imageUrls);
-  const uploadObj: listingFormData = {
-    ...newListing,
-    imageUrls: uploadedUrls,
-  };
+  const session = (await cookies()).get("session")?.value;
+  if (!session) return;
+  console.log(sellerId)
   const response = await fetch(`${BASEURL}/api/listings/`, {
     method: "post",
-    body: JSON.stringify({ ...uploadObj, sellerId }),
+    body: JSON.stringify({ ...newListing, sellerId }),
   });
 
   return response.json();
@@ -46,18 +44,14 @@ export const editListingAction = async (
   sellerId: string,
 ) => {
   const session = (await cookies()).get("session")?.value;
-  if(!session) return;
-  const uploadedUrls = await uploadImages(listingToEdit.imageUrls);
-  const uploadObj = {
-    ...listingToEdit,
-    imageUrls: uploadedUrls,
-  };
+  if (!session) return;
+
   const response = await fetch(`${BASEURL}/api/listings/${listingToEdit.lid}`, {
     headers: {
       Authorization: session,
     },
     method: "PUT",
-    body: JSON.stringify({ ...uploadObj, sellerId }),
+    body: JSON.stringify({ ...listingToEdit, sellerId }),
   });
 
   return response.json();

@@ -19,8 +19,10 @@ import Image from "next/image";
 
 import { IoClose } from "react-icons/io5";
 import { cleanUP } from "@/app/client-utils/functions";
-import { listingFormData } from "@/app/types";
-import { motion } from "motion/react";
+
+import { motion, stagger, useAnimate } from "motion/react";
+import { uploadImages } from "@/app/client-utils/functions";
+import { deleteImages } from "@/cloudinary/cloudinary";
 
 const ListingForm = z.object({
   title: z.string().min(1, "Title Too Short"),
@@ -43,12 +45,16 @@ type ImageEntry = {
 const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   const { user, setUser, reset: userReset } = useUser();
   const [rows, setInputRows] = useState(1);
-  const { selectedListing, setSelectedListing, reset: lisReset } = useListings();
+  const {
+    selectedListing,
+    setSelectedListing,
+    reset: lisReset,
+  } = useListings();
   const { setError, setSuccess } = useMessage();
+  const [scope, animate] = useAnimate();
   const [selectedFiles, setSelectedFiles] = useState<ImageEntry[]>([]);
   // Listing form data inferred by ZOD
 
- 
   const [listingFormData, setListingFormData] = useState<
     z.infer<typeof ListingForm>
   >({
@@ -67,7 +73,31 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       setError(true);
       redirect("/sign-in");
     }
+    setUser(session);
   }
+  useEffect(() => {
+    if (!scope.current) return;
+    animate(
+      "#sect",
+      {
+        y: [50, 0],
+        opacity: [0, 1],
+      },
+      {
+        delay: stagger(0.1),
+      },
+    );
+    animate(
+      "#from, div",
+      {
+        y: [50, 0],
+        opacity: [0, 1],
+      },
+      {
+        delay: stagger(0.1),
+      },
+    );
+  }, [scope]);
   useEffect(() => {
     mountUser();
     if (type === "edit" && selectedListing.imageUrls) {
@@ -91,8 +121,6 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       setSelectedFiles((prev) => [...entries]);
     }
   }, []);
-
-
 
   function emptyLine() {
     const lines = listingFormData.description.split("\n");
@@ -120,6 +148,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       });
     }
   };
+
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
@@ -138,8 +167,16 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       console.log("error occured", parseListingForm.error);
       return;
     } else {
+      const files = selectedFiles.map((img) => {
+        if (!img.file) return img.preview;
+
+        return img.file;
+      });
+
       const { title, price, description, condition } = parseListingForm.data;
       if (user && type === "new") {
+        const uploadedUrls = await uploadImages(files);
+
         const newListing = await newListingAction(
           {
             title,
@@ -148,7 +185,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
             condition,
             latitude: 0,
             longitude: 0,
-            imageUrls: selectedFiles.map((img) => img.file),
+            imageUrls: uploadedUrls,
             sellerId: user.uid,
           },
           user?.uid,
@@ -159,7 +196,17 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
         } else {
           setError(true);
         }
-      } else if (user && type === "edit"){
+      } else if (user && type === "edit") {
+        console.log(selectedFiles, selectedListing.imageUrls);
+        const delImage = [];
+        for (let image of selectedListing.imageUrls) {
+          if (!selectedFiles.find(file => file.preview === image)) {
+            delImage.push(image);
+          }
+        }
+        await deleteImages(delImage);
+        const uploadedUrls = await uploadImages(files);
+
         const editListing = await editListingAction(
           {
             title,
@@ -169,25 +216,21 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
             lid: selectedListing.lid,
             latitude: 0,
             longitude: 0,
-            imageUrls: selectedFiles.map((img) => {
-              if (!img.file) return img.preview;
-
-              return img.file
-            }),
+            imageUrls: uploadedUrls,
             sellerId: user.uid,
           },
           user?.uid,
         );
-        console.log(editListing)
+        console.log(editListing);
         if (editListing?.success) {
           setSuccess(true);
           redirect(`/listings/`);
         } else {
           setError(true);
         }
-
-      } else  {
+      } else {
         console.log("User No Exist");
+        setError(true);
         return;
       }
     }
@@ -210,16 +253,30 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   }
 
   return (
-    <main className="overflow-auto h-[85vh]">
+    <motion.main
+      initial={{
+        y: 50,
+        opacity: 0,
+      }}
+      animate={{
+        y: [50, 0],
+        opacity: [0, 1],
+      }}
+      transition={{
+        delay: 0.1,
+      }}
+      ref={scope}
+      className="overflow-auto h-[85vh]"
+    >
       {/* <div className="px-2 flex relative justify-end ">
       <button className="bg-primary  rounded-xl cursor-pointer text-white mt-4 font-bold px-4 py-2">
         Post Listing
       </button>
 
       </div> */}
-      <header className="flex gap-2 overflow-auto no-scrollbar p-2">
+      <header id="sect" className="flex gap-2 overflow-auto no-scrollbar p-2">
         {selectedFiles &&
-          selectedFiles.map(({preview, file}, i) => {
+          selectedFiles.map(({ preview, file }, i) => {
             return (
               <div
                 key={preview}
@@ -261,13 +318,14 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
           />
         </div>
       </header>
-      <article className="pl-4 text-sm text-gray-400">
+      <article id="sect" className="pl-4 text-sm text-gray-400">
         Photos: {selectedFiles?.length}/10
       </article>
-      <section className="p-2">
+      <section id="sect" className="p-2">
         <form
           onSubmit={(e) => handleSubmit(e)}
           className="flex  form flex-col gap-2 p-2"
+          id="form"
         >
           <div className="">
             <label className="" htmlFor="title">
@@ -301,9 +359,9 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
             {condition.map((c) => {
               return (
                 <motion.button
-                whileTap={{
-                  scale: 0.8
-                }}
+                  whileTap={{
+                    scale: 0.8,
+                  }}
                   key={c}
                   type="button"
                   onClick={() =>
@@ -342,11 +400,11 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
               value={listingFormData.location}
               placeholder="Location"
             />
-          </div> 
+          </div>
           <motion.button
-          whileTap={{
-            scale: 0.8
-          }}
+            whileTap={{
+              scale: 0.8,
+            }}
             type="submit"
             className="bg-primary rounded-xl cursor-pointer text-white mt-4 font-bold w-full h-12"
           >
@@ -354,7 +412,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
           </motion.button>
         </form>
       </section>
-    </main>
+    </motion.main>
   );
 };
 

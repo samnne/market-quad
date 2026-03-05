@@ -4,19 +4,24 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 import "dotenv/config";
 const ListingMap = () => {
   const mapContainer = useRef(null);
-  const map = useRef(null);
+  const map = useRef<maptilersdk.Map>(null);
   useEffect(() => {
     if (map.current) return;
     const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
     if (mapContainer.current && apiKey) {
       maptilersdk.config.apiKey = apiKey;
-        map.current = new maptilersdk.Map({
+      map.current = new maptilersdk.Map({
         container: mapContainer.current,
         style: maptilersdk.MapStyle.BASE_V4,
         center: [-123.312603, 48.463816],
         zoom: 12,
       });
+   
+    }
+    return () => {
+      map.current?.remove();
+      map.current = null;
     }
   }, []);
   return (
