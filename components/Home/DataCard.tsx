@@ -34,7 +34,7 @@ const DataCard = ({ dataList, href }: DataCardProps) => {
   return (
     <motion.div
       ref={scope}
-      className="flex  gap-2 w-full py-2 overflow-x-auto h-full"
+      className="flex  gap-2 w-full py-2 overflow-x-auto overflow-y-hidden h-full"
     >
       {dataList.map((data, i) => {
         return (
@@ -43,7 +43,7 @@ const DataCard = ({ dataList, href }: DataCardProps) => {
               y: 25,
               opacity: 0,
             }}
-            animate={{
+            whileInView={{
               y: [25, 0],
               opacity: [0, 1],
             }}
@@ -52,7 +52,7 @@ const DataCard = ({ dataList, href }: DataCardProps) => {
               stiffness: 300,
               // when: "beforeChildren",
               duration: 0.4,
-              delay: i * 0.2,
+              delay: 0.2,
             }}
             key={data ? (data.lid ? data.lid : data) : ""}
             onClick={() => {

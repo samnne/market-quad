@@ -19,7 +19,7 @@ const SuccessMessage = ({setter}: {setter: Function}) => {
             duration: 0.2,
             stiffness: 200
         }}
-    className="flex p-4 absolute bottom-15 z-100  w-screen ">
+    className="flex p-4 fixed bottom-15 z-100  w-screen ">
       <div className="flex items-center justify-between font-bold w-full p-4 drop-shadow-lg drop-shadow-primary/50 rounded-2xl border-2  gap-5 border-primary bg-white text-primary text-xl">
         <div className="text-3xl flex items-center gap-2 ">
           <CiCircleInfo />

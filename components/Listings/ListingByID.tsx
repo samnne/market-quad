@@ -20,7 +20,7 @@ import { redirect } from "next/navigation";
 import { deleteListingAction } from "@/lib/listing.lib";
 import { getSession } from "@/lib/lib";
 import { deleteImages } from "@/cloudinary/cloudinary";
-
+import Carousel from "../Carousel";
 
 const getRandomFirstMessage = (): string => {
   const randomMessages = [
@@ -102,16 +102,20 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
     setOptionsModal((prev) => !prev);
   }
 
-  async function handleDeleteListing(){ 
- 
-
-    const delList = await deleteListingAction(listing.lid)
-    if (delList.success){
-      redirect('/listings')
+  async function handleDeleteListing() {
+    const delList = await deleteListingAction(listing.lid);
+    if (delList.success) {
+      redirect("/listings");
     }
   }
-  async function handleEditListing(){
-    redirect('/edit')
+  async function handleEditListing() {
+    redirect("/edit");
+  }
+  async function handleArchive() {
+    console.log("Archived");
+  }
+  async function handleSold() {
+    console.log("Sold");
   }
 
   return (
@@ -122,15 +126,16 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
           initial={{
             y: 50,
 
-            scale: 0.75,
+        
             opacity: 0,
           }}
-          whileInView={{
-            y: 0,
-            x: 0,
-            scale: 1,
-            opacity: 1,
+          animate={{
+          
+            x: [-100,0],
+         
+            opacity: [0,1],
           }}
+          whileInView={{}}
           transition={{
             duration: 0.2,
           }}
@@ -154,45 +159,44 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
               >
                 <BsThreeDots className="w-full h-full " />
               </motion.span>
-              {optionsModal && listing.sellerId === user.uid && (
-                <motion.div
-                  ref={scope}
-                  animate={{
-                    top: ["30px", "52px"],
-                    right: [0, "8px"],
-                    opacity: [0, 1],
-                  }}
-                  transition={{
-                    ...transition,
-                  }}
-                  className="absolute top-13 rounded-2xl border-2 border-primary text-primary font-bold bg-white min-w-fit w-30 right-2 p-2"
-                >
-                  <ul className="flex flex-col gap-2">
-                    <li onClick={() => handleEditListing()}>Edit</li>
-                    <li
-                      onClick={() => handleDeleteListing()}
-                      className="text-red-500"
-                    >
-                      Delete
-                    </li>
-                  </ul>
-                </motion.div>
-              )}
             </div>
           </nav>
+          {optionsModal && listing.sellerId === user.uid && (
+            <motion.div
+              ref={scope}
+              animate={{
+                top: ["30px", "52px"],
+                right: [0, "8px"],
+                opacity: [0, 1],
+              }}
+              transition={{
+                ...transition,
+              }}
+              className="absolute z-100 top-13 rounded-2xl border-2 border-primary  font-bold bg-white min-w-fit w-30 right-2 p-2"
+            >
+              <ul className="flex  flex-col gap-2">
+                <li onClick={() => handleArchive()}>Archive</li>
+                <li onClick={() => handleSold()}>Mark Sold</li>
+                <li onClick={() => handleEditListing()}>Edit</li>
+                <li
+                  onClick={() => handleDeleteListing()}
+                  className="text-red-500"
+                >
+                  Delete
+                </li>
+              </ul>
+            </motion.div>
+          )}
           <section className="flex flex-col grow">
-            <div className="w-full">
-              <Image
-                className="w-full"
-                src={listing.imageUrls[0]}
-                width={200}
-                height={200}
-                alt="Bigger Listing View"
-              />
+            <div
+              id="carousel"
+              className="w-full relative z-0 flex gap-2 overflow-hidden h-full "
+            >
+              <Carousel images={listing.imageUrls}> </Carousel>
             </div>
             <article className="p-5 rounded-t-4xl relative  shadow-2xl border h-full  bg-background flex flex-col">
               <h3 className="text-2xl font-semibold">{listing?.title}</h3>
-              <span className="text-lg">${listing?.price / 100}</span>
+              <span className="text-lg">${listing?.price}</span>
               <span className="text-gray-400 text-sm">{date}</span>
               <div className="w-full h-25 rounded-2xl mt-4  bg-white drop-shadow-xl drop-shadow-black/20">
                 <h4 className="pl-4 pt-4  w-full flex font-semibold text-sm ">
@@ -256,13 +260,11 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
       ) : (
         <motion.section
           animate={{
-            y: [50, 0],
             opacity: [0, 1],
-            dur: 0.2,
           }}
-          className="absolute  flex flex-col min-h-screen   w-screen inset-0 bg-white z-50"
+          className="absolute  flex flex-col min-h-screen    w-screen inset-0 bg-white z-50"
         >
-          <nav className="flex sticky w-full h-20 bg-white justify-between p-4">
+          {/* <nav className="flex sticky w-full h-20 bg-white justify-between p-4">
             <button onClick={closeModal} className="w-6 h-6">
               <IoClose className="w-full h-full " />
             </button>
@@ -281,6 +283,7 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
                 className="w-full"
                 src={"/nav-logo.svg"}
                 width={200}
+                loading="eager"
                 height={200}
                 alt="Bigger Listing View"
               />
@@ -328,7 +331,7 @@ const ListingModal = ({ listing }: { listing: Listing }) => {
                 <div className="h-30 w-full bg-gray-300 animate-pulse"></div>
               </div>
             </article>
-          </section>
+          </section> */}
         </motion.section>
       )}
     </>

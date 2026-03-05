@@ -9,14 +9,17 @@ const ListingCard = ({ listing }: { listing: Listing }) => {
   }
 
   return (
-    <section
+    <motion.section
+      whileTap={{
+        scale: 0.95,
+      }}
       onClick={() => openListingModal(listing)}
       className=" bg-white  drop-shadow-xl text-white p-2 flex flex-col gap-2 rounded-4xl"
       key={listing.lid}
     >
-      <div className="h-80 relative p-1">
+      <motion.div className="h-80 relative p-1">
         <Image
-          className=" rounded-4xl w-full h-full object-cover z-0"
+          className=" rounded-4xl w-full h-full object-contain bg-primary/25 z-0"
           width={250}
           loading="eager"
           height={250}
@@ -32,7 +35,7 @@ const ListingCard = ({ listing }: { listing: Listing }) => {
           alt="listing photo"
         />
 
-        <motion.span
+        {/* <motion.span
           initial={{
             opacity: 0,
             scale: 0,
@@ -49,8 +52,8 @@ const ListingCard = ({ listing }: { listing: Listing }) => {
           className="absolute top-3 right-5 font-bold bg-primary rounded-4xl px-2"
         >
           Click to View
-        </motion.span>
-      </div>
+        </motion.span> */}
+      </motion.div>
       <div className="p-4 rounded-2xl text-lg  overflow-hidden text-nowrap flex flex-col gap-1 justify-center">
         {/* <span className="">${listing.price / 100} ⋅</span>
                   <h3 className="">{listing.title}</h3> */}
@@ -63,7 +66,7 @@ const ListingCard = ({ listing }: { listing: Listing }) => {
           {listing.description}
         </p>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

@@ -8,7 +8,7 @@ const ErrorMessage = (props: {setter: Function}) => {
   const [scope, animate] = useAnimate();
   console.log(props)
   return (  
-    <motion.div className="flex p-4 absolute bottom-15  z-100  w-screen ">
+    <motion.div className="flex p-4 fixed bottom-15  z-100  w-screen ">
       <div className="flex items-center justify-between font-bold w-full p-4 drop-shadow-lg drop-shadow-red-500/50 rounded-2xl border-2  gap-5 border-red-500 bg-white text-red-500 text-xl">
         <div className="text-3xl flex items-center gap-2 ">
           <CiCircleInfo />
