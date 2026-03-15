@@ -73,8 +73,8 @@ const UserListings = ({
           {userListings.length > 0 ? (
             userListings.map((listing) => {
               return (
-                <div key={listing?.lid}>
-                  <ListingCard listing={listing} />;
+                <div  key={listing?.lid}>
+                  <ListingCard listing={listing} setSelectedListing={setSelectedListing} />;
                 </div>
               );
             })
@@ -122,7 +122,8 @@ const UserListings = ({
               left: -600,
               opacity: 0,
             }}
-            className="left-0 p-5 fixed items-center z-20 bg-white w-screen top-0 justify-between  flex "
+            
+            className="left-0 p-5 fixed items-center z-100 bg-white w-screen top-0 justify-between  flex "
           >
             <h1 className="text-black font-bold text-2xl">Your Listings</h1>
             <button

@@ -1,5 +1,5 @@
 
-const NestedLayout = ({ children }: { children: React.ReactNode }) => {
+const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="w-screen h-screen overflow-x-hidden ">
       <section className="">{children}</section>
@@ -7,4 +7,4 @@ const NestedLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default NestedLayout;
+export default layout;

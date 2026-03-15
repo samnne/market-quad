@@ -2,14 +2,16 @@
   "name": "thequad",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "bun run server.ts",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint"
   },
   "dependencies": {
     "@maptiler/sdk": "^3.11.1",
+    "@placekit/autocomplete-react": "^2.2.2",
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
     "@supabase/ssr": "^0.9.0",
@@ -20,6 +22,7 @@
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "cookies-next": "4.3.0",
+    "input-otp": "^1.4.2",
     "jose": "^6.1.3",
     "lucide-react": "^0.575.0",
     "motion": "^12.34.3",
@@ -33,6 +36,7 @@
     "react-icons": "^5.5.0",
     "react-responsive": "^10.0.1",
     "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.11"
   },

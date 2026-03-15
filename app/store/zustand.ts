@@ -81,11 +81,15 @@ export const useMessage: UseBoundStore<StoreApi<MessagePopUp>> = create(
 type ConvosState = {
   convos: (Conversation & ConversationInclude)[];
   setConvos: Function;
+  selectedConvo: Conversation,
+  setSelectedConvo: Function,
   reset: Function;
 };
 export const useConvos: UseBoundStore<StoreApi<ConvosState>> = create((set) => {
   return {
     convos: [],
+    selectedConvo: {},
+    setSelectedConvo: (convo: Conversation) => set({ selectedConvo: convo }),
     setConvos: (convos: Conversation[]) => set({ convos: convos }),
     reset: () => set({ convos: [] }),
   };

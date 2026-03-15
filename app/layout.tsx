@@ -2,17 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 // import { getCldOgImageUrl } from "next-cloudinary";
 import "./globals.css";
+import { NetworkProvider } from "./NetworkProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap"
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: "swap"
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -33,10 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-   
-        className={`${geistSans.variable} ${geistMono.variable} antialiased  h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-auto  min-h-screen`}
       >
-        {children}
+        <NetworkProvider>{children}</NetworkProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { getCloudinarySignature } from "@/cloudinary/cloudinary";
+import { getConvos } from "@/lib/conversations.lib";
 import { getSession } from "@/lib/lib";
 import {
   getClientListings,
@@ -8,14 +9,29 @@ import {
 } from "@/lib/listing.lib";
 import { supabase } from "@/supabase/authHelper";
 import pLimit from "p-limit";
+import { ConvosState, ListingStore, UserState } from "../types";
 
-export function cleanUP(listingStore, userStore) {
+
+export function cleanUP(listingStore: ListingStore, userStore: UserState, convoStore: ConvosState) {
   userStore.reset();
   listingStore.reset();
+  convoStore.reset()
+}
+
+export async function fetchConvos({ setter }: { setter: Function }) {
+  const { data, error } = await supabase.auth.getUser();
+  if (!data.user) {
+    return false
+  } else {
+    const temp = await getConvos(data.user?.id);
+    setter(temp);
+
+    return temp;
+  }
 }
 
 export const fetchListings = async ({ setter }: { setter: Function }) => {
-  const {data, error} = await supabase.auth.getUser()
+  const { data, error } = await supabase.auth.getUser();
   if (!data.user) {
     const temp = await getClientListings();
     setter(temp?.listings);
@@ -79,5 +95,11 @@ async function uploadImage(file: File) {
   return data.secure_url;
 }
 
+export async function getUserSupabase() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    return false;
+  }
 
-
+  return { user: data.user };
+}

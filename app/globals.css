@@ -95,7 +95,7 @@
   .form {
     input,
     textarea {
-      @apply p-4 focus:outline-1 focus:outline-secondary w-full rounded-2xl outline outline-black/50;
+      @apply p-4 focus:outline-1 focus:outline-secondary w-full rounded-2xl ;
     }
     div {
       @apply flex flex-col gap-2;
@@ -158,12 +158,15 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-white ;
+    @apply bg-white min-h-screen flex flex-col justify-between ;
   }
   main {
-    @apply h-[85vh] overflow-auto;
+    @apply grow  overflow-auto;
   }
   section.home {
     @apply w-full max-h-1/2 h-1/2  p-4 rounded-4xl;  
+  }
+  button .confirm{
+    @apply bg-primary text-sm  px-4 py-2 hover:bg-secondary hover:text-white transition-all duration-150 cursor-pointer hover:scale-105;
   }
 }

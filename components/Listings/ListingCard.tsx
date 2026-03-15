@@ -3,9 +3,10 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-const ListingCard = ({ listing }: { listing: Listing }) => {
+const ListingCard = ({ listing, setSelectedListing }: { listing: Listing, setSelectedListing: Function }) => {
   function openListingModal(listing: Listing) {
     redirect(`/listings/${listing?.lid}`);
+    // setSelectedListing(listing)
   }
 
   return (
@@ -51,9 +52,11 @@ const ListingCard = ({ listing }: { listing: Listing }) => {
           }}
           className="absolute top-3 right-5 font-bold bg-primary rounded-4xl px-2"
         >
+
           Click to View
         </motion.span> */}
       </motion.div>
+
       <div className="p-4 rounded-2xl text-lg  overflow-hidden text-nowrap flex flex-col gap-1 justify-center">
         {/* <span className="">${listing.price / 100} ⋅</span>
                   <h3 className="">{listing.title}</h3> */}
@@ -61,8 +64,10 @@ const ListingCard = ({ listing }: { listing: Listing }) => {
           {" "}
           ${listing.price} ⋅ {listing.title}
         </h3>
-        <span className="text-sm text-gray-400">{listing?.condition}</span>
-        <p className="text-gray-400 text-sm text-nowrap overflow-hidden">
+        <span className="text-sm text-accent/50 font-bold">
+          {listing?.condition}
+        </span>
+        <p className="text-gray-400 text-sm text-nowrap  overflow-hidden">
           {listing.description}
         </p>
       </div>

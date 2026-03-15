@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { BASEURL } from "@/app/server-utils/utils";
 import { User } from "@/src/generated/prisma/client";
 
+
 const key = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const SECONDS = 60 * 60;
@@ -157,3 +158,5 @@ export async function updateSession(request: NextRequest) {
     NextResponse.error();
   }
 }
+
+

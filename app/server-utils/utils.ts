@@ -6,7 +6,7 @@ import { SafeUser } from "../types";
 
 export function simplifyUserData(user: User & UserInclude): SafeUser {
   return {
-    uid: userid,
+    uid: user.uid,
     email: user.email,
     name: user.name,
     profileURL: user.profileURL,
@@ -35,4 +35,4 @@ export async function verifyPassword(password: string, hash: string) {
 }
 
 
-export const BASEURL = process.env.BASE_URL
+export const BASEURL = process.env.BASE_URL ?? "http://localhost:3000";

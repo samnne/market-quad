@@ -3,7 +3,6 @@ import DeleteModal from "@/components/Modals/DeleteModal";
 import ProfileSections from "@/components/AuthRelated/ProfileSections";
 import { getUserListings } from "@/db/listings.db";
 
-
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -11,36 +10,57 @@ import { AiOutlineLike } from "react-icons/ai";
 import { CiViewList } from "react-icons/ci";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { MdOutlinePrivacyTip } from "react-icons/md";
-import { useListings, useUser } from "../store/zustand";
+import { useConvos, useListings, useMessage, useUser } from "../../store/zustand";
 
-import { cleanUP } from "../client-utils/functions";
+import { cleanUP } from "../../client-utils/functions";
 import { supabase } from "@/supabase/authHelper";
 
 const Profile = () => {
   const [deleteUser, setDeleteUser] = useState(false);
-  const { user, userListings, setUserListings, setUser, reset: userReset } = useUser();
+  const {
+    user,
+    userListings,
+    setUserListings,
+    setUser,
+    reset: userReset,
+  } = useUser();
+  const { reset: convoReset } = useConvos();
   const { reset: lisReset, setSelectedListing } = useListings();
+  const { setError, setSuccess } = useMessage();
 
   async function mountSession() {
-    const {data, error} = await supabase.auth.getUser()
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      console.log("Auth error:", error);
+      setError(true);
+      redirect("/sign-in");
+     
+    }
     const tempUser = data.user;
-    if (!tempUser) redirect('/sign-in')
-    setUser(tempUser)
+    
+    if (!tempUser) {
+      setError(true);
+      redirect("/sign-in");
+    
+    }
+    setUser(tempUser);
   }
   async function mountUserListings() {
-    // if (userListings.length !== 0) return;
     try {
-      const tempListings = await getUserListings(user?.id);
-      if (!tempListings) {
-        // TODO: Set Error Message
+      if (!user?.id) {
+        console.warn("No user ID available");
         return;
       }
-
-      if (user?.id) {
-        setUserListings(tempListings);
+      const tempListings = await getUserListings(user.id);
+      if (!tempListings) {
+        console.warn("No listings found");
+        setError(true);
+        return;
       }
-    } catch (error) {
-      // Set Error Message
+      setUserListings(tempListings);
+    } catch (err) {
+      console.log("Error fetching user listings:", err);
+      setError(true);
     }
   }
   useEffect(() => {
@@ -53,9 +73,9 @@ const Profile = () => {
   }, [user]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    cleanUP({ reset: lisReset }, { reset: userReset });
-
+    await supabase.auth.signOut();
+    cleanUP({ reset: lisReset }, { reset: userReset }, { reset: convoReset });
+    setSuccess(true);
     redirect("/sign-in");
   };
 

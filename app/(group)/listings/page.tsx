@@ -1,45 +1,85 @@
 "use client";
 
-import { useListings } from "@/app/store/zustand";
+import { useListings, useMessage } from "@/app/store/zustand";
 
 import { type Listing } from "@/src/generated/prisma/client";
 
 import { useEffect, useState } from "react";
 
 import { fetchListings } from "@/app/client-utils/functions";
+import { useSearchParams } from "next/navigation";
 
 import ListingCard from "@/components/Listings/ListingCard";
+import { motion } from "motion/react";
 
-const Listing = () => {
+const ListingPage = () => {
   const { listings, setListings } = useListings();
   const [loading, setLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState<Listing[]>([]);
+  const { setError } = useMessage();
 
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search");
+  const displayListings =
+    searchQuery && searchResults !== null ? searchResults : listings;
   useEffect(() => {
-    try {
-      setLoading(true);
-      if (listings.length === 0) {
-        fetchListings({ setter: setListings });
+    const loadListings = async () => {
+      try {
+        setLoading(true);
+
+        if (searchQuery) {
+          // Fetch search results
+          const response = await fetch(
+            `/api/listings/search?q=${encodeURIComponent(searchQuery)}`,
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch search results");
+          }
+          const data = await response.json();
+          if (data.success) {
+            setSearchResults(data.listings);
+          } else {
+            setError(true);
+          }
+        } else {
+      
+          setSearchResults(null);
+          if (listings.length === 0) {
+            await fetchListings({ setter: setListings });
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching listings:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    };
+
+    loadListings();
+  }, [searchQuery]);
 
   return (
     <main className=" h-[85vh]  overflow-auto">
       <header className="px-2">
-        <h1 className="text-lg font-semibold">Today's Listings</h1>
+        <h1 className="text-lg font-semibold">
+          {searchQuery
+            ? `Search Results for "${searchQuery}"`
+            : "Today's Listings"}
+        </h1>
       </header>
-      <section className="flex flex-col p-12 gap-5">
-        {listings ? (
-          listings.map((listing: Listing) => {
+      <motion.section className="flex flex-col p-12 gap-5">
+        {!loading && displayListings && displayListings.length > 0 ? (
+          displayListings.map((listing: Listing) => {
             return <ListingCard key={listing.lid} listing={listing} />;
           })
-        ) : (
-          <div>Empty</div>
-        )}
+        ) : !loading ? (
+          <div className="text-center text-gray-400">
+            {searchQuery
+              ? "No listings found matching your search"
+              : "No listings available"}
+          </div>
+        ) : null}
         {loading && (
           <>
             <section className="">
@@ -62,9 +102,9 @@ const Listing = () => {
             </section>
           </>
         )}
-      </section>
+      </motion.section>
     </main>
   );
 };
 
-export default Listing;
+export default ListingPage;

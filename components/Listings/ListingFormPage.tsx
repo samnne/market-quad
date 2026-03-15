@@ -24,6 +24,7 @@ import { motion, stagger, useAnimate } from "motion/react";
 import { uploadImages } from "@/app/client-utils/functions";
 import { deleteImages } from "@/cloudinary/cloudinary";
 import { supabase } from "@/supabase/authHelper";
+import LocationInput from "../Inputs/LocationInput";
 
 const ListingForm = z.object({
   title: z.string().min(1, "Title Too Short"),
@@ -68,14 +69,14 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
 
   async function mountUser() {
     const { data, error } = await supabase.auth.getUser();
-    if (error) {
+    if (error || !data.user) {
+      console.error("Auth error:", error);
       setError(true);
       redirect("/sign-in");
     }
-   
     setUser(data.user);
   }
- 
+
   useEffect(() => {
     if (!scope.current) return;
     animate(
@@ -153,10 +154,11 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    // const parseListingForm = ListingForm.safeParse({...listingFormData, price: Number.parseInt(listingFormData.price), location: 0});
+
     const { title, price, location, condition, description } = listingFormData;
     const newPrice = Number.parseInt(price);
     const newLocation = Number.parseInt(location);
+
     const parseListingForm = ListingForm.safeParse({
       title,
       price: newPrice,
@@ -164,76 +166,87 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       condition,
       location: newLocation,
     });
+
     if (!parseListingForm.success) {
-      console.log("error occured", parseListingForm.error);
+      console.error("Validation error:", parseListingForm.error);
+      setError(true);
       return;
-    } else {
-      const files = selectedFiles.map((img) => {
-        if (!img.file) return img.preview;
+    }
 
-        return img.file;
-      });
+    if (!user?.id) {
+      console.error("User not authenticated");
+      setError(true);
+      return;
+    }
 
-      const { title, price, description, condition } = parseListingForm.data;
-      if (user && type === "new") {
-        const uploadedUrls = await uploadImages(files);
+    const files = selectedFiles.map((img) => {
+      if (!img.file) return img.preview;
+      return img.file;
+    });
 
-        const newListing = await newListingAction(
-          {
-            title,
-            price,
-            description,
-            condition,
-            latitude: 0,
-            longitude: 0,
-            imageUrls: uploadedUrls,
-            sellerId: user?.id,
-          },
-          user?.id,
-        );
-        if (newListing?.success) {
-          setSuccess(true);
-          redirect(`/listings/`);
-        } else {
-          console.log(newListing);
-          setError(true);
-        }
-      } else if (user && type === "edit") {
-        console.log(selectedFiles, selectedListing.imageUrls);
-        const delImage = [];
-        for (let image of selectedListing.imageUrls) {
-          if (!selectedFiles.find((file) => file.preview === image)) {
-            delImage.push(image);
-          }
-        }
-        await deleteImages(delImage);
-        const uploadedUrls = await uploadImages(files);
-        
-        const editListing = await editListingAction(
-          {
-            title,
-            price,
-            description,
-            condition,
-            lid: selectedListing.lid,
-            latitude: 0,
-            longitude: 0,
-            imageUrls: uploadedUrls,
-            sellerId: user?.id,
-          },
-          user?.id,
-        );
-        console.log(editListing);
-        if (editListing?.success) {
-          setSuccess(true);
-          redirect(`/listings/`);
-        } else {
-          setError(true);
-        }
+    const {
+      title: formTitle,
+      price: formPrice,
+      description: formDesc,
+      condition: formCond,
+    } = parseListingForm.data;
+
+    if (type === "new") {
+      const uploadedUrls = await uploadImages(files);
+      const newListing = await newListingAction(
+        {
+          title: formTitle,
+          price: formPrice,
+          description: formDesc,
+          condition: formCond,
+          latitude: 0,
+          longitude: 0,
+          imageUrls: uploadedUrls,
+          sellerId: user.id,
+        },
+        user.id,
+      );
+      if (newListing.success) {
+        setSuccess(true);
+        redirect(`/listings/${newListing.listing.lid}`);
       } else {
-        console.log("User No Exist");
+        console.log("Failed to create listing:", newListing);
         setError(true);
-        return;
+      }
+    } else if (type === "edit") {
+      const delImage = [];
+      for (let image of selectedListing.imageUrls) {
+        if (!selectedFiles.find((file) => file.preview === image)) {
+          delImage.push(image);
+        }
+      }
+
+      if (delImage.length > 0) {
+        await deleteImages(delImage);
+      }
+
+      const uploadedUrls = await uploadImages(files);
+      const editListing = await editListingAction(
+        {
+          title: formTitle,
+          price: formPrice,
+          description: formDesc,
+          condition: formCond,
+          lid: selectedListing.lid,
+          latitude: 0,
+          longitude: 0,
+          imageUrls: uploadedUrls,
+          sellerId: user.id,
+        },
+        user.id,
+      );
+
+      if (editListing?.success) {
+        setSuccess(true);
+        redirect(`/listings/`);
+      } else {
+        console.log("Failed to edit listing:", editListing);
+        setError(true);
       }
     }
   };
@@ -393,15 +406,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
           </div>
           <div className="">
             <label>Location</label>
-            <input
-              type="number"
-              className=""
-              name="location"
-              id="location"
-              onChange={handleChange}
-              value={listingFormData.location}
-              placeholder="Location"
-            />
+            <LocationInput />
           </div>
           <motion.button
             whileTap={{

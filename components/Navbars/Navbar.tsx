@@ -29,7 +29,7 @@ const Navbar = () => {
   }, [pathname]);
 
   return (
-    <nav className={clsx("p-1 w-screen grid", "fixed bottom-0 z-1")}>
+    <nav className={"w-screen self-end"}>
       <ul
         onMouseLeave={() => {
           // Return to active link instead of hiding
@@ -41,6 +41,7 @@ const Navbar = () => {
           setPosition({
             width: activeEl.getBoundingClientRect().width,
             opacity: 1,
+
             left: activeEl.offsetLeft,
           });
         }}

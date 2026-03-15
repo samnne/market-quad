@@ -12,7 +12,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 
 import { BsThreeDots } from "react-icons/bs";
 
-import { IoClose, IoSearch } from "react-icons/io5";
+import { IoArrowUp, IoClose, IoSearch } from "react-icons/io5";
 
 import StarRating from "../StarRating";
 import ListingMap from "./ListingMap";
@@ -23,6 +23,7 @@ import Carousel from "../Carousel";
 import { ListingInclude } from "@/src/generated/prisma/models";
 import { createConvo } from "@/lib/conversations.lib";
 import { supabase } from "@/supabase/authHelper";
+import { getUserSupabase } from "@/app/client-utils/functions";
 
 const getRandomFirstMessage = (): string => {
   const randomMessages = [
@@ -41,6 +42,7 @@ const getRandomFirstMessage = (): string => {
 const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
   const [sectionRef, animate] = useAnimate();
   const [scope, animateDots] = useAnimate();
+  const [containerRef, animateText] = useAnimate();
   const { setSelectedListing } = useListings();
   const [optionsModal, setOptionsModal] = useState(false);
   const { user, setUser } = useUser();
@@ -60,16 +62,32 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
       hoursDiff = hoursDiff * 60;
       hoursString = `${Math.round(hoursDiff).toString()} minutes ago`;
     }
+    
+    if (hoursDiff > 24){
+      hoursDiff = hoursDiff / 24
+      hoursString = `${Math.round(hoursDiff).toString()} days ago`;
+    }
+    
 
     setDate(hoursString);
   }
+  console.log(listing);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+  async function mountUser() {
+    const user = await getUserSupabase();
+    if (!user) {
+      setError(false);
+      return;
+    }
+    console.log(user);
+    setUser(user);
+  }
   useEffect(() => {
     getTimeElapsed();
-
+    mountUser();
     setMessage(getRandomFirstMessage());
   }, [listing]);
 
@@ -92,7 +110,7 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
   };
 
   async function createConversation() {
-    const {data, error} = await supabase.auth.getUser()
+    const { data, error } = await supabase.auth.getUser();
     if (error) {
       setError(true);
       redirect("/sign-in");
@@ -103,28 +121,29 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
       sellerId: listing.sellerId,
       initialMessage: message,
     });
-    console.log(created)
-    redirect(`/conversations`)
+    console.log(created);
+    redirect(`/conversations`);
   }
   async function toggleListingOptions() {
     if (optionsModal === true) {
-      await animateDots(
+       animateDots(
         scope.current,
         {
-          top: "30px",
-          right: 0,
-          opacity: 0,
+     
+          y: [0,100],
+          opacity: [1,0]
         },
         { ...transition },
       );
     }
+
     setOptionsModal((prev) => !prev);
   }
 
   async function handleDeleteListing() {
-    const delList = await deleteListingAction(listing.lid);
-    if (delList.success) {
-      redirect("/listings");
+    const delList = await deleteListingAction(listing.lid, user.id);
+    if (delList?.success) {
+      redirect("/profile");
     }
   }
   async function handleEditListing() {
@@ -142,30 +161,36 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
       {listing?.title ? (
         <motion.section
           ref={sectionRef}
+          drag="y"
+          dragConstraints={{
+            top: 0,
+            bottom: 0,
+          }}
+          onDragEnd={(event, info) => {
+            if (info.velocity.y > 500 || info.offset.y > 100) {
+              closeModal();
+            } else {
+              animate(sectionRef.current, { y: 50 });
+            }
+          }}
           initial={{
-            y: 50,
-
+            y: 500,
             opacity: 0,
           }}
           animate={{
-            x: [-100, 0],
-
+            y: [500, 50],
             opacity: [0, 1],
           }}
-          whileInView={{}}
           transition={{
             duration: 0.2,
           }}
-          className="absolute  flex flex-col min-h-screen   w-screen inset-0 bg-white z-50"
+          className="absolute rounded-t-4xl flex flex-col min-h-screen w-screen inset-0 bg-white z-50"
         >
-          <nav className="flex sticky top-0 w-full h-20 bg-white justify-between p-4">
+          <motion.nav className="flex relative  rounded-t-4xl z-60  top-0 w-full h-20 bg-white justify-between p-4">
             <button onClick={closeModal} className="w-6 h-6">
               <IoClose className="w-full h-full " />
             </button>
             <div className="flex gap-2">
-              <span className="w-6 h-6 ">
-                <IoSearch className="w-full h-full" />
-              </span>
               <motion.span
                 whileTap={{
                   scale: 0.8,
@@ -177,40 +202,52 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
                 <BsThreeDots className="w-full h-full " />
               </motion.span>
             </div>
-          </nav>
-          {optionsModal && listing.sellerId === user.id && (
-            <motion.div
-              ref={scope}
-              animate={{
-                top: ["30px", "52px"],
-                right: [0, "8px"],
-                opacity: [0, 1],
-              }}
-              transition={{
-                ...transition,
-              }}
-              className="absolute z-100 top-13 rounded-2xl border-2 border-primary  font-bold bg-white min-w-fit w-30 right-2 p-2"
-            >
-              <ul className="flex  flex-col gap-2">
-                <li onClick={() => handleArchive()}>Archive</li>
-                <li onClick={() => handleSold()}>Mark Sold</li>
-                <li onClick={() => handleEditListing()}>Edit</li>
-                <li
-                  onClick={() => handleDeleteListing()}
-                  className="text-red-500"
-                >
-                  Delete
-                </li>
-              </ul>
-            </motion.div>
-          )}
+          </motion.nav>
           <section className="flex flex-col grow">
             <div
               id="carousel"
-              className="w-full relative z-0 flex gap-2 overflow-hidden h-full "
+              className="w-full relative bg-accent/10  z-0 flex gap-2 overflow-hidden h-full "
             >
               <Carousel images={listing.imageUrls}> </Carousel>
             </div>
+
+            <motion.h4
+              ref={containerRef}
+             
+                animate={{
+                  y: [50,0]
+                }}
+              className="flex flex-col text-black/30 items-center justify-center text-sm font-bold "
+            >
+              <IoArrowUp />
+
+              <span  onClick={toggleListingOptions} >Toggle Options</span>
+              {optionsModal && (
+                <motion.div className="flex flex-col rounded-2xl p-2 font-bold bg-white min-w-fit w-30  ">
+                  <motion.ul
+                    ref={scope}
+                    animate={{
+                   
+                      y: [100, 0],
+                      opacity: [0,1]
+                    }}
+                
+                    className="flex   gap-2"
+                  >
+                    <li onClick={() => handleArchive()}>Archive</li>
+                    <li onClick={() => handleSold()}>Mark Sold</li>
+                    <li onClick={() => handleEditListing()}>Edit</li>
+                    <li
+                      onClick={() => handleDeleteListing()}
+                      className="text-red-500"
+                    >
+                      Delete
+                    </li>
+                  </motion.ul>
+                </motion.div>
+              )}
+            </motion.h4>
+
             <article className="p-5 rounded-t-4xl relative  shadow-2xl border h-full  bg-background flex flex-col">
               <h3 className="text-2xl font-semibold">{listing?.title}</h3>
               <span className="text-lg">${listing?.price}</span>
@@ -283,77 +320,13 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
             opacity: [0, 1],
           }}
           className="absolute  flex flex-col min-h-screen    w-screen inset-0 bg-white z-50"
-        >
-          {/* <nav className="flex sticky w-full h-20 bg-white justify-between p-4">
-            <button onClick={closeModal} className="w-6 h-6">
-              <IoClose className="w-full h-full " />
-            </button>
-            <div className="flex gap-2">
-              <span className="w-6 h-6 ">
-                <IoSearch className="w-full h-full" />
-              </span>
-              <span className="w-6 h-6">
-                <BsThreeDots className="w-full h-full" />
-              </span>
-            </div>
-          </nav>
-          <section className="flex flex-col grow">
-            <div className="w-full">
-              <Image
-                className="w-full"
-                src={"/nav-logo.svg"}
-                width={200}
-                loading="eager"
-                height={200}
-                alt="Bigger Listing View"
-              />
-            </div>
-            <article className="p-5 rounded-t-4xl relative  shadow-2xl border h-full  bg-background flex flex-col">
-              <h3 className="text-2xl font-semibold"></h3>
-              <span className="text-lg"></span>
-              <span className="text-gray-400 text-sm"></span>
-              <div className="w-full h-25 rounded-2xl mt-4  bg-white drop-shadow-xl drop-shadow-black/20">
-                <h4 className="pl-4 pt-4  w-full flex font-semibold text-sm ">
-                  Send a Message
-                </h4>
-                <form action="#" className="p-2 flex gap-2">
-                  <button className="font-bold bg-accent rounded-2xl px-2 text-white">
-                    Send
-                  </button>
-                </form>
-              </div>
-              <div className="mt-2  p-5 drop-shadow-xl drop-shadow-black/20 w-full bg-white rounded-2xl">
-                <h4 className="font-bold ">Description</h4>
-                <p className="text-md mt-2"></p>
-              </div>
-
-              <div className="mt-2 p-2 absolute right-0 -top-1">
-                <p className="text-sm bg-accent font-semibold text-white rounded-2xl p-2 w-fit mt-2"></p>
-              </div>
-              <div className="mt-2 p-5 drop-shadow-xl drop-shadow-black/20 w-full bg-white rounded-2xl ">
-                <h3 className="font-bold">The Seller</h3>
-                <div className="text-md mt-3 flex gap-2 ">
-                  <div>
-                    <div className="w-14 h-14 bg-accent/50 rounded-full"></div>
-                  </div>
-                  <div className="flex-col flex">
-                    <h1 className="w-full pl-1 font-semibold"></h1>
-                    <div className="w-30 flex gap-1">
-                      <StarRating value={4} />
-
-                      <span className="text-sm text-gray-500">(20)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-2 p-5 flex flex-col gap-2  drop-shadow-xl drop-shadow-black/20 w-full bg-white rounded-2xl">
-                <h1 className="w-full pl-1 font-semibold">Location</h1>
-                <div className="h-30 w-full bg-gray-300 animate-pulse"></div>
-              </div>
-            </article>
-          </section> */}
-        </motion.section>
+        ></motion.section>
       )}
+
+      <div
+        onClick={closeModal}
+        className="w-screen h-screen absolute inset-0 z-40 bg-black/20"
+      ></div>
     </>
   );
 };

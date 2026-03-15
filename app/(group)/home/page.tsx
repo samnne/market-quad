@@ -1,7 +1,7 @@
 "use client";
 
-import { fetchListings } from "@/app/client-utils/functions";
-import { useListings } from "@/app/store/zustand";
+import { fetchConvos, fetchListings } from "@/app/client-utils/functions";
+import { useConvos, useListings, useMessage } from "@/app/store/zustand";
 import DataCard from "@/components/Home/DataCard";
 import SectionHeader from "@/components/Home/SectionHeader";
 import { motion, stagger, useAnimate } from "motion/react";
@@ -11,41 +11,61 @@ import { useEffect, useState } from "react";
 const Home = () => {
   const { listings, setListings, setSelectedListing } = useListings();
   const [loading, setLoading] = useState(false);
+  const {setConvos} = useConvos()
   const [scope, animate] = useAnimate();
-  useEffect(() => {
-    try {
-      setLoading(true);
-      if (listings.length === 0) {
-        fetchListings({ setter: setListings });
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  const {convos} = useConvos();
+  const { setError } = useMessage();
 
-    animate(
-      "main section",
-      {
-        y: [50, 0],
-        opacity: [0, 1],
-      },
-      {
-        type: "spring",
-        stiffness: 300,
-        when: "beforeChildren",
-        duration: 0.4,
-        delay: stagger(0.2),
-      },
-    );
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+
+        setLoading(true);
+        if (listings.length === 0) {
+          await fetchListings({ setter: setListings });
+        }
+        await fetchConvos({setter: setConvos})
+      } catch (err) {
+        console.error('Error fetching listings:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+
+    if (!scope.current) return;
+    
+    try {
+      animate(
+        "main section",
+        {
+          y: [50, 0],
+          opacity: [0, 1],
+        },
+        {
+          type: "keyframes",
+          stiffness: 300,
+        
+          duration: 0.4,
+          delay: stagger(0.2),
+        },
+      );
+    } catch (err) {
+      console.error('Animation error:', err);
+    }
   }, []);
+
   const initial = {
     init: {
       opacity: 0,
     },
   };
+
   return (
-    <motion.main ref={scope} className="flex flex-col gap-4 p-2">
+    <motion.main ref={scope} className="flex flex-col justify-between  gap-4 p-2">
+     
       <motion.section
         variants={initial}
         className="home flex flex-col gap-2  overflow-y-hidden justify-between"
@@ -64,7 +84,7 @@ const Home = () => {
       >
         <div className="max-h-2/3 flex flex-col justify-between gap-2  overflow-y-hidden  h-2/3">
           <SectionHeader type="messages" title="Messages" />
-          <DataCard dataList={[1, 2, 4, 5, 67, 8]} href="conversations" />
+          <DataCard dataList={convos} href="conversations" />
         </div>
         <div className="max-h-1/3 h-1/3 flex relative flex-col overflow-x-hidden  mt-2">
           <motion.div>

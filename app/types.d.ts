@@ -1,6 +1,6 @@
 import { Conversation, Listing } from "@/src/generated/prisma/client";
 
-interface UserFormData{
+interface UserFormData {
   name: string;
   uid: string;
   email: string;
@@ -9,7 +9,7 @@ interface UserFormData{
   isVerified: boolean;
   createdAt: Date;
 }
-interface SafeUser{
+interface SafeUser {
   name: string;
   uid: string;
   email: string;
@@ -22,14 +22,35 @@ interface SafeUser{
 interface listingFormData {
   condition: string;
   title: string;
-  latitude?:number;
-  longitude?:number;
+  latitude?: number;
+  longitude?: number;
   description: string;
   price: number;
   imageUrls: File[] | string[];
   sellerId: string;
   views?: number;
-
 }
 type FormType = "sign-in" | "sign-up";
 interface UserSession extends SafeUser {}
+
+type ListingStore = {
+  listings: Listing[];
+  setListings: Function;
+  selectedListing: Listing | object;
+  setSelectedListing: Function;
+  reset: Function;
+};
+type UserState = {
+  user: SafeUser | object;
+  setUser: Function;
+  userListings: Listing[];
+  setUserListings: Function;
+  reset: Function;
+};
+type ConvosState = {
+  convos: (Conversation & ConversationInclude)[];
+  setConvos: Function;
+  selectedConvo: Conversation;
+  setSelectedConvo: Function;
+  reset: Function;
+};

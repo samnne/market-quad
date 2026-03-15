@@ -30,7 +30,8 @@ export async function getOthersListings(uid: string): Promise<Listing[]> {
     where: {
       sellerId: {
         not: uid
-      }
+      },
+      archived: false
     },
     include: {
       conversations: true,
@@ -47,7 +48,8 @@ export async function getUserListings(uid: string): Promise<Listing[]> {
     },
     take: 10,
     where: {
-      sellerId: uid
+      sellerId: uid,
+     
     },
     include: {
       seller: true,
@@ -63,6 +65,8 @@ export async function getListingByID(
   const listing = await prisma.listing.findUnique({
     where: {
       lid,
+      archived: false
+      
     },
     include: {
       seller: true,
@@ -105,6 +109,7 @@ export async function deleteListing(lid: string) {
     where: {
       lid,
     },
+    
   });
 
   return listing;

@@ -7,10 +7,18 @@ import { ChangeEvent, Ref, useEffect, useRef, useState } from "react";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
 import { useMessage, useType, useUser } from "../../app/store/zustand";
-import ErrorMessage from "../Modals/ErrorMessage";
-import { cleanUP } from "@/app/client-utils/functions";
+
 import { signUpUser } from "@/supabase/supabase";
 import { supabase } from "@/supabase/authHelper";
+import { FormType } from "@/app/types";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "../ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { setVerifiedUser } from "@/db/user.db";
 
 interface LoginUserForm {
   email: string;
@@ -25,8 +33,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const [counter, setCounter] = useState(0);
   const { setError, setSuccess } = useMessage();
   const { user, setUser } = useUser();
+
   const { changeType } = useType();
+  const [focused, setFocused] = useState(0);
   const [otp, setOTP] = useState("");
+  const [loadingLogin, setLoadingLogin] = useState(false);
+  const [loadingSignup, setLoadingSignup] = useState(false);
+  const [loadingOtp, setLoadingOtp] = useState(false);
   const [formData, setFormData] = useState<LoginUserForm>({
     email: "",
     password: "",
@@ -34,12 +47,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
   });
 
   const mountSession = async () => {
-    const session = await getSession();
-
-    if (session) {
-      setUser(session);
-      redirect("/home");
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      setError(true);
+      return;
     }
+    setUser(data.user);
+    redirect("/home");
   };
   useEffect(() => {
     mountSession();
@@ -62,55 +76,136 @@ const AuthForm = ({ type }: { type: FormType }) => {
   }, []);
   // HANDLE LOGIN
   const handleLogin = async (formData: FormData) => {
-    // const loginSession = await login(formData);
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: formData.get("email"),
-      options: {
-       
-        shouldCreateUser: false,
-      },
-    });
-    if (error) {
+    setLoadingLogin(true);
+    try {
+      const email = formData.get("email");
+      if (!email) {
+        console.error("Email is required");
+        setError(true);
+        setLoadingLogin(false);
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: email as string,
+        options: {
+          shouldCreateUser: false,
+        },
+      });
+
+      if (error) {
+        console.error("Login error:", error);
+        setError(true);
+        setLoadingLogin(false);
+        return;
+      }
+
+      changeType("otp");
+    } catch (err) {
+      console.error("Unexpected error during login:", err);
       setError(true);
+    } finally {
+      setLoadingLogin(false);
+    }
+  };
+  console.log(otp);
+  const hanldeOTPChange = (newVal: string) => {
+    setOTP((prev) => {
+      return newVal;
+    });
+  };
+
+  const handleOTP = async () => {
+    if (counter !== 0) {
+      console.warn("OTP still on cooldown");
       return;
     }
 
-    changeType("otp");
-  };
-  const hanldeOTPChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setOTP(e.target.value);
-  };
-  const handleOTP = async () => {
-    if (counter !== 0) return;
-    console.log(formData.email);
-    const {
-      data: { user, session },
-      error,
-    } = await supabase.auth.verifyOtp({
-      email: formData.email,
-      token: otp,
-      type: "email",
-    });
-    if (user?.id) {
-      setSuccess(true);
-      setUser(user);
+    if (!otp || otp.length !== 6) {
+      console.error("Invalid OTP format");
+      setError(true);
+      return;
+    }
+    let veriUser;
+    setLoadingOtp(true);
+    try {
+      if (!formData.email) {
+        console.error("Email is missing");
+        setError(true);
+        setLoadingOtp(false);
+        return;
+      }
+
+      const {
+        data: { user, session },
+        error,
+      } = await supabase.auth.verifyOtp({
+        email: formData.email,
+        token: otp,
+        type: "email",
+      });
+
+      if (error) {
+        console.log("OTP verification error:", error);
+        setError(true);
+        setLoadingOtp(false);
+        return;
+      }
+
+      if (user?.id) {
+        setSuccess(true);
+        setUser(user);
+        veriUser = user;
+      } else {
+        console.log("No user returned after OTP verification");
+        setError(true);
+      }
+    } catch (err) {
+      console.log("Unexpected error during OTP verification:", err);
+      setError(true);
+    } finally {
+      setLoadingOtp(false);
+    }
+    const res = await setVerifiedUser(veriUser?.id);
+    if (!res.success) {
+      setError(true);
+    } else {
+      setUser(veriUser)
       redirect("/profile");
     }
-    setError(true);
   };
 
   // HANDLES SIGN UP
   const handleSignUp = async (formData: FormData) => {
-    const email: string = formData.get("email");
-    const password: string = formData.get("password");
-    const name: string = formData.get("name");
-    const { data, error } = await signUpUser(email, password, name);
-    
-    if (error) {
+    setLoadingSignup(true);
+    try {
+      const email: string = formData.get("email") as string;
+      const password: string = formData.get("password") as string;
+      const name: string = formData.get("name") as string;
+
+      if (!email || !password || !name) {
+        console.error("Missing required fields for signup");
+        setError(true);
+        setLoadingSignup(false);
+        return;
+      }
+
+      const { data, error } = await signUpUser(email, password, name);
+
+      if (error) {
+        console.error("Signup error:", error);
+        setError(true);
+        setLoadingSignup(false);
+        return;
+      }
+
+      changeType("otp");
+    } catch (err) {
+      console.error("Unexpected error during signup:", err);
       setError(true);
-      return;
+    } finally {
+      setLoadingSignup(false);
     }
-    changeType("otp");
   };
 
   const toggleShowPassword = (e: MouseEvent) => {
@@ -134,6 +229,28 @@ const AuthForm = ({ type }: { type: FormType }) => {
         break;
     }
   };
+  function getDigitsMathematically(num: number) {
+    const digits: Number[] = [];
+    let currentNum = Math.abs(num);
+
+    while (currentNum > 0) {
+      const lastDigit = currentNum % 10; // Get the last digit (remainder)
+
+      digits.unshift(lastDigit); // Add to the beginning of the array to maintain order
+      currentNum = Math.floor(currentNum / 10); // Remove the last digit (integer division)
+    }
+
+    if (num === 0) {
+      return [0];
+    }
+    let stringDigits: string = "";
+    for (let i = 0; i < digits.length; i++) {
+      stringDigits += digits[i].toString();
+    }
+
+    return stringDigits;
+  }
+
   return (
     <>
       {type !== "otp" ? (
@@ -204,8 +321,37 @@ const AuthForm = ({ type }: { type: FormType }) => {
             </button>
           </div>
           <div className="self-center gap-2 flex  justify-center items-center ">
-            <button className="bg-primary text-sm  px-4 py-2 hover:bg-secondary hover:text-white transition-all duration-150 cursor-pointer hover:scale-105">
-              {type === "sign-in" ? "Sign In" : "Sign Up"}
+            <button
+              disabled={loadingLogin || loadingSignup}
+              className="bg-primary text-sm  px-4 py-2 hover:bg-secondary hover:text-white transition-all duration-150 cursor-pointer hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {loadingLogin || loadingSignup ? (
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Loading...
+                </span>
+              ) : (
+                <span>{type === "sign-in" ? "Sign In" : "Sign Up"}</span>
+              )}
             </button>
 
             <Link
@@ -230,24 +376,85 @@ const AuthForm = ({ type }: { type: FormType }) => {
           </div>
         </form>
       ) : (
-        <form action={handleOTP}>
-          <div className="flex relative text-black flex-col">
-            <label className="font-bold  p-2" htmlFor="otp">
+        <form action={handleOTP} className="flex flex-col items-center  gap-2">
+          <div className="flex gap-2 relative text-black flex-col">
+            <label className="font-bold  text-4xl  p-2" htmlFor="otp">
               OTP
             </label>
-            <input
-              className="w-full p-4 border text-black border-black  outline-primary"
-              type="text"
-              name="otp"
-              onChange={hanldeOTPChange}
-              id="otp"
-              value={otp}
-              placeholder="OTP"
-            />
-            <span className="absolute text-secondary top-15 right-5">
-              <CiMail />
-            </span>
-            <button>submit</button>
+            <div className="">
+              <InputOTP
+                id="digits-only"
+                className=""
+                maxLength={6}
+                onChange={(newVal) => hanldeOTPChange(newVal)}
+                value={otp}
+                pattern={REGEXP_ONLY_DIGITS}
+              >
+                <InputOTPGroup className="flex  gap-2  p-2  outline-primary">
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={0}
+                      className="h-10 w-10 text-lg border-primary bg-white data-[active=true]:border-primary data-[active=true]:ring-primary/30"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="h-10 w-10 text-lg border-primary bg-white data-[active=true]:border-primary data-[active=true]:ring-primary/30"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="h-10 w-10 text-lg border-primary bg-white data-[active=true]:border-primary data-[active=true]:ring-primary/30"
+                    />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={3}
+                      className="h-10 w-10 text-lg border-primary bg-white data-[active=true]:border-primary data-[active=true]:ring-primary/30"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="h-10 w-10 text-lg border-primary bg-white data-[active=true]:border-primary data-[active=true]:ring-primary/30"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="h-10 w-10 text-lg border-primary bg-white data-[active=true]:border-primary data-[active=true]:ring-primary/30"
+                    />
+                  </InputOTPGroup>
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
+            <button
+              disabled={loadingOtp}
+              className="confirm w-fit self-end font-bold mr-2  disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loadingOtp ? (
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Verifying...
+                </span>
+              ) : (
+                "Confirm"
+              )}
+            </button>
           </div>
           <div className="flex relative mt-4 gap-2 text-black flex-col">
             <label className="font-bold " htmlFor="otp">
