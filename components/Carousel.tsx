@@ -7,13 +7,7 @@ import { useState } from "react";
 
 const DRAG_BUFFER = 50;
 
-const Carousel = ({
-  children,
-  images,
-}: {
-  children: React.ReactNode;
-  images: string[];
-}) => {
+const Carousel = ({ images }: { images: string[] }) => {
   const [scope, animate] = useAnimate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -39,7 +33,6 @@ const Carousel = ({
         }}
         style={{
           x: dragX,
-     
         }}
         drag="x"
         whileDrag={{}}
@@ -60,7 +53,7 @@ const Carousel = ({
               }}
               animate={{
                 scale: currentIndex === i ? 0.95 : 0.85,
-                opacity: [0,1]
+                opacity: [0, 1],
               }}
               transition={{
                 type: "spring",

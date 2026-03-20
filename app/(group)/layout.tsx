@@ -13,7 +13,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
     <main className="flex  flex-col justify-between w-screen h-screen bg-background overflow-x-hidden ">
       {success && <SuccessMessage setter={setSuccess} />}
       {error && <ErrorMessage setter={setError} />}
-      {/* <TopNavbar /> */}
+      <TopNavbar />
       <section className="grow  overflow-y-scroll no-scrollbar">{children}</section>
       <Navbar />
 

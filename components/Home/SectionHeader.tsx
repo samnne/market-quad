@@ -12,7 +12,7 @@ const SectionHeader = ({
 }) => {
   return (
     <div className="flex  justify-between gap-2">
-      <h3 className="text-2xl py-1 font-syne">{title}</h3>
+      <h3 className="text-2xl py-1 font-inc-sans">{title}</h3>
       <button
         onClick={() => {
           switch (type) {

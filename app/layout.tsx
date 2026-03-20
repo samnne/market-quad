@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Syne, Syne_Mono} from "next/font/google";
+import { Geist, Geist_Mono, Syne, Inclusive_Sans, Inter, Open_Sans} from "next/font/google";
 // import { getCldOgImageUrl } from "next-cloudinary";
 import "./globals.css";
 import { NetworkProvider } from "./NetworkProvider";
@@ -14,9 +14,14 @@ const syneSansSerif = Syne({
   subsets: ["greek"],
   display: "swap",
 });
-const syneMono = Syne({
-  variable: "--font-syne-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["greek"],
+  display: "swap",
+});
+const inclusiveSans = Inclusive_Sans({
+  variable: "--font-inclusive-sans",
+  subsets: ["latin"],
   display: "swap",
 });
 const geistMono = Geist_Mono({
@@ -43,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${syneMono.variable} ${syneSansSerif.variable} ${geistMono.variable} antialiased overflow-y-auto  min-h-screen`}
+        className={`${geistSans.variable} ${inter.variable} ${inclusiveSans.variable} ${syneSansSerif.variable} ${geistMono.variable} antialiased overflow-y-auto  min-h-screen`}
       >
         <NetworkProvider>{children}</NetworkProvider>
       </body>

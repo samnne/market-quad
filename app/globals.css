@@ -50,7 +50,8 @@
   --color-secondary: #d282f9;
   --color-accent: #f544bd;
   --font-syne: var(--font-syne-sans);
-  --font-syne-mono: var(--font-syne-mono)
+  --font-inc-sans: var(--font-inclusive-sans);
+  --font-inter: var(--font-inter);
 
   /* --color-text: #f0f4f4;
   --color-background: #060909;

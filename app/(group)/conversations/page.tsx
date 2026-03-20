@@ -6,6 +6,7 @@ import { supabase } from "@/supabase/authHelper";
 import { motion } from "motion/react";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
+import {  IoIosRefresh } from "react-icons/io";
 
 const AVATAR_COLORS = [
   { bg: "#17f3b5", text: "#011d16" },
@@ -39,12 +40,7 @@ const Conversations = () => {
   const { setError } = useMessage();
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-
-  async function mountConvos() {
-    if (convos?.length > 0) {
-      setLoading(false);
-      return;
-    }
+  async function getConvosClient() {
     setLoading(true);
     const { data, error } = await supabase.auth.getUser();
     if (error) {
@@ -66,6 +62,13 @@ const Conversations = () => {
     setConvos(tempConvos);
     setLoading(false);
   }
+  async function mountConvos() {
+    if (convos?.length > 0) {
+      setLoading(false);
+      return;
+    }
+    getConvosClient();
+  }
 
   useEffect(() => {
     mountConvos();
@@ -84,20 +87,28 @@ const Conversations = () => {
 
   return (
     <div className="flex flex-col gap-0 bg-[#ecfef8] min-h-full">
-
       {/* Search */}
       <div className="px-4 pt-4 pb-3">
         <div className="bg-white border border-[#c8f5e8] rounded-2xl px-4 py-2.5 flex items-center gap-2.5 focus-within:border-[#17f3b5] transition-colors">
-          <svg className="w-3.5 h-3.5 shrink-0 opacity-40" viewBox="0 0 20 20" fill="none">
+          <svg
+            className="w-3.5 h-3.5 shrink-0 opacity-40"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
             <circle cx="9" cy="9" r="6" stroke="#011d16" strokeWidth="1.5" />
-            <path d="M13.5 13.5L17 17" stroke="#011d16" strokeWidth="1.5" strokeLinecap="round" />
+            <path
+              d="M13.5 13.5L17 17"
+              stroke="#011d16"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search conversations…"
-            className="flex-1 text-[13px] text-[#011d16] placeholder:text-[#6b9e8a] bg-transparent outline-none"
+            className="flex-1 text-[13px] text-text placeholder:text-[#6b9e8a] bg-transparent outline-none"
           />
           {query.length > 0 && (
             <button
@@ -114,7 +125,10 @@ const Conversations = () => {
       {loading ? (
         <div className="flex flex-col">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="flex items-center gap-3 px-4 py-3.5 border-b border-[#e8faf4]">
+            <div
+              key={n}
+              className="flex items-center gap-3 px-4 py-3.5 border-b border-[#e8faf4]"
+            >
               <div className="w-12 h-12 rounded-full bg-white border border-[#e0faf2] animate-pulse shrink-0" />
               <div className="flex-1 flex flex-col gap-2">
                 <div className="h-3 w-2/3 bg-white rounded-full animate-pulse" />
@@ -124,14 +138,17 @@ const Conversations = () => {
             </div>
           ))}
         </div>
-
       ) : filtered?.length > 0 ? (
         <>
-          <p className="text-[11px] font-medium text-[#6b9e8a] uppercase tracking-widest px-4 pt-2 pb-2">
-            {query.trim()
-              ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
-              : "Recent"}
-          </p>
+          <div className="flex justify-between items-center">
+            <p className="text-[11px] font-medium text-[#6b9e8a] uppercase tracking-widest px-4 pt-2 pb-2">
+              {query.trim()
+                ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
+                : "Recent"}
+            </p>
+            <button  onClick={async ()=> await getConvosClient()} className="pr-4 w-10 h-10"><IoIosRefresh /></button>
+          </div>
+
           {filtered.map((convo, i) => {
             const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
             const title = convo.listing?.title || "Unknown listing";
@@ -180,19 +197,25 @@ const Conversations = () => {
                       {unread}
                     </div>
                   ) : (
-                    <span className="text-[11px] text-[#aad4c5]">Delivered</span>
+                    <span className="text-[11px] text-[#aad4c5]">
+                      Delivered
+                    </span>
                   )}
                 </div>
               </motion.div>
             );
           })}
         </>
-
       ) : (
         <div className="flex flex-col items-center justify-center px-6 py-20 gap-4">
           <div className="w-14 h-14 bg-[#d6fdf1] rounded-2xl flex items-center justify-center">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="#0a6644" strokeWidth="1.5" strokeLinejoin="round" />
+              <path
+                d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"
+                stroke="#0a6644"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
           <p className="text-[14px] text-[#6b9e8a] text-center leading-relaxed">
@@ -200,7 +223,10 @@ const Conversations = () => {
               <>
                 No conversations match{" "}
                 <span className="text-[#011d16] font-semibold">"{query}"</span>.{" "}
-                <span className="underline cursor-pointer" onClick={() => setQuery("")}>
+                <span
+                  className="underline cursor-pointer"
+                  onClick={() => setQuery("")}
+                >
                   Clear search
                 </span>
               </>
@@ -219,7 +245,6 @@ const Conversations = () => {
           </p>
         </div>
       )}
-
     </div>
   );
 };

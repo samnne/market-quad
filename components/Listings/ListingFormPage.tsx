@@ -26,6 +26,7 @@ import { supabase } from "@/supabase/authHelper";
 
 import { Listing } from "@/src/generated/prisma/client";
 import LocationInput from "@/components/Inputs/LocationInput";
+import { useRouter } from "next/navigation";
 
 const ListingForm = z.object({
   title: z.string().min(4, "Title Too Short"),
@@ -45,7 +46,14 @@ type ImageEntry = {
 };
 
 const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
-  const { user, setUser, reset: userReset, setUserListings } = useUser();
+  const {
+    user,
+    setUser,
+    reset: userReset,
+    userListings,
+    setUserListings,
+  } = useUser();
+  const router = useRouter()
   const [rows, setInputRows] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -90,7 +98,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   useEffect(() => {
     mountUser();
     if (type === "edit" && selectedListing && selectedListing.imageUrls) {
-      const { title, price, description, condition, imageUrls } =
+      const { title, price, description, condition, imageUrls, category } =
         selectedListing;
       setListingFormData((prev) => ({
         ...prev,
@@ -99,10 +107,31 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
         price,
         condition,
         imageUrls,
+        category,
       }));
       setLatLong([selectedListing.latitude, selectedListing.longitude]);
       const entries = imageUrls.map((url) => ({ file: null, preview: url }));
       setSelectedFiles(entries);
+    }
+  }, []);
+
+  useEffect(() => {
+    const { title, price, condition, description, category } = listingFormData;
+    const newPrice = Number.parseInt(price);
+
+    const parseListingForm = ListingForm.safeParse({
+      title,
+      price: newPrice,
+      condition,
+      description,
+      location: { lng: latLong[1], lat: latLong[0] },
+      category: category,
+    });
+
+    if (!parseListingForm.success) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
     }
   }, []);
 
@@ -160,7 +189,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
     });
     if (!parseListingForm.success) {
       setError(true);
-      console.log(parseListingForm.error)
+      console.log(parseListingForm.error);
       return;
     }
 
@@ -200,7 +229,10 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       if (newListing.success) {
         setSuccess(true);
         setSelectedListing(newListing.listing);
-        setUserListings((prev: Listing[]) => [...prev, newListing.listing]);
+         const notNew = userListings.filter(
+          (listing) => listing.lid !== newListing.listing.lid,
+        );
+        setUserListings([...notNew, newListing.listing]);
         setIsLoading(false);
         redirect("/listings/");
       } else {
@@ -232,11 +264,15 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
         },
         user.id,
       );
-    
+
       if (editListing?.success) {
         setSuccess(true);
         setSelectedListing(editListing.listing);
-        setUserListings((prev: Listing[]) => [...prev, editListing.listing]);
+        const notEdited = userListings.filter(
+          (listing) => listing.lid !== editListing.listing.lid,
+        );
+        console.log(notEdited, editListing.listing);
+        setUserListings([...notEdited, editListing.listing]);
         setIsLoading(false);
         redirect("/listings/");
       } else {
@@ -252,7 +288,6 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       return prev.filter((_, i) => i !== index);
     });
   }
-
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
@@ -484,7 +519,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
 
           <button
             type="button"
-            onClick={() => redirect("/new")}
+          onClick={() => router.back()}
             className="w-full bg-transparent text-[#6b9e8a] border border-[#c8f5e8] font-medium text-[14px] py-3 rounded-2xl"
           >
             Cancel

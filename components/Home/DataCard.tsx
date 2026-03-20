@@ -70,7 +70,7 @@ const DataCard = ({ dataList, href }: DataCardProps) => {
             {data?.imageUrls?.length > 0 ? (
               <Image
                 src={data.imageUrls[0]}
-                className=" rounded-t-2xl  max-h-50 w-full h-45 opacity-75"
+                className=" rounded-t-2xl  max-h-50 w-full h-45 "
                 width={250}
                 height={250}
                 alt=""
@@ -78,23 +78,23 @@ const DataCard = ({ dataList, href }: DataCardProps) => {
             ) : (
               ""
             )}{" "}
-            <div className="p-2 w-full bg-white rounded-2xl h-fit flex flex-col font-syne ">
+            <div className="p-2 w-full bg-white rounded-2xl h-fit flex flex-col font-inter ">
               <h4 className="w-full h-fit   font-bold   text-black ">
                 {data?.title || data?.listing?.title}
               </h4>
               <span className="text-sm text-gray-400 ">
-                {data?.seller?.name}
+                {data?.seller?.email.substring(0, data?.seller?.email.indexOf('@'))}
               </span>
 
               <div>
-                <span className="font-bold text-lg font-syne ">
+                <span className="font-bold text-lg font-inter ">
                   {data?.price == 0
                     ? "Free"
                     : `${data?.price ? `$${data.price}` : ""}`}
                 </span>
               </div>
             </div>
-            <div className="text-xs text-gray-400 p-1 border border-black/25 font-light font-sans absolute top-2 right-2 rounded-2xl bg-white ">
+            <div className="text-xs text-gray-400 p-1 border border-black/25 font-light font-inter absolute top-2 right-2 rounded-2xl bg-white ">
               {data?.condition}
             </div>
           </motion.div>

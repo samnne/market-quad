@@ -29,7 +29,7 @@ const Navbar = () => {
   }, [pathname]);
 
   return (
-    <nav className={"w-screen self-end p-2"}>
+    <nav className={"w-screen font-light self-end p-2"}>
       <ul
         onMouseLeave={() => {
           // Return to active link instead of hiding
@@ -60,7 +60,7 @@ const Navbar = () => {
             >
 
               {link.icon()}
-              {link.name !== 'New' && <span className="text-xs font-bold">{link.name}</span>}
+              {link.name !== 'New' && <span className="text-xs font-syne">{link.name}</span>}
               
             </Link>
 

@@ -1,10 +1,12 @@
+import { useListings } from "@/app/store/zustand";
 import { Listing } from "@/src/generated/prisma/client";
 import { motion } from "motion/react";
 import Image from "next/image";
 
-const ListingCard = ({ listing, setSelectedListing }: { listing: Listing, setSelectedListing: Function }) => {
+const ListingCard = ({ listing }: { listing: Listing }) => {
+  const { setSelectedListing } = useListings();
   function openListingModal(listing: Listing) {
-    setSelectedListing(listing)
+    setSelectedListing(listing);
   }
 
   return (
@@ -18,7 +20,7 @@ const ListingCard = ({ listing, setSelectedListing }: { listing: Listing, setSel
     >
       <motion.div className="h-48 relative ">
         <Image
-          className=" rounded-t-4xl w-full h-full object-contain bg-primary/25 z-0"
+          className=" rounded-t-4xl w-full h-full object-cover bg-primary/25 z-0"
           width={250}
           loading="eager"
           height={250}
@@ -55,10 +57,10 @@ const ListingCard = ({ listing, setSelectedListing }: { listing: Listing, setSel
         </motion.span> */}
       </motion.div>
 
-      <div className="p-4 rounded-2xl text-lg  overflow-hidden text-nowrap flex flex-col gap-1 justify-center">
+      <div className="p-4 font-inter rounded-2xl text-lg  overflow-hidden text-nowrap flex flex-col gap-1 justify-center">
         {/* <span className="">${listing.price / 100} ⋅</span>
                   <h3 className="">{listing.title}</h3> */}
-        <h3 className="text-xl  text-black truncate">
+        <h3 className="text-lg   text-black truncate">
           {" "}
           ${listing.price} ⋅ {listing.title}
         </h3>

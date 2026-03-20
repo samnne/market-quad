@@ -4,48 +4,30 @@ import { useEffect } from "react";
 import ListingCard from "../Listings/ListingCard";
 import { redirect } from "next/navigation";
 import ListingModal from "../Listings/ListingByID";
-import { useListings } from "@/app/store/zustand";
+import { useListings, useUser } from "@/app/store/zustand";
 
 const UserListings = ({
-  userListings,
   setModals,
   showModal,
-  setSelectedListing,
 }: {
-  userListings: any[];
   setModals: Function;
   showModal: boolean;
-  setSelectedListing: Function;
 }) => {
   const [scope, animate] = useAnimate();
   const [titleScope, titleAnimate] = useAnimate();
-  const { selectedListing } = useListings();
+  const { selectedListing, setSelectedListing } = useListings();
+  const { userListings } = useUser();
+
   const animateModal = async () => {
     await animate(
       scope.current,
-      {
-        left: 0,
-        opacity: 1,
-      },
-      {
-        duration: 0.1,
-        type: "spring",
-        stiffness: 200,
-        damping: 30,
-      },
+      { left: 0, opacity: 1 },
+      { duration: 0.1, type: "spring", stiffness: 200, damping: 30 },
     );
     await titleAnimate(
       titleScope.current,
-      {
-        left: 0,
-        opacity: 1,
-      },
-      {
-        duration: 0.1,
-        type: "spring",
-        stiffness: 200,
-        damping: 20,
-      },
+      { left: 0, opacity: 1 },
+      { duration: 0.1, type: "spring", stiffness: 200, damping: 20 },
     );
   };
 
@@ -53,105 +35,109 @@ const UserListings = ({
     if (!scope.current || !titleScope.current) return;
     animateModal();
   }, [scope, showModal, titleScope]);
-  async function closeModal() {
-    await animate(scope.current, {
-      left: -600,
-      opacity: 0,
-    });
 
+  async function closeModal() {
+    await animate(scope.current, { left: -600, opacity: 0 });
     setModals((prev: object) => ({ ...prev, userModal: false }));
   }
 
   return (
     <>
-      {showModal ? (
-        <motion.section
-          ref={scope}
-          initial={{
-            left: -600,
-            opacity: 0,
-          }}
-          className=" absolute p-8 pt-20 flex gap-5 flex-col   z-20 h-fit min-h-screen w-screen bg-white top-0 right-0"
-        >
-          <ListingModal listing={selectedListing} />
-          {userListings.length > 0 ? (
-            userListings.map((listing) => {
-              return (
-                <div key={listing?.lid}>
-                  <ListingCard
-                    listing={listing}
-                    setSelectedListing={setSelectedListing}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <div className="w-full h-full  flex flex-col ">
-              <div className="w-full h-full flex flex-col ">
-                <header
-                  id="mock"
-                  className="text-4xl  gap-2 flex flex-col font-bold text-black"
-                >
-                  <h1>Make A Listing!</h1>
-                  <span className="text-lg text-gray-400">
-                    Created listings will be displayed here!
-                  </span>
-                </header>
-                <section id="mock">
-                  <section
-                    onClick={() => redirect("/new")}
-                    className=" bg-white  h-80 mt-10  drop-shadow-xl text-white p-2 flex flex-col gap-2 rounded-4xl"
-                  >
-                    <div className="w-full rounded-2xl bg-gray-300 h-2/3"></div>
-                    <header className="text-xl flex flex-col pl-2 font-bold">
-                      <h2 className="text-black">
-                        Click Me to Create A Listing
-                      </h2>
-                      <span className="text-gray-400 text-sm font-bold">
-                        Trust me!
-                      </span>
-                    </header>
-                    <motion.button
-                      whileTap={{
-                        scale: 0.8,
-                      }}
-                      whileInView={{
-                        y: [25, 0],
-                        opacity: [0, 1],
-                      }}
-                      transition={{
-                        delay: 0.2,
-                        type: "spring",
-                      }}
-                      className="text-black absolute top-5 right-5 flex self-end px-2 py-1 bg-primary rounded-2xl"
-                    >
-                      Click me
-                    </motion.button>
-                  </section>
-                </section>
-              </div>
-            </div>
-          )}
+      {showModal && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={closeModal}
+            className="fixed inset-0 z-20 bg-black/20"
+          />
 
-          <motion.div
-            ref={titleScope}
-            initial={{
-              left: -600,
-              opacity: 0,
-            }}
-            className="left-0 p-5 fixed items-center z-10 bg-white w-screen  top-0 justify-between  flex "
+          <motion.section
+            ref={scope}
+            initial={{ left: -600, opacity: 0 }}
+            className="fixed inset-x-0 bottom-0 top-0 z-30 flex flex-col bg-[#ecfef8] rounded-t-[24px] overflow-hidden"
           >
-            <h1 className="text-black font-bold text-2xl">Your Listings</h1>
-            <button
-              className="x-4 py-2 px-2 bg-accent rounded-2xl font-bold"
-              onClick={(e) => closeModal()}
+            {/* Sticky header */}
+            <motion.div
+              ref={titleScope}
+              initial={{ left: -600, opacity: 0 }}
+              className="bg-white border-b border-[#e0faf2] px-4 py-3.5 flex items-center justify-between sticky top-0 z-10"
             >
-              Close Listings
-            </button>
-          </motion.div>
-        </motion.section>
-      ) : (
-        ""
+              <p className="text-[17px] font-extrabold text-[#011d16]">
+                Your listings
+                {userListings?.length > 0 && (
+                  <span className="ml-2 text-[13px] font-normal text-[#6b9e8a]">
+                    · {userListings.length}
+                  </span>
+                )}
+              </p>
+              <button
+                onClick={closeModal}
+                className="bg-[#f0fdf8] border border-[#c8f5e8] rounded-xl px-3.5 py-1.5 text-[13px] font-semibold text-[#6b9e8a] cursor-pointer"
+              >
+                Close ✕
+              </button>
+            </motion.div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 no-scrollbar pb-10">
+              <ListingModal listing={selectedListing} />
+
+              {userListings?.length > 0 ? (
+                userListings.map((listing, i) => (
+                  <motion.div
+                    key={listing.lid}
+                    whileInView={{ y: [20, 0], opacity: [0, 1] }}
+                    transition={{ delay: 0.06 * i, type: "keyframes" }}
+                  >
+                    <ListingCard listing={listing} setSelectedListing={setSelectedListing} />
+                  </motion.div>
+                ))
+              ) : (
+                /* Empty state */
+                <div className="flex flex-col gap-4 pt-2">
+                  <div>
+                    <h1 className="text-[26px] font-extrabold text-[#011d16] leading-tight mb-1">
+                      Make a listing!
+                    </h1>
+                    <p className="text-[14px] text-[#6b9e8a]">
+                      Created listings will appear here.
+                    </p>
+                  </div>
+
+                  <motion.div
+                    whileTap={{ scale: 0.98 }}
+                    whileInView={{ y: [25, 0], opacity: [0, 1] }}
+                    transition={{ delay: 0.15, type: "spring" }}
+                    onClick={() => redirect("/new")}
+                    className="bg-white border border-[#e0faf2] rounded-[20px] overflow-hidden cursor-pointer relative"
+                  >
+                    {/* Mock image area */}
+                    <div className="w-full h-40 bg-[#e8faf4] flex items-center justify-center">
+                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect width="48" height="48" rx="12" fill="#d6fdf1" />
+                        <path d="M24 16v16M16 24h16" stroke="#17f3b5" strokeWidth="2.5" strokeLinecap="round" />
+                      </svg>
+                    </div>
+
+                    {/* CTA badge */}
+                    <span className="absolute top-3 right-3 bg-[#17f3b5] text-[#011d16] text-[11px] font-bold px-3 py-1.5 rounded-xl">
+                      Tap to list
+                    </span>
+
+                    <div className="p-4">
+                      <p className="text-[15px] font-bold text-[#011d16] mb-0.5">
+                        Click here to create a listing
+                      </p>
+                      <p className="text-[12px] text-[#6b9e8a]">
+                        Takes less than 30 seconds
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </div>
+          </motion.section>
+        </>
       )}
     </>
   );
