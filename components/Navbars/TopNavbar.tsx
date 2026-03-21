@@ -75,9 +75,9 @@ const TopNavbar = () => {
             animate={{ width: "auto", opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2, type: "keyframes" }}
-            className="flex gap-2 items-center bg-gray-100 rounded-full px-4 py-1 origin-right"
+            className="flex gap-2 items-center bg-primary/25 text-text shadow  rounded-full px-4 py-1 origin-right"
           >
-            <FaMagnifyingGlass className="text-gray-500" />
+            <FaMagnifyingGlass className="text-text" />
             <input
               type="text"
               placeholder="Search listings..."
@@ -93,7 +93,7 @@ const TopNavbar = () => {
                 setSearchOpen(false);
                 setSearchQuery("");
               }}
-              className="text-lg text-gray-500 hover:text-gray-700"
+              className="text-lg text-text hover:text-primary"
             >
               <IoClose />
             </button>

@@ -8,7 +8,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   const { error, success, setSuccess, setError } = useMessage();
 
   return (
-    <main className="w-screen h-screen overflow-x-hidden grid md:grid-cols-2">
+    <main className="w-screen font-inc-sans h-screen overflow-x-hidden grid md:grid-cols-2">
       <section className="bg-primary max-md:hidden"></section>
       <section className="flex flex-col justify-center gap-5 p-10 md:p-22">
         <div className="flex grow-2 justify-center flex-col gap-10">

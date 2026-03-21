@@ -104,6 +104,8 @@ const Profile = () => {
   const soldCount = userListings?.filter((l) => l.sold).length ?? 0;
   const initials = getInitials(user?.name, user?.email);
 
+  const isVerified  = user?.user_metadata.email_verified
+
   return (
     <>
       <main className="p-4 ">
@@ -122,8 +124,8 @@ const Profile = () => {
                 {user?.email}
               </p>
               <div className="flex gap-1.5 flex-wrap">
-                <span className="bg-[#d6fdf1] text-[#0a6644] text-[10px] font-bold px-2 py-0.5 rounded-md">
-                  Verified student
+                <span className={` ${isVerified ? 'text-[#0a6644] bg-[#d6fdf1]' : 'text-red-600 bg-[#ffb7b7]'} text-[10px] font-bold px-2 py-0.5 rounded-md`}>
+                  {isVerified ? "Verified student" : "Not Verified..."} 
                 </span>
               </div>
             </div>

@@ -58,9 +58,9 @@ const UpdatePassword = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen">
-            <form onSubmit={handleUpdatePassword} className="w-full max-w-md p-6 border rounded-lg">
-                <h1 className="text-2xl font-bold mb-6">Update Password</h1>
+        <div className="flex items-center justify-center ">
+            <form onSubmit={handleUpdatePassword} className="w-full font-inc-sans max-w-md p-6 border rounded-lg">
+                <h1 className="text-2xl font-inc-sans font-bold mb-6">Update Password</h1>
                 
                 {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
                 {success && <div className="bg-green-100 text-green-700 p-3 rounded mb-4">Password updated successfully!</div>}
@@ -86,7 +86,7 @@ const UpdatePassword = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
+                    className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-text hover:text-primary disabled:bg-gray-400"
                 >
                     {loading ? "Updating..." : "Update Password"}
                 </button>
