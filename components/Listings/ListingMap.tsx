@@ -1,11 +1,11 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import * as maptilersdk from "@maptiler/sdk";
-import "@maptiler/sdk/dist/maptiler-sdk.css";
+
 import "dotenv/config";
 import { useListings } from "@/app/store/zustand";
 import { UVIC_LNG_LAT } from "@/app/client-utils/constants";
 
-const ListingMap = (props: {ll: number[]}) => {
+const ListingMap = () => {
   const mapContainer = useRef(null);
   const map = useRef<maptilersdk.Map>(null);
   const {selectedListing} = useListings()
@@ -56,7 +56,7 @@ const ListingMap = (props: {ll: number[]}) => {
       map.current?.remove();
       map.current = null;
     };
-  }, []);
+  }, [selectedListing]);
   return (
     <div className="relative w-full  h-30">
       <div ref={mapContainer} className="map  absolute w-full h-full"></div>

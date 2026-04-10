@@ -4,27 +4,27 @@ export const navLinks = [
   {
     name: "Home",
     href: "/home",
-    icon: FaHome,
+    icon: <FaHome/>,
   },
   {
     name: "Market",
     href: "/listings",
-    icon: FaShoppingBag,
+    icon: <FaShoppingBag/>,
   },
   {
     name: "New",
     href: "/new",
-    icon: FaPlus,
+    icon: <FaPlus/>,
   },
   {
     name: "Messages",
     href: "/conversations",
-    icon: FaInbox,
+    icon: <FaInbox/>,
   },
   {
     name: "Profile",
     href: "/profile",
-    icon: FaUser,
+    icon: <FaUser/>,
   },
 ];
 

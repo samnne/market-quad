@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { mid: string } },
+  { params }: { params: Promise<{ mid: string }> },
 ) {
   const session = req.headers.get("authorization");
   const body = await req.json();

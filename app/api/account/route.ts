@@ -3,11 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserListings } from "@/db/listings.db";
 
 export async function POST(req: NextRequest) {
-  const userId = req.headers.get("authorization");
-  const uid = await req.json();
+  const uid = req.headers.get("authorization");
+  const lid = await req.json();
 
-
-  if (!userId) {
+  if (!uid) {
     return NextResponse.json({
       message: "Failed to Fetch Listings, no UID",
       status: 500,
@@ -16,7 +15,7 @@ export async function POST(req: NextRequest) {
     });
   }
   try {
-    const listings = await getUserListings(userId);
+    const listings = await getUserListings(lid);
 
     return NextResponse.json({
       listings,

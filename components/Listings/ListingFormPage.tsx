@@ -1,5 +1,9 @@
 "use client";
-import { categories, condition } from "@/app/client-utils/constants";
+import {
+  categories,
+  condition,
+  UVIC_LNG_LAT,
+} from "@/app/client-utils/constants";
 import { editListingAction, newListingAction } from "@/lib/listing.lib";
 import {
   ChangeEvent,
@@ -22,11 +26,10 @@ import { IoClose } from "react-icons/io5";
 import { motion, stagger, useAnimate } from "motion/react";
 import { getUserSupabase, uploadImages } from "@/app/client-utils/functions";
 import { deleteImages } from "@/cloudinary/cloudinary";
-import { supabase } from "@/supabase/authHelper";
 
-import { Listing } from "@/src/generated/prisma/client";
 import LocationInput from "@/components/Inputs/LocationInput";
 import { useRouter } from "next/navigation";
+import { mapToUserSession } from "@/app/types";
 
 const ListingForm = z.object({
   title: z.string().min(4, "Title Too Short"),
@@ -41,7 +44,7 @@ const ListingForm = z.object({
 });
 
 type ImageEntry = {
-  file: File;
+  file: File | null; // ← allow null for existing cloudinary images
   preview: string;
 };
 
@@ -49,7 +52,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   const {
     user,
     setUser,
-    reset: userReset,
+
     userListings,
     setUserListings,
   } = useUser();
@@ -60,34 +63,30 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   const {
     selectedListing,
     setSelectedListing,
-    reset: lisReset,
+
   } = useListings();
   const { setError, setSuccess } = useMessage();
   const [scope, animate] = useAnimate();
 
   const [selectedFiles, setSelectedFiles] = useState<ImageEntry[]>([]);
   const [disabled, setDisabled] = useState(true);
-  const [latLong, setLatLong] = useState<number[] | null[]>([0, 0]);
-  const [listingFormData, setListingFormData] = useState({
+  const [latLong, setLatLong] = useState<number[]>([0, 0]);
+  const [listingFormData, setListingFormData] = useState<{
+    title: string;
+    price: string;
+    description: string;
+    condition: string;
+    category: string;
+  }>({
     title: "",
-    price: 0,
+    price: "0",
     description: "",
     condition: "",
     category: "",
   });
 
-  async function mountUser() {
-    const { user, error, app_user } = await getUserSupabase();
-    if (error || !user) {
-      console.error("Auth error:", error);
-      setError(true);
-      redirect("/sign-in");
-    }
-
-    setUser({ ...user, app_user });
-  }
-
   useEffect(() => {
+    
     if (!scope.current) return;
     animate("#sect", { y: [50, 0], opacity: [0, 1] }, { delay: stagger(0.1) });
     animate(
@@ -95,47 +94,96 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       { y: [50, 0], opacity: [0, 1] },
       { delay: stagger(0.1) },
     );
-  }, [scope]);
+  }, [scope, animate]);
+  useEffect(() => {
+    async function mountUser() {
+      const { user, error, app_user } = await getUserSupabase();
+      if (error || !user) {
+        console.error("Auth error:", error);
+        setError(true);
+        redirect("/sign-in");
+      }
+
+    const sessionUser = mapToUserSession(user, app_user);
+setUser(sessionUser);
+    }
+    mountUser();
+  }, [setError, setUser]);
 
   useEffect(() => {
-    mountUser();
     if (type === "edit" && selectedListing && selectedListing.imageUrls) {
+      function mountListingFormData({
+        title,
+        price,
+        description,
+        condition,
+        category,
+        imageUrls,
+      }: {
+        category: string;
+        imageUrls: string[];
+        title: string;
+        price: string;
+        description: string;
+        condition: string;
+      }) {
+        setListingFormData((prev) => ({
+          ...prev,
+          title,
+          price,
+          description,
+          condition,
+          category,
+        }));
+        if (
+          selectedListing &&
+          selectedListing.latitude &&
+          selectedListing.longitude
+        ) {
+          setLatLong([
+            selectedListing.latitude ?? UVIC_LNG_LAT[1],
+            selectedListing.longitude ?? UVIC_LNG_LAT[0],
+          ]);
+        }
+        const entries = imageUrls.map((url) => ({ file: null, preview: url }));
+        setSelectedFiles(entries);
+      }
       const { title, price, description, condition, imageUrls, category } =
         selectedListing;
-      setListingFormData((prev) => ({
-        ...prev,
+      mountListingFormData({
         title,
+        price: String(price),
         description,
-        price,
-        condition,
+        condition: condition ?? "",
+        category: category ?? "",
         imageUrls,
-        category,
-      }));
-      setLatLong([selectedListing.latitude, selectedListing.longitude]);
-      const entries = imageUrls.map((url) => ({ file: null, preview: url }));
-      setSelectedFiles(entries);
+      });
     }
-  }, []);
+  }, [selectedListing, type]);
 
   useEffect(() => {
-    const { title, price, condition, description, category } = listingFormData;
-    const newPrice = Number.parseInt(price);
+    function parseFormPlease() {
+      const { title, price, condition, description, category } =
+        listingFormData;
+      const newPrice = Number.parseInt(price);
 
-    const parseListingForm = ListingForm.safeParse({
-      title,
-      price: newPrice,
-      condition,
-      description,
-      location: { lng: latLong[1], lat: latLong[0] },
-      category: category,
-    });
+      const parseListingForm = ListingForm.safeParse({
+        title,
+        price: newPrice,
+        condition,
+        description,
+        location: { lng: latLong[1], lat: latLong[0] },
+        category: category,
+      });
 
-    if (!parseListingForm.success) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
+      if (!parseListingForm.success) {
+        setDisabled(true);
+      } else {
+        setDisabled(false);
+      }
     }
-  }, []);
+    parseFormPlease();
+  }, [latLong, listingFormData]);
 
   function emptyLine() {
     const lines = listingFormData.description.split("\n");
@@ -186,7 +234,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
       price: newPrice,
       description,
       condition,
-      category: listingFormData.category,
+      category: listingFormData.category ?? "",
       location: { lng: latLong[1], lat: latLong[0] },
     });
     if (!parseListingForm.success) {
@@ -242,9 +290,9 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
         setIsLoading(false);
         setError(true);
       }
-    } else if (type === "edit") {
+    } else if (type === "edit" && selectedListing) {
       const delImage = [];
-      for (let image of selectedListing.imageUrls) {
+      for (const image of selectedListing.imageUrls) {
         if (!selectedFiles.find((file) => file.preview === image)) {
           delImage.push(image);
         }
@@ -262,7 +310,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
           latitude: latLong[0],
           longitude: latLong[1],
           imageUrls: uploadedUrls,
-          sellerId: user.id,
+
           category: listingFormData.category,
         },
         user.id,
@@ -499,7 +547,10 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
             <div className="transition-colors">
               <LocationInput
                 llSetter={setLatLong}
-                ll={[selectedListing?.latitude ? selectedListing?.latitude : 0, selectedListing?.longitude ? selectedListing?.longitude : 0]}
+                ll={[
+                  selectedListing?.latitude ? selectedListing?.latitude : 0,
+                  selectedListing?.longitude ? selectedListing?.longitude : 0,
+                ]}
               />
             </div>
             <p className="text-[11px] text-primary/50">

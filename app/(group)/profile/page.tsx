@@ -5,7 +5,7 @@ import { getUserListings } from "@/db/listings.db";
 
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import { HiLogout } from "react-icons/hi";
+
 import { AiOutlineLike } from "react-icons/ai";
 import { CiViewList } from "react-icons/ci";
 import { IoChatbubbleOutline } from "react-icons/io5";
@@ -19,8 +19,7 @@ import {
 
 import { cleanUP, getUserSupabase } from "../../client-utils/functions";
 import { supabase } from "@/supabase/authHelper";
-import { getPreferences } from "@/lib/preferences.lib";
-import { UserPreferences } from "@/src/generated/prisma/client";
+import { mapToUserSession } from "@/app/types";
 
 function getInitials(name?: string, email?: string) {
   if (name) {
@@ -44,57 +43,55 @@ const Profile = () => {
     setUser,
     reset: userReset,
   } = useUser();
-  const { reset: convoReset, convos } = useConvos();
-  const { reset: lisReset, setSelectedListing } = useListings();
+  const { reset: convoReset } = useConvos();
+  const { reset: lisReset } = useListings();
   const { setError, setSuccess } = useMessage();
-  const [preferences, setPreferences] = useState<UserPreferences>({});
 
-  async function mountSession() {
-    const { user, error, app_user } = await getUserSupabase();
-    if (!user || error) {
-      console.log("Auth error:", error);
-      setError(true);
-      redirect("/sign-in");
-    }
-    const tempUser = user;
-
-    if (!tempUser) {
-      setError(true);
-      redirect("/sign-in");
-    }
-    setUser({ ...tempUser, app_user });
-  }
-  async function mountUserListings() {
-    if (userListings.length > 0) return;
-    try {
-      if (!user?.id) {
-        console.warn("No user ID available");
-        return;
-      }
-      const { success, preferences } = await getPreferences(user.id);
-    
-      if (success) setPreferences(preferences);
-      const tempListings = await getUserListings(user.id);
-      if (!tempListings) {
-        console.warn("No listings found");
+  useEffect(() => {
+    async function mountSession() {
+      const { user, error, app_user } = await getUserSupabase();
+      if (!user || error) {
+        console.log("Auth error:", error);
         setError(true);
-        return;
+        redirect("/sign-in");
       }
-      setUserListings(tempListings);
-    } catch (err) {
-      console.log("Error fetching user listings:", err);
-      setError(true);
-    }
-  }
+      const tempUser = user;
 
-  useEffect(() => {
+      if (!tempUser) {
+        setError(true);
+        redirect("/sign-in");
+      }
+      const sessionUser = mapToUserSession(user, app_user);
+      setUser(sessionUser);
+    }
     mountSession();
-  }, []);
+  }, [setError, setUser]);
   useEffect(() => {
+    async function mountUserListings() {
+      if (userListings.length > 0) return;
+      try {
+        if (!user?.id) {
+          console.warn("No user ID available");
+          return;
+        }
+
+        const tempListings = await getUserListings(user.id);
+        if (!tempListings) {
+          console.warn("No listings found");
+          setError(true);
+          return;
+        }
+        setUserListings(tempListings);
+      } catch (err) {
+        console.log("Error fetching user listings:", err);
+        setError(true);
+      }
+    }
+
     if (user) {
       mountUserListings();
     }
-  }, [user]);
+  }, [user, setError, setUserListings, userListings.length]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -103,15 +100,10 @@ const Profile = () => {
     redirect("/sign-in");
   };
 
-  function openDeleteModal() {
-    setDeleteUser(true);
-  }
-  const unreadCount =
-    convos?.filter((c) => (c.unreadCount ?? 0) > 0).length ?? 0;
   const soldCount = userListings?.filter((l) => l.sold).length ?? 0;
   const initials = getInitials(user?.name, user?.email);
 
-  const isVerified = user?.user_metadata.email_verified;
+  const isVerified = user?.user_metadata?.email_verified;
   const rating = user?.app_user?.rating;
 
   return (
@@ -159,7 +151,7 @@ const Profile = () => {
               { num: userListings?.length ?? 0, label: "Listings" },
               { num: soldCount, label: "Sold" },
               {
-                num: (rating as number) ? rating.toFixed(1) : rating,
+                num: (rating as number) ? rating?.toFixed(1) : rating,
                 label: "Rating",
               },
             ].map(({ num, label }, i) => (
@@ -182,14 +174,11 @@ const Profile = () => {
             <ProfileSections
               sideIcon={<CiViewList className="text-primary" />}
               displayText="Your listings"
-              badge={userListings?.length}
               props={{ type: "ulist" }}
             />
             <ProfileSections
               sideIcon={<IoChatbubbleOutline className="text-secondary" />}
               displayText="Your messages"
-              badge={unreadCount > 0 ? unreadCount : undefined}
-              badgeAccent
               props={{ type: "messages" }}
             />
           </div>
@@ -288,8 +277,6 @@ const Profile = () => {
         {deleteUser && (
           <DeleteModal
             session={user}
-            lisReset={lisReset}
-            userReset={userReset}
             setDeleteUser={setDeleteUser}
             deleteUser={deleteUser}
           />

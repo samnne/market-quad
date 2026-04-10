@@ -2,20 +2,18 @@ import { useReviewModal } from "@/app/store/zustand";
 import {
   AnimatePresence,
   motion,
-  scale,
-  useAnimate,
-  useIsPresent,
+
 } from "motion/react";
 import { FaStar } from "react-icons/fa";
 import MakeAReview from "./MakeAReview";
 
 const ReviewModal = () => {
-  const { reviewModal, setReviewModal, setMakeAReview, makeReview } =
+  const { reviewModal, setMakeAReview, makeReview } =
     useReviewModal();
 
-  async function closeModal() {
-    setReviewModal(!reviewModal);
-  }
+  // async function closeModal() {
+  //   setReviewModal(!reviewModal);
+  // }
   async function openMakeAReview() {
     setMakeAReview(!makeReview);
   }

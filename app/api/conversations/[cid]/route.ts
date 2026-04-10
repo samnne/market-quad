@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { cid: string } },
+  { params }: { params: Promise<{ cid: string }> },
 ) {
   const session = req.headers.get("authorization");
 
@@ -90,10 +90,10 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { cid: string } }
+  { params }: { params: Promise<{ cid: string }> }
 ) {
   const userId = req.headers.get("authorization");
-  console.log(userId)
+
   const { cid } = await params;
   if (!userId || !cid) {
     return NextResponse.json({ success: false, message: "Missing params" }, { status: 400 });

@@ -8,11 +8,12 @@ export async function updateReviewCount(userID: string) {
   });
 
   let rating = 0;
-  for (let review of reviews_for_user) {
+  for (const review of reviews_for_user) {
     rating += review.rating;
   }
   rating /= reviews_for_user.length;
   rating = parseFloat(rating.toFixed(2));
+  
   const user = await prisma.user.update({
     where: {
       uid: userID,

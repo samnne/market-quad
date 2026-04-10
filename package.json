@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run server.ts",
-    "build": "next build",
+    "build": "next build && bun build server.ts --outdir . --target node",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint"
   },

@@ -4,18 +4,21 @@ import { useListings } from "@/app/store/zustand";
 import ListingModal from "@/components/Listings/ListingByID";
 import { getListingByID } from "@/db/listings.db";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 const LID = () => {
-  const params: {lid: string} = useParams();
-  const fetchByID = async (id: string) => {
-    const listing = await getListingByID(id);
-    setSelectedListing(listing);
-  };
-  const { selectedListing, setSelectedListing, listings } = useListings();
+  const params: { lid: string } = useParams();
+  const { selectedListing, setSelectedListing } = useListings();
+  const fetchByID = useCallback(
+    async (id: string) => {
+      const listing = await getListingByID(id);
+      setSelectedListing(listing);
+    },
+    [setSelectedListing],
+  );
   useEffect(() => {
     fetchByID(params.lid);
-  }, []);
+  }, [params.lid, fetchByID]);
   return (
     <>
       <ListingModal listing={selectedListing} />
@@ -24,7 +27,3 @@ const LID = () => {
 };
 
 export default LID;
-
-// LID.getLayout = function getLayout(page) {
-// return <NestedLayout>{page}</NestedLayout>;
-// };

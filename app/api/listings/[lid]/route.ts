@@ -1,27 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getListingByID, updateListing, deleteListing } from "@/db/listings.db";
-import { Listing } from "@/src/generated/prisma/client";
-import { ListingInclude } from "@/src/generated/prisma/models";
+import { getListingByID, updateListing } from "@/db/listings.db";
 
 import { ErrorMessage } from "@/app/server-utils/utils";
 
 import { deleteImages } from "@/cloudinary/cloudinary";
+import { ListingWithIncludes } from "@/app/types";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { lid: string } },
+  { params }: { params: Promise<{ lid: string }> },
 ) {
-  const { lid } = params;
+  const { lid } = await params;
   try {
     if (!lid) {
       return NextResponse.json(ErrorMessage("ID not provided error", 500), {
         status: 500,
       });
     }
-    let listing: (Listing & ListingInclude) | null = await getListingByID(lid);
-    if (listing && listing?.sellerId !== listing?.seller) {
+    let listing: ListingWithIncludes  = await getListingByID(lid);
+
+    if (!listing) {
+      return NextResponse.json(ErrorMessage("Failed to Fetch Listing", 500), {
+        status: 500,
+      });
+    } else {
       listing = await updateListing(lid, {
-        ...listing,
+        
         views: listing.views + 1,
       });
     }
@@ -40,7 +44,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { lid: string } },
+  { params }: { params: Promise<{ lid: string }> },
 ) {
   const session = req.headers.get("authorization");
 
@@ -78,7 +82,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { lid: string } },
+  { params }: { params: Promise<{ lid: string }> },
 ) {
   const session = req.headers.get("authorization");
 
@@ -97,21 +101,29 @@ export async function DELETE(
       });
     }
 
-    const listing = await deleteListing(lid);
+    const listing = await getListingByID(lid);
 
-    const val = await deleteImages(listing.imageUrls);
-    
+    if (!listing) {
+      return NextResponse.json(ErrorMessage("Listing not found", 404), {
+        status: 404,
+      });
+    }
+
+    // Delete images from Cloudinary first
+    if (listing.imageUrls?.length) {
+      await deleteImages(listing.imageUrls as string[]);
+    }
+
+    // Actually delete the listing from DB
+    // await deleteListing(lid);
+
     return NextResponse.json(
-      {
-        message: "Succesfully deleted Listing",
-        listing,
-        success: true,
-      },
+      { message: "Successfully deleted Listing", success: true },
       { status: 200 },
     );
   } catch (error) {
     console.log(error);
-    return NextResponse.json(ErrorMessage("Failed to Fetch Listing", 500), {
+    return NextResponse.json(ErrorMessage("Failed to Delete Listing", 500), {
       status: 500,
     });
   }

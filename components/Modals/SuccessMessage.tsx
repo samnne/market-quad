@@ -1,11 +1,11 @@
 "use client";
 
-import { motion, useAnimate } from "motion/react";
+import { motion } from "motion/react";
 import { CiCircleInfo } from "react-icons/ci";
 import { FaTimes } from "react-icons/fa";
 
-const SuccessMessage = ({setter, msg = "Success"}: {setter: Function, msg: string}) => {
-  const [scope, animate] = useAnimate();
+const SuccessMessage = ({setter, msg = "Success"}: {setter: (val: boolean) => void, msg: string}) => {
+
   return (
     <motion.div 
         animate={{

@@ -4,8 +4,8 @@ import {
   useMessage,
   useUser,
 } from "@/app/store/zustand";
-import { Conversation, type Listing } from "@/src/generated/prisma/client";
-import { AnimationOptions, motion, useAnimate } from "motion/react";
+import { Conversation } from "@/src/generated/prisma/client";
+import { motion, useAnimate } from "motion/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
@@ -14,9 +14,10 @@ import ListingMap from "./ListingMap";
 import { redirect, useRouter } from "next/navigation";
 import { deleteListingAction } from "@/lib/listing.lib";
 import Carousel from "../Carousel";
-import { ListingInclude } from "@/src/generated/prisma/models";
+
 import { createConvo } from "@/lib/conversations.lib";
 import { getUserSupabase } from "@/app/client-utils/functions";
+import { ListingWithIncludes, mapToUserSession } from "@/app/types";
 
 const getRandomFirstMessage = (): string => {
   const msgs = [
@@ -29,12 +30,11 @@ const getRandomFirstMessage = (): string => {
   return msgs[Math.floor(Math.random() * msgs.length)];
 };
 
-const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
+const ListingModal = ({ listing }: { listing: ListingWithIncludes }) => {
   const [sectionRef, animate] = useAnimate();
-  const [scope, animateDots] = useAnimate();
-  const [containerRef, animateText] = useAnimate();
+
   const { setSelectedListing } = useListings();
-  const [optionsModal, setOptionsModal] = useState(false);
+
   const { user, setUser } = useUser();
   const { setSelectedConvo } = useConvos();
   const [expandDescription, setExpandDescription] = useState(false);
@@ -44,61 +44,63 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
   const [date, setDate] = useState("No time available");
   const [message, setMessage] = useState<string>("");
 
-  const transition: AnimationOptions = {
-    type: "spring",
-    stiffness: 300,
-    bounceDamping: 5,
-    duration: 0.2,
-  };
-
-  function getTimeElapsed() {
-    const currentTime = new Date(Date.now());
-    const listingDate = new Date(listing?.createdAt);
-    const timeMs = currentTime.getTime() - listingDate.getTime();
-    let hoursDiff = timeMs / (1000 * 60 * 60);
-    let hoursString = `${Math.floor(hoursDiff)} hours ago`;
-    if (hoursDiff < 1) {
-      hoursDiff = hoursDiff * 60;
-      hoursString = `${Math.round(hoursDiff)} minutes ago`;
-    }
-    if (hoursDiff > 24) {
-      hoursDiff = hoursDiff / 24;
-      hoursString = `${Math.round(hoursDiff)} days ago`;
-    }
-    setDate(hoursString);
-  }
-
   const handleInput = (e: ChangeEvent<HTMLInputElement>) =>
     setMessage(e.target.value);
 
-  async function mountUser() {
-    const { user, app_user } = await getUserSupabase();
-    if (!user) {
-      setError(false);
-      return;
+  useEffect(() => {
+    async function mountUser() {
+      const { user, app_user } = await getUserSupabase();
+      if (!user) {
+        setError(false);
+        return;
+      }
+
+      const sessionUser = mapToUserSession(user, app_user);
+      setUser(sessionUser);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/reviews/count`,
+          {
+            method: "get",
+            headers: {
+              Authorization: listing.sellerId!,
+            },
+          },
+        ).then((res) => res.json());
+
+        setLocalReviews(response.count);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    mountUser();
+  }, [listing.sellerId, setError, setUser]);
+  useEffect(() => {
+    function getTimeElapsed() {
+      const currentTime = new Date(Date.now());
+      const listingDate = new Date(listing?.createdAt);
+      const timeMs = currentTime.getTime() - listingDate.getTime();
+      let hoursDiff = timeMs / (1000 * 60 * 60);
+      let hoursString = `${Math.floor(hoursDiff)} hours ago`;
+      if (hoursDiff < 1) {
+        hoursDiff = hoursDiff * 60;
+        hoursString = `${Math.round(hoursDiff)} minutes ago`;
+      }
+      if (hoursDiff > 24) {
+        hoursDiff = hoursDiff / 24;
+        hoursString = `${Math.round(hoursDiff)} days ago`;
+      }
+      setDate(hoursString);
     }
 
-    setUser({ ...user, app_user });
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reviews/count`,
-      {
-        method: "get",
-        headers: {
-          Authorization: listing?.sellerId,
-        },
-      },
-    ).then((res) => res.json());
-    console.log(response)
-    setLocalReviews(response.count);
-  }
-
-  useEffect(() => {
     getTimeElapsed();
-    mountUser();
-
-    setMessage(getRandomFirstMessage());
   }, [listing]);
+  useEffect(() => {
+    function messageMount() {
+      setMessage(getRandomFirstMessage());
+    }
+    messageMount();
+  }, []);
 
   async function closeModal() {
     await animate(
@@ -106,7 +108,7 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
       { y: [50, 500], opacity: [1, 0] },
       { duration: 0.2 },
     );
-    setSelectedListing({});
+    setSelectedListing(null);
   }
 
   function goToConvos(convo: Conversation) {
@@ -120,24 +122,13 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
       setError(true);
       redirect("/sign-in");
     }
-    const created = await createConvo({
+    await createConvo({
       listingId: listing.lid,
       buyerId: data.app_user.uid,
       sellerId: listing.sellerId,
       initialMessage: message,
     });
     redirect("/conversations");
-  }
-
-  async function toggleListingOptions() {
-    if (optionsModal === true) {
-      animateDots(
-        scope.current,
-        { y: [0, 100], opacity: [1, 0] },
-        { ...transition },
-      );
-    }
-    setOptionsModal((prev) => !prev);
   }
 
   async function handleDeleteListing() {
@@ -151,15 +142,18 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
   }
   async function handleArchive() {
     if (!user) return;
-    listing.archived = !listing.archived;
+    const copy = {
+      ...listing,
+      archived: !listing.archived,
+    };
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/listings`,
       {
         method: "put",
         headers: {
-          Authorization: user.id,
+          Authorization: user.id!,
         },
-        body: JSON.stringify(listing),
+        body: JSON.stringify(copy),
       },
     ).then((res) => res.json());
 
@@ -169,20 +163,23 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
     }
 
     setSuccess(true);
-    setSelectedListing({});
+    setSelectedListing(null);
     router.refresh();
   }
   async function handleSold() {
     if (!user) return;
-    listing.sold = !listing.sold;
+    const copy = {
+      ...listing,
+      archived: !listing.sold,
+    };
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/listings`,
       {
         method: "put",
         headers: {
-          Authorization: user.id,
+          Authorization: user.id!,
         },
-        body: JSON.stringify(listing),
+        body: JSON.stringify(copy),
       },
     ).then((res) => res.json());
 
@@ -192,11 +189,12 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
     }
 
     setSuccess(true);
-    setSelectedListing({});
+    setSelectedListing(null);
     router.refresh();
   }
 
   const isSeller = listing?.sellerId === user?.id;
+
   const existingConvo = listing?.conversations?.find(
     (convo: Conversation) => convo.buyerId === user?.id,
   );
@@ -307,7 +305,6 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
                     Manage listing
                   </p>
                   <motion.div
-                    ref={scope}
                     animate={{ y: [20, 0], opacity: [0, 1] }}
                     className="flex gap-2 overflow-x-auto no-scrollbar"
                   >
@@ -411,13 +408,7 @@ const ListingModal = ({ listing }: { listing: Listing & ListingInclude }) => {
               <div className="bg-[#f7fdfb] border border-[#e0faf2] rounded-2xl p-4">
                 <p className="text-[13px] font-bold text-text mb-3">Location</p>
                 <div className="rounded-xl overflow-hidden border border-[#e0faf2]">
-                  <ListingMap
-                    ll={
-                      listing.latitude && listing.longitude
-                        ? [listing.latitude, listing.longitude]
-                        : []
-                    }
-                  />
+                  <ListingMap />
                 </div>
               </div>
             </div>

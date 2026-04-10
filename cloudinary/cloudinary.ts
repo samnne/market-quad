@@ -7,24 +7,22 @@ cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
 });
 
-
+function getPublicId(url: string): string {
+  const parts = url.split('/')
+  const uploadIndex = parts.indexOf('upload')
+  // skip 'upload' and the version segment (vXXXXXX)
+  const relevantParts = parts.slice(uploadIndex + 2)
+  const withExtension = relevantParts.join('/')
+  return withExtension.replace(/\.[^/.]+$/, '') // strip file extension
+}
 
 export async function deleteImages(images: string[]) {
-  for (let image of images) {
+  for (const image of images) {
     
-    const publicID = image.split("/");
-   
-    const uploadFolder = publicID.find((p) => p === "listings");
-  
-    const png = publicID.find((p) => p.includes("png"));
-
-    const file = png?.substring(0, png.indexOf("."));
-   
-
-    const combined = `${uploadFolder}/${png}`;
- 
+    const publicID = getPublicId(image)
+    console.log(publicID)
     await cloudinary.uploader
-      .destroy(combined, { invalidate: true, resource_type: "image" })
+      .destroy(publicID, { invalidate: true, resource_type: "image" })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }

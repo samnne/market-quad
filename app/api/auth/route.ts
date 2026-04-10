@@ -32,6 +32,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     return NextResponse.json({
       success: false,
+      error
     });
   }
 }

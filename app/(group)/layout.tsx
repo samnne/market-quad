@@ -6,7 +6,7 @@ import SuccessMessage from "@/components/Modals/SuccessMessage";
 import ErrorMessage from "@/components/Modals/ErrorMessage";
 import ReviewModal from "@/components/ReviewRelated/ReviewModal";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const { error, success, setSuccess, setError, msg } = useMessage();
 
   return (
@@ -33,4 +33,4 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default layout;
+export default Layout;

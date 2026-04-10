@@ -1,119 +1,54 @@
 'use server'
-import { type Listing } from "../src/generated/prisma/client";
-import { type ListingInclude } from "../src//generated/prisma/models";
 import { prisma } from "./db";
 
-export async function getListings(): Promise<Listing[]> {
-  const listings = await prisma.listing.findMany({
-    orderBy: {
-      createdAt: "asc",
-    },
+import { ListingCreateInput, ListingUpdateInput } from "../src/generated/prisma/models";
+import { ListingWithIncludes } from "@/app/types";
+
+export async function getListings(): Promise<ListingWithIncludes[]> {
+  return prisma.listing.findMany({
+    orderBy: { createdAt: "asc" },
     take: 10,
-    where: {
-      archived: false,
-    },
-    include: {
-      seller: true,
-      conversations: true
-    },
+    where: { archived: false },
+    include: { seller: true, conversations: true },
   });
-
-  return listings;
 }
 
-export async function getOthersListings(uid: string): Promise<Listing[]> {
-  const listings = await prisma.listing.findMany({
-    orderBy: {
-      createdAt: "asc",
-    },
+export async function getOthersListings(uid: string): Promise<ListingWithIncludes[]> {
+  return prisma.listing.findMany({
+    orderBy: { createdAt: "asc" },
     take: 10,
-    where: {
-      sellerId: {
-        not: uid
-      },
-      archived: false
-    },
-    include: {
-      conversations: true,
-      seller: true,
-    },
+    where: { sellerId: { not: uid }, archived: false },
+    include: { seller: true, conversations: true },
   });
-  return listings
 }
-export async function getUserListings(uid: string): Promise<Listing[]> {
-  
-  const listings = await prisma.listing.findMany({
-    orderBy: {
-      createdAt: "asc",
-    },
+
+export async function getUserListings(uid: string): Promise<ListingWithIncludes[]> {
+  return prisma.listing.findMany({
+    orderBy: { createdAt: "asc" },
     take: 10,
-    where: {
-      sellerId: uid,
-     
-    },
-    include: {
-      seller: true,
-      conversations: true
-    },
+    where: { sellerId: uid },
+    include: { seller: true, conversations: true },
   });
-  return listings
 }
 
-export async function getListingByID(
-  lid: string,
-): Promise<ListingInclude | Listing | null> {
-  const listing = await prisma.listing.findUnique({
-    where: {
-      lid,
-      archived: false
-      
-    },
-    include: {
-      seller: true,
-      conversations: true
-    },
+export async function getListingByID(lid: string): Promise<ListingWithIncludes | null> {
+  return prisma.listing.findUnique({
+    where: { lid, archived: false },
+    include: { seller: true, conversations: true },
   });
-  if (!listing) {
-    return null;
-  }
-
-  return listing;
 }
 
-export async function createNewListing(
-  listingData: listingFormData,
-): Promise<Listing> {
- 
-  const listing = await prisma.listing.create({
-    data: {
-      ...listingData,
-    },
-  });
-
-  return listing;
+export async function createNewListing(listingData: ListingCreateInput) {
+  return prisma.listing.create({ data: { ...listingData } });
 }
 
-export async function updateListing(lid: string, listingData: listingFormData) {
-  
-  const listing = await prisma.listing.update({
-    data: {
-      ...listingData,
-      
-    },
-    where: {
-      lid,
-    },
+export async function updateListing(lid: string, listingData: ListingUpdateInput) {
+  return prisma.listing.update({
+    data: { ...listingData },
+    where: { lid },
   });
-
-  return listing;
 }
+
 export async function deleteListing(lid: string) {
-  const listing = await prisma.listing.delete({
-    where: {
-      lid,
-    },
-    
-  });
-
-  return listing;
+  return prisma.listing.delete({ where: { lid } });
 }

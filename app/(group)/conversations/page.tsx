@@ -3,10 +3,11 @@
 import { getUserSupabase } from "@/app/client-utils/functions";
 import { useConvos, useMessage } from "@/app/store/zustand";
 import { getConvos } from "@/lib/conversations.lib";
+import { Listing, Message } from "@/src/generated/prisma/client";
 
 import { motion } from "motion/react";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IoIosRefresh } from "react-icons/io";
 
 const AVATAR_COLORS = [
@@ -41,7 +42,7 @@ const Conversations = () => {
   const { setError } = useMessage();
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  async function getConvosClient() {
+ const getConvosClient = useCallback(async ()=> {
     setLoading(true);
     const data = await getUserSupabase();
     if (!data.user) {
@@ -62,23 +63,27 @@ const Conversations = () => {
     }
     setConvos(tempConvos);
     setLoading(false);
-  }
-  async function mountConvos() {
-    if (convos?.length > 0) {
-      setLoading(false);
-      return;
-    }
-    getConvosClient();
-  }
+  }, [setConvos, setError])
 
   useEffect(() => {
+    async function mountConvos() {
+      if (convos && convos?.length > 0) {
+        setLoading(false);
+        return;
+      }
+      getConvosClient();
+    }
+
     mountConvos();
-  }, []);
+  }, [getConvosClient, convos]);
 
   const filtered = query.trim()
     ? convos?.filter((convo) => {
-        const title = convo.listing?.title ?? "";
-        const lastMsg = convo.messages?.[convo.messages.length - 1]?.text ?? "";
+        const title = (convo.listing as Listing)?.title ?? "";
+        const lastMsg = (convo.messages as Message[])?.[
+          (convo.messages as Message[]).length - 1
+        ]?.text;
+
         return (
           title.toLowerCase().includes(query.toLowerCase()) ||
           lastMsg.toLowerCase().includes(query.toLowerCase())
@@ -139,12 +144,12 @@ const Conversations = () => {
             </div>
           ))}
         </div>
-      ) : filtered?.length > 0 ? (
+      ) : filtered && filtered.length > 0 ? (
         <>
           <div className="flex justify-between items-center">
             <p className="text-[11px] font-medium text-secondary uppercase tracking-widest px-4 pt-2 pb-2">
               {query.trim()
-                ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""}`
+                ? `${filtered?.length} result${filtered?.length !== 1 ? "s" : ""}`
                 : "Recent"}
             </p>
             <button
@@ -155,12 +160,18 @@ const Conversations = () => {
             </button>
           </div>
 
-          {filtered.map((convo, i) => {
+          {filtered?.map((convo, i) => {
             const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
-            const title = convo.listing?.title || "Unknown listing";
+            const title =
+              (typeof convo.listing !== "boolean" &&
+                convo.listing &&
+                (convo.listing as Listing).title) ||
+              "Unknown listing";
             const initials = getInitials(title);
-            const lastMsg = convo.messages?.[convo.messages.length - 1];
-            const unread = convo.unreadCount ?? 0;
+            const lastMsg = (convo.messages as Message[])?.[
+              (convo.messages as Message[]).length - 1
+            ];
+
             const timestamp = convo.updatedAt ?? convo.createdAt;
 
             return (
@@ -198,15 +209,8 @@ const Conversations = () => {
                   <span className="text-[11px] text-[#aad4c5]">
                     {timeAgo(timestamp)}
                   </span>
-                  {unread > 0 ? (
-                    <div className="w-4.5 h-4.5 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold text-text">
-                      {unread}
-                    </div>
-                  ) : (
-                    <span className="text-[11px] text-[#aad4c5]">
-                      Delivered
-                    </span>
-                  )}
+
+                  <span className="text-[11px] text-[#aad4c5]">Delivered</span>
                 </div>
               </motion.div>
             );
@@ -228,7 +232,7 @@ const Conversations = () => {
             {query.trim() ? (
               <>
                 No conversations match{" "}
-                <span className="text-text font-semibold">"{query}"</span>.{" "}
+                <span className="text-text font-semibold">{query}</span>.{" "}
                 <span
                   className="underline cursor-pointer"
                   onClick={() => setQuery("")}

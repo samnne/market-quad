@@ -2,15 +2,16 @@
 
 import { getCloudinarySignature } from "@/cloudinary/cloudinary";
 import { getConvos } from "@/lib/conversations.lib";
-import { getSession } from "@/lib/lib";
+
 import {
   getClientListings,
   getClientListingsNotUsers,
 } from "@/lib/listing.lib";
 import { supabase } from "@/supabase/authHelper";
 import pLimit from "p-limit";
-import { ConvosState, ListingStore, UserState } from "../types";
+
 import { ImageLoaderProps } from "next/image";
+import { Listing } from "@/src/generated/prisma/client";
 
 export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
   const transforms = `c_fill,w_${width},q_${quality ?? 75},f_auto`;
@@ -18,9 +19,9 @@ export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
 };
 
 export function cleanUP(
-  listingStore: ListingStore,
-  userStore: UserState,
-  convoStore: ConvosState,
+  listingStore: {reset: ()=>void},
+  userStore: {reset: ()=>void},
+  convoStore: {reset: ()=>void},
 ) {
   userStore.reset();
   listingStore.reset();
@@ -35,20 +36,28 @@ export function matchUVIC(email: string) {
   return email.includes("@uvic");
 }
 
-export async function fetchConvos({ setter }: { setter: Function }) {
+export async function fetchConvos({
+  setter,
+}: {
+  setter: (data: object[]) => void;
+}) {
   const user = await getUserSupabase();
-  if (user) {
+  if (!user.user) {
     return false;
   } else {
-    const temp = await getConvos(user?.id);
+    const temp = await getConvos(user.user?.id);
     setter(temp);
 
     return temp;
   }
 }
 
-export const fetchListings = async ({ setter }: { setter: Function }) => {
-  const { data, error } = await supabase.auth.getUser();
+export const fetchListings = async ({
+  setter,
+}: {
+  setter: (listings: Listing[]) => void;
+}) => {
+  const { data } = await supabase.auth.getUser();
   if (!data.user) {
     const temp = await getClientListings();
     setter(temp?.listings);

@@ -5,17 +5,24 @@ import { getUserSupabase } from "@/app/client-utils/functions";
 import { socket } from "@/app/socket";
 import {
   useConvos,
-  useListings,
   useMessage,
   useUser,
   useReviewModal,
 } from "@/app/store/zustand";
+import { mapToUserSession } from "@/app/types";
 import { getMessagesForConvo, sendMessage } from "@/lib/messages.lib";
-import { Message } from "@/src/generated/prisma/client";
-import { supabase } from "@/supabase/authHelper";
+import { Listing, Message } from "@/src/generated/prisma/client";
+
 import { motion, useAnimate } from "motion/react";
 import { redirect, useParams } from "next/navigation";
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { CiCircleInfo } from "react-icons/ci";
 
 import { IoArrowBack, IoArrowUp } from "react-icons/io5";
@@ -52,11 +59,11 @@ const CID = () => {
   const [rows, setInputRows] = useState(1);
   const [messageText, setMessageText] = useState("");
   const { setError } = useMessage();
-  const { selectedListing } = useListings();
+
   const [scope, animate] = useAnimate();
   const [isConnected, setIsConnected] = useState(false);
   const [typing, setTyping] = useState(false);
-  const [transport, setTransport] = useState("N/A");
+
   const [messageError, setMessageError] = useState<{
     error?: string;
     success?: boolean;
@@ -75,39 +82,75 @@ const CID = () => {
     return convo;
   }
 
-  const getListingMetaData = async () => {
-    if (!params.cid) return;
-    const convo = await getConvo(params.cid as string);
-    if (!convo) {
-      setError(true);
-      redirect("/conversations");
-    }
-    setSelectedConvo(convo);
-  };
-
   useEffect(() => {
+    const getListingMetaData = async () => {
+      if (!params.cid) return;
+      const convo = await getConvo(params.cid as string);
+      if (!convo) {
+        setError(true);
+        redirect("/conversations");
+      }
+      setSelectedConvo(convo);
+    };
+    async function mountUser() {
+      try {
+        const { user, app_user } = await getUserSupabase();
+        if (!user || !("id" in user)) {
+          setError(true);
+          return;
+        }
+        socket.emit("open-convo", { cid: params.cid, uid: user.id });
+        const sessionUser = mapToUserSession(user, app_user);
+        setUser(sessionUser);
+      } catch (err) {
+        console.error("Error mounting user:", err);
+        setError(true);
+      }
+    }
     mountUser();
     getListingMetaData();
-  }, []);
+  }, [setUser, setError, params.cid, setSelectedConvo]);
 
   useEffect(() => {
-    mountMessages();
-  }, []);
+    async function mountMessages() {
+      try {
+        const cid = params.cid;
+        if (!cid) {
+          setError(true);
+          return;
+        }
+        const tempMessages = await getMessagesForConvo(cid as string);
+        if (!tempMessages) {
+          setError(true);
+          return;
+        }
 
+        setMessages(tempMessages);
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+        setError(true);
+      }
+    }
+    mountMessages();
+  }, [params.cid, setError]);
+  const handleOpenConvo = useCallback(() => {
+    try {
+      if (!user || !("id" in user)) return;
+      socket.emit("open-convo", { cid: params.cid, uid: user.id as string });
+    } catch (err) {
+      console.error("Error opening conversation:", err);
+      setError(true);
+    }
+  }, [setError, params.cid, user]);
   useEffect(() => {
     if (socket.connected) onConnect();
 
     function onConnect() {
       setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
-      socket.io.engine.on("upgrade", (transport) =>
-        setTransport(transport.name),
-      );
     }
 
     function onDisconnect() {
       setIsConnected(false);
-      setTransport("N/A");
     }
 
     socket.on("connect", onConnect);
@@ -122,7 +165,7 @@ const CID = () => {
       setTyping(val);
     });
     socket.on("disconnect", onDisconnect);
-    socket.on("message", ({ message, sender }) => {
+    socket.on("message", ({ message }) => {
       try {
         setMessages((prev) => [...prev, message]);
       } catch (err) {
@@ -143,52 +186,7 @@ const CID = () => {
       socket.off("typing");
       socket.off("error");
     };
-  }, []);
-
-  function handleOpenConvo() {
-    try {
-      if (!user?.id) return;
-      socket.emit("open-convo", { cid: params.cid, uid: user.id as string });
-    } catch (err) {
-      console.error("Error opening conversation:", err);
-      setError(true);
-    }
-  }
-
-  async function mountMessages() {
-    try {
-      const cid = params.cid;
-      if (!cid) {
-        setError(true);
-        return;
-      }
-      const tempMessages = await getMessagesForConvo(cid as string);
-      if (!tempMessages) {
-        setError(true);
-        return;
-      }
-
-      setMessages(tempMessages);
-    } catch (err) {
-      console.error("Error fetching messages:", err);
-      setError(true);
-    }
-  }
-
-  async function mountUser() {
-    try {
-      const { user, app_user } = await getUserSupabase();
-      if (!user) {
-        setError(true);
-        return;
-      }
-      socket.emit("open-convo", { cid: params.cid, uid: user.id });
-      setUser({ ...user, app_user });
-    } catch (err) {
-      console.error("Error mounting user:", err);
-      setError(true);
-    }
-  }
+  }, [scope, animate, handleOpenConvo, setError]);
 
   function scrollToBottom() {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -203,44 +201,36 @@ const CID = () => {
     }
   }
 
-  async function determineReviewPage() {
-    const senderMessages = messages.map((msg) => msg.senderId === user?.id);
-    const otherMessages = messages.map((msg) => msg.senderId !== user?.id);
-    const checkReviews = {
-      sender: senderMessages,
-      other: otherMessages,
-    };
-
-    if (!(checkReviews.sender.length > 3 && checkReviews.other.length > 3)) {
-      return;
-    }
-
-    setReviewModal(true);
-    return;
-  }
   async function handleSendMessage() {
     try {
-      if (!messageText.trim() || !user?.id) return;
+      const currentUser = user;
+      const userId =
+        currentUser && "id" in currentUser ? currentUser.id : undefined;
+      const appUser =
+        currentUser && "app_user" in currentUser
+          ? currentUser.app_user
+          : undefined;
+      if (!messageText.trim() || !userId || !currentUser || !appUser) return;
       socket.emit("typing", { cid: params.cid, typing: false });
       socket.emit("message", {
         cid: params.cid,
-        message: { senderId: user.id, text: messageText },
+        message: { senderId: userId, text: messageText },
       });
       const response = await sendMessage(
         {
           conversationId: params.cid as string,
-          senderId: user.id,
+          senderId: appUser.uid,
           text: messageText,
         },
-        user,
+        appUser,
       );
       if (!response.new_message) {
-        setMessageError({ ...response });
+        setMessageError(response);
         return;
       }
 
       if (response.error) {
-        setMessageError({ ...response });
+        setMessageError(response);
         return;
       }
 
@@ -269,11 +259,27 @@ const CID = () => {
   };
 
   useEffect(() => {
+    async function determineReviewPage() {
+      const userId = user && "id" in user ? user.id : undefined;
+      const senderMessages = messages.map((msg) => msg.senderId === userId);
+      const otherMessages = messages.map((msg) => msg.senderId !== userId);
+      const checkReviews = {
+        sender: senderMessages,
+        other: otherMessages,
+      };
+
+      if (!(checkReviews.sender.length > 3 && checkReviews.other.length > 3)) {
+        return;
+      }
+
+      setReviewModal(true);
+      return;
+    }
     determineReviewPage();
     scrollToBottom();
-  }, [messages]);
+  }, [messages, user, setReviewModal]);
 
-  const listing = selectedConvo?.listing;
+  const listing = selectedConvo?.listing as Listing;
 
   return (
     <div className="absolute inset-0 z-50 min-h-screen flex flex-col bg-background">
@@ -288,7 +294,7 @@ const CID = () => {
 
         <div className="flex-1 min-w-0">
           <p className="text-[14px] font-bold text-text truncate">
-            {selectedConvo?.listing?.title ?? "Conversation"}
+            {(selectedConvo?.listing as Listing)?.title ?? "Conversation"}
           </p>
           <p className="text-[11px] text-text">
             {isConnected ? "Connected" : "Offline"}
@@ -326,8 +332,8 @@ const CID = () => {
               {listing.title}
             </p>
             <p className="text-[11px] text-secondary">
-              ${listing.price}
-              {listing.condition ? ` · ${listing.condition}` : ""}
+              ${listing?.price}
+              {listing?.condition ? ` · ${listing.condition}` : ""}
             </p>
           </div>
           <button
@@ -368,7 +374,9 @@ const CID = () => {
               >
                 {!isMine && (
                   <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-text shrink-0 mb-0.5">
-                    {(selectedConvo?.listing?.title?.[0] ?? "?").toUpperCase()}
+                    {(
+                      (selectedConvo?.listing as Listing)?.title?.[0] ?? "?"
+                    ).toUpperCase()}
                   </div>
                 )}
                 <div className="flex flex-col">

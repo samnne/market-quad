@@ -9,17 +9,18 @@ import { useState } from "react";
 const DRAG_BUFFER = 50;
 
 const Carousel = ({ images }: { images: string[] }) => {
-  const [scope, animate] = useAnimate();
+  const [scope] = useAnimate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragging, setDragging] = useState(false);
   const dragX = useMotionValue(0);
 
   const onDragStart = () => {
+    console.log(dragging)
     setDragging(true);
   };
   const onDragEnd = () => {
     if (images.length === 1) return
-    setDragging(false);
+
     const x = dragX.get();
     if (x <= -DRAG_BUFFER) {
       setCurrentIndex((prev) => (prev + 1) % 3);
@@ -86,7 +87,7 @@ const Carousel = ({ images }: { images: string[] }) => {
             <button
               key={`${image}-${i}`}
               onClick={() => {
-                setCurrentIndex((prev) => i);
+                setCurrentIndex(() => i);
               }}
               className={clsx(
                 i === currentIndex && "bg-primary ",

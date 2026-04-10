@@ -15,5 +15,6 @@ export async function signUpUser(
     },
   });
 
+
   return {data, error}
 }

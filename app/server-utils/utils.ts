@@ -2,7 +2,7 @@
 import { UserInclude } from "@/src/generated/prisma/models";
 import { type User } from "../../src/generated/prisma/client";
 
-import bcrypt from "bcrypt";
+
 import { SafeUser } from "../types";
 
 export function simplifyUserData(user: User & UserInclude): SafeUser {
@@ -21,7 +21,7 @@ export function ErrorMessage(
   message: string,
   status: number,
   ...args: Array<string | number | null>
-): Object {
+): object {
   return {
     message,
     status,

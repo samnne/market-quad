@@ -1,7 +1,6 @@
 "use client";
 import { cleanUP } from "@/app/client-utils/functions";
-import { useConvos, useListings, useUser } from "@/app/store/zustand";
-import { UserSession } from "@/app/types";
+import { useConvos, useListings, UserSession, useUser } from "@/app/store/zustand";
 
 import { supabase } from "@/supabase/authHelper";
 import { motion, useAnimate } from "motion/react";
@@ -13,13 +12,13 @@ const DeleteModal = ({
   session,
 }: {
   deleteUser: boolean;
-  setDeleteUser: Function;
-  session: UserSession;
+  setDeleteUser: (bool: boolean)=> void;
+  session: UserSession | null;
 }) => {
   const [scope, animate] = useAnimate();
-  const { reset: lisReset } = useListings();
-  const { reset: userReset } = useUser();
-  const { reset: convoReset } = useConvos();
+  const listStore = useListings();
+  const userStore= useUser();
+  const convoStore = useConvos();
   async function closeModal() {
     await animate(
       scope.current,
@@ -41,7 +40,7 @@ const DeleteModal = ({
     if (session?.id) {
       await supabase.auth.admin.deleteUser(session?.uid, true);
     }
-    cleanUP({ reset: lisReset }, { reset: userReset }, { reset: convoReset });
+    cleanUP(listStore, userStore, convoStore);
     await animate(
       scope.current,
       { y: 20, opacity: 0 },
@@ -72,10 +71,10 @@ const DeleteModal = ({
                 stiffness: 300,
                 damping: 28,
               }}
-              className="bg-pill rounded-[24px] p-6 w-full max-w-[340px] flex flex-col gap-5 pointer-events-auto"
+              className="bg-pill rounded-3xl p-6 w-full max-w-85 flex flex-col gap-5 pointer-events-auto"
             >
               {/* Warning icon */}
-              <div className="w-[52px] h-[52px] bg-[#fff0f0] border border-[#fca5a5] rounded-2xl flex items-center justify-center mx-auto">
+              <div className="w-13 h-13 bg-[#fff0f0] border border-[#fca5a5] rounded-2xl flex items-center justify-center mx-auto">
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                   <path
                     d="M11 8v5M11 14.5v.5"

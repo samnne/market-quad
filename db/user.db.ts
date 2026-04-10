@@ -13,7 +13,7 @@ export async function setVerifiedUser(uid: string | undefined) {
     },
   });
   if (!user) {
-    return { success: false };
+    return { success: false, user: null };
   }
   return { user, success: true };
 }

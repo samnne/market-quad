@@ -1,6 +1,6 @@
 "use client";
 import { motion, useAnimate } from "motion/react";
-import { useEffect, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 import ListingCard from "../Listings/ListingCard";
 import { redirect } from "next/navigation";
 import ListingModal from "../Listings/ListingByID";
@@ -18,12 +18,12 @@ const UserListings = ({
   setModals,
   showModal,
 }: {
-  setModals: Function;
+  setModals: (modals: SetStateAction<{ userModal: boolean }>) => void;
   showModal: boolean;
 }) => {
   const [scope, animate] = useAnimate();
   const [titleScope, titleAnimate] = useAnimate();
-  const { selectedListing, setSelectedListing } = useListings();
+  const { selectedListing } = useListings();
   const { userListings } = useUser();
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -33,7 +33,7 @@ const UserListings = ({
     return true;
   });
 
-  const animateModal = async () => {
+  const animateModal = useCallback(async () => {
     await animate(
       scope.current,
       { left: 0, opacity: 1 },
@@ -44,23 +44,25 @@ const UserListings = ({
       { left: 0, opacity: 1 },
       { duration: 0.1, type: "spring", stiffness: 200, damping: 20 },
     );
-  };
-
+  }, [animate, titleAnimate, scope, titleScope]);
   useEffect(() => {
     if (!scope.current || !titleScope.current) return;
     animateModal();
-  }, [scope, showModal, titleScope]);
+  }, [scope, showModal, titleScope, animateModal]);
 
   async function closeModal() {
     await animate(scope.current, { left: -600, opacity: 0 });
-    setModals((prev: object) => ({ ...prev, userModal: false }));
+    setModals(() => ({ userModal: false }));
   }
-
+  
   return (
     <>
       {showModal && (
         <>
-          <div onClick={closeModal} className="fixed inset-0 z-20 bg-black/20" />
+          <div
+            onClick={closeModal}
+            className="fixed inset-0 z-20 bg-black/20"
+          />
 
           <motion.section
             ref={scope}
@@ -126,7 +128,7 @@ const UserListings = ({
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 no-scrollbar pb-10">
-              <ListingModal listing={selectedListing} />
+              {selectedListing && <ListingModal listing={selectedListing} />}
 
               {displayedListings.length > 0 ? (
                 displayedListings.map((listing, i) => (
@@ -135,7 +137,7 @@ const UserListings = ({
                     animate={{ opacity: [0, 1], y: [10, 0] }}
                     transition={{ delay: Math.min(i * 0.04, 0.3) }}
                   >
-                    <ListingCard listing={listing} setSelectedListing={setSelectedListing} />
+                    <ListingCard listing={listing} />
                   </motion.div>
                 ))
               ) : userListings.length === 0 ? (
@@ -157,9 +159,19 @@ const UserListings = ({
                     className="bg-pill border border-[#e0faf2] rounded-[20px] overflow-hidden cursor-pointer relative"
                   >
                     <div className="w-full h-40 bg-[#e8faf4] flex items-center justify-center">
-                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                      <svg
+                        width="48"
+                        height="48"
+                        viewBox="0 0 48 48"
+                        fill="none"
+                      >
                         <rect width="48" height="48" rx="12" fill="#d6fdf1" />
-                        <path d="M24 16v16M16 24h16" stroke="#17f3b5" strokeWidth="2.5" strokeLinecap="round" />
+                        <path
+                          d="M24 16v16M16 24h16"
+                          stroke="#17f3b5"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                        />
                       </svg>
                     </div>
                     <span className="absolute top-3 right-3 bg-primary text-dtext text-[11px] font-bold px-3 py-1.5 rounded-xl">
@@ -169,7 +181,9 @@ const UserListings = ({
                       <p className="text-[15px] font-bold text-dtext mb-0.5">
                         Click here to create a listing
                       </p>
-                      <p className="text-[12px] text-[#6b9e8a]">Takes less than 30 seconds</p>
+                      <p className="text-[12px] text-[#6b9e8a]">
+                        Takes less than 30 seconds
+                      </p>
                     </div>
                   </motion.div>
                 </div>
@@ -178,7 +192,12 @@ const UserListings = ({
                 <div className="flex flex-col items-center justify-center py-16 gap-3">
                   <div className="w-12 h-12 bg-[#e8faf4] rounded-2xl flex items-center justify-center">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M3 5h14M6 10h8M9 15h2" stroke="#17f3b5" strokeWidth="1.5" strokeLinecap="round" />
+                      <path
+                        d="M3 5h14M6 10h8M9 15h2"
+                        stroke="#17f3b5"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </div>
                   <p className="text-[14px] text-[#6b9e8a] text-center">

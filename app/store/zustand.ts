@@ -1,26 +1,29 @@
-import { Conversation, Listing, User, UserPreferences } from "@/src/generated/prisma/client";
-import { ConversationInclude } from "@/src/generated/prisma/models";
+import { Listing, User, UserPreferences } from "@/src/generated/prisma/client";
+
+import { UserMetadata } from "@supabase/supabase-js";
 
 import { create, StoreApi, UseBoundStore } from "zustand";
+import { ConvoWithRelations, ListingWithRelations } from "../types";
 
 export interface Store {
   type: "sign-in" | "sign-up" | "otp";
-  changeType: Function;
+  changeType: (newType: "sign-in" | "sign-up" | "otp") => void;
 }
-export const useType = create((set) => {
+export const useType = create<Store>((set) => {
   const store: Store = {
     type: "sign-in",
-    changeType: (newType: string) => set({ type: newType }),
+    changeType: (newType: "sign-in" | "sign-up" | "otp") =>
+      set({ type: newType }),
   };
   return { ...store };
 });
 
 export type ListingStore = {
   listings: Listing[];
-  setListings: Function;
+  setListings: (listings: Listing[]) => void;
   selectedListing?: Listing | null;
-  setSelectedListing: Function;
-  reset: Function;
+  setSelectedListing: (listing:ListingWithRelations | null) => void;
+  reset: () => void;
 };
 
 export const useListings: UseBoundStore<StoreApi<ListingStore>> = create(
@@ -29,41 +32,53 @@ export const useListings: UseBoundStore<StoreApi<ListingStore>> = create(
       listings: [],
       setListings: (listings: Listing[]) => set({ listings: listings }),
       selectedListing: null,
-      setSelectedListing: (listing: Listing) =>
+      setSelectedListing: (listing: ListingWithRelations | null) =>
         set({ selectedListing: listing }),
       reset: () => set({ listings: [], selectedListing: null }),
     };
   },
 );
-
+export type UserSession = {
+  uid: string;
+  id?: string;
+  name: string;
+  email: string;
+  profileURL: string;
+  isVerified: boolean;
+  rating: number;
+  createdAt: Date;
+  app_user?: User;
+  user_metadata?: UserMetadata;
+};
 export type UserState = {
-  user: User | null;
-  setUser: Function;
+  user: UserSession | null;
+  setUser: (user: UserSession | null) => void;
   userListings: Listing[];
-  setUserListings: Function;
-  reset: Function;
+  setUserListings: (listings: Listing[]) => void;
+  reset: () => void;
   preferences: UserPreferences | null;
   setPreferences: (p: UserPreferences | null) => void;
 };
 export const useUser: UseBoundStore<StoreApi<UserState>> = create((set) => {
   return {
     user: null,
-    setUser: (user: User) => set({ user: user }),
+    setUser: (user: UserSession | null) => set({ user: user }),
     userListings: [],
     setUserListings: (listings: Listing[]) => set({ userListings: listings }),
     reset: () => set({ user: null, userListings: [] }),
     preferences: null,
-    setPreferences: (pref: UserPreferences | null) => ({ preferences: pref }),
+    setPreferences: (pref: UserPreferences | null) =>
+      set({ preferences: pref }),
   };
 });
 
 export type MessagePopUp = {
   error: boolean;
   success: boolean;
-  setSuccess: Function;
-  setError: Function;
+  setSuccess: (bool: boolean) => void;
+  setError: (bool: boolean) => void;
   msg: string;
-  setMessage: Function;
+  setMessage: (msg: string) => void;
 };
 
 export const useMessage: UseBoundStore<StoreApi<MessagePopUp>> = create(
@@ -80,28 +95,28 @@ export const useMessage: UseBoundStore<StoreApi<MessagePopUp>> = create(
 );
 
 export type ConvosState = {
-  convos: (Conversation & ConversationInclude)[] | null;
-  setConvos: Function;
-  selectedConvo: Conversation | null;
-  setSelectedConvo: Function;
-  reset: Function;
+  convos: ConvoWithRelations[] | null;
+  setConvos: (convos: ConvoWithRelations[]) => void;
+  selectedConvo: ConvoWithRelations | null;
+  setSelectedConvo: (convo: ConvoWithRelations) => void;
+  reset: () => void;
 };
 export const useConvos: UseBoundStore<StoreApi<ConvosState>> = create((set) => {
   return {
     convos: null,
     selectedConvo: null,
-    setSelectedConvo: (convo: Conversation) => set({ selectedConvo: convo }),
-    setConvos: (convos: (Conversation & ConversationInclude)[]) =>
-      set({ convos: convos }),
+    setSelectedConvo: (convo: ConvoWithRelations) =>
+      set({ selectedConvo: convo }),
+    setConvos: (convos: ConvoWithRelations[]) => set({ convos: convos }),
     reset: () => set({ convos: null, selectedConvo: null }),
   };
 });
 export interface ReviewModalState {
   reviewModal: boolean;
-  setReviewModal: Function;
+  setReviewModal: (show: boolean) => void;
   makeReview: boolean;
-  setMakeAReview: Function;
-  reset: Function;
+  setMakeAReview: (show: boolean) => void;
+  reset: () => void;
 }
 
 export const useReviewModal: UseBoundStore<StoreApi<ReviewModalState>> = create(

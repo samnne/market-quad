@@ -1,12 +1,11 @@
 import { motion } from "motion/react";
-import { useState } from "react";
 
 export default function StarRating({
   value,
   setValue,
 }: {
   value: number;
-  setValue: Function;
+  setValue: (val: number)=> void;
 }) {
   return (
     <div className="flex  gap-0.5">

@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import StarRating from "../StarRating";
 import {
   useConvos,
-  useListings,
+  
   useReviewModal,
   useUser,
 } from "@/app/store/zustand";
@@ -51,7 +51,7 @@ const MakeAReview = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: user.id,
+          authorization: user.id!,
         },
         body: JSON.stringify(data),
       });

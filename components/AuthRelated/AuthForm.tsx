@@ -1,8 +1,8 @@
 "use client";
-import { decrypt, getSession, login, signup } from "@/lib/lib";
+
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChangeEvent, Ref, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
@@ -10,7 +10,7 @@ import { useMessage, useType, useUser } from "../../app/store/zustand";
 
 import { signUpUser } from "@/supabase/supabase";
 import { supabase } from "@/supabase/authHelper";
-import { FormType } from "@/app/types";
+import { FormType, mapToUserSession } from "@/app/types";
 import {
   InputOTP,
   InputOTPGroup,
@@ -35,7 +35,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [counter, setCounter] = useState(0);
   const { setError, setSuccess, setMessage } = useMessage();
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
 
   const { changeType } = useType();
 
@@ -48,17 +48,18 @@ const AuthForm = ({ type }: { type: FormType }) => {
     password: "",
     name: "",
   });
-  const mountSession = async () => {
-    const { user, error, app_user } = await getUserSupabase();
+  const mountSession = useCallback(async () => {
+    const { user, app_user } = await getUserSupabase();
     if (!user) {
       return;
     }
-    setUser({ ...user, app_user });
+    const sessionUser = mapToUserSession(user, app_user);
+    setUser(sessionUser);
     redirect("/home");
-  };
+  }, [setUser]);
   useEffect(() => {
     mountSession();
-  }, []);
+  }, [mountSession]);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -87,14 +88,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
         .from("User")
         .select("*")
         .eq("email", formData.email);
-   
+
       if (user.data && user.data[0]?.isVerified) {
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
         if (error) {
-        
           setError(true);
           setMessage("Email or Password is incorrect");
           console.log(error);
@@ -122,7 +122,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   };
 
   const hanldeOTPChange = (newVal: string) => {
-    setOTP((prev) => {
+    setOTP(() => {
       return newVal;
     });
   };
@@ -139,6 +139,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       return;
     }
     let veriUser;
+    let user;
     setLoadingOtp(true);
     try {
       if (!formData.email) {
@@ -149,7 +150,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       }
 
       const {
-        data: { user, session },
+        data: { user: supaUser },
         error,
       } = await supabase.auth.verifyOtp({
         email: formData.email,
@@ -164,10 +165,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
         return;
       }
 
-      if (user?.id) {
+      if (supaUser?.id) {
         setSuccess(true);
-        setUser({ ...user });
-        veriUser = user;
+        user = supaUser
+        veriUser = supaUser;
       } else {
         console.log("No user returned after OTP verification");
         setError(true);
@@ -178,20 +179,23 @@ const AuthForm = ({ type }: { type: FormType }) => {
     } finally {
       setLoadingOtp(false);
     }
+
     const res = await setVerifiedUser(veriUser?.id);
     if (!res.success) {
       setError(true);
     } else {
-      setUser({ ...veriUser });
+    
+      const sessionUser = mapToUserSession(user!, res.user!);
+      setUser(sessionUser);
       redirect("/profile");
     }
   };
 
   async function handleForgotPassword() {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(
+    const { error } = await supabase.auth.resetPasswordForEmail(
       formData.email as string,
       {
-        redirectTo: "http://localhost:3000/update-password",
+        redirectTo: process.env.NEXT_PUBLIC_REDIRECT_URL,
       },
     );
     if (error) {
@@ -199,8 +203,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
       console.log(error);
       return;
     }
-
- 
   }
 
   // HANDLES SIGN UP
@@ -218,7 +220,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
         return;
       }
 
-      const { data, error } = await signUpUser(email, password, name);
+      const { error } = await signUpUser(email, password, name);
 
       if (error) {
         console.error("Signup error:", error);
@@ -236,7 +238,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
     }
   };
 
-  const toggleShowPassword = (e: MouseEvent) => {
+  const toggleShowPassword = () => {
     const inputElem: HTMLInputElement | null = inputRef.current;
 
     if (inputElem && inputElem.type === "password") {
@@ -250,7 +252,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const handleSubmit = async (formData: FormData) => {
     switch (type) {
       case "sign-in":
-        await handleLogin(formData);
+        await handleLogin();
         break;
       case "sign-up":
         await handleSignUp(formData);
@@ -316,7 +318,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
               placeholder="Password (Different from your UVic Passcode)"
             />
             <button
-              onClick={(e) => toggleShowPassword(e)}
+              onClick={() => toggleShowPassword()}
               type="button"
               id="view-pass"
               className="text-secondary group absolute cursor-pointer top-15 right-5"

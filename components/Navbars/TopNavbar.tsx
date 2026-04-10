@@ -1,34 +1,38 @@
 "use client";
-import { useListings, useMessage, useUser } from "@/app/store/zustand";
-import { animate, motion } from "motion/react";
+import {  useMessage, useUser } from "@/app/store/zustand";
+import {  motion } from "motion/react";
 import Image from "next/image";
 import {
   redirect,
   usePathname,
   useRouter,
-  useSearchParams,
+
 } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
+
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 
 const TopNavbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
+
   const { setError } = useMessage();
   const [path, setPath] = useState(pathname.substring(1, pathname.length));
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const {user, setUser} = useUser()
+  const {user} = useUser()
   useEffect(() => {
-    const segments = pathname.split("/");
-    if (segments.length > 2) {
-      setPath("");
-    } else {
-      setPath(segments[1]);
+    function mountPath(){
+      
+      const segments = pathname.split("/");
+      if (segments.length > 2) {
+        setPath("");
+      } else {
+        setPath(segments[1]);
+      }
     }
+    mountPath()
   }, [pathname]);
 
   const handleSearchListings = async () => {
@@ -109,11 +113,12 @@ const TopNavbar = () => {
                 <FaMagnifyingGlass />
               </button>
               <button onClick={()=> redirect('/profile')} className="w-12 h-12 bg-primary text-black rounded-full flex items-center justify-center text-[14px] font-bold shrink-0">
-                {user?.user_metadata?.name[0]}
+                {user?.app_user?.name[0]}
               </button>
             </div>
           </>
         )}
+        <span id={path}></span>
       </section>
     </nav>
   );

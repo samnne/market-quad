@@ -1,15 +1,21 @@
 "use client";
 
-import { useMediaQuery } from "react-responsive";
 import { navLinks } from "../../app/client-utils/constants";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  forwardRef,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { motion, useAnimate } from "motion/react";
 
 const Navbar = () => {
   const pathname = usePathname();
-  const isMobile = useMediaQuery({ query: "(max-width: 1024px)" });
+
   const [position, setPosition] = useState({ left: 0, width: 0, opacity: 0 });
   const refs = useRef<(HTMLLIElement | null)[]>([]);
 
@@ -48,22 +54,22 @@ const Navbar = () => {
         className="flex p-1 relative shadow-lg shadow-accent/40 bg-pill border border-secondary/30 rounded-xl justify-around items-center"
       >
         {navLinks.map((link, i) => (
-
           <Tab
             key={link.href}
-            ref={(el) => (refs.current[i] = el)}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
             setPosition={setPosition}
           >
             <Link
               className={`${pathname.includes(link.href) && "text-primary border border-primary"} hover:bg-background-dark/10 grow cursor-pointer flex-col  rounded-2xl w-12 h-12 flex justify-center items-center`}
               href={link.href}
             >
-
-              {link.icon()}
-              {link.name !== 'New' && <span className="text-xs font-syne">{link.name}</span>}
-              
+              {link.icon}
+              {link.name !== "New" && (
+                <span className="text-xs font-syne">{link.name}</span>
+              )}
             </Link>
-
           </Tab>
         ))}
         <Cursor position={position} />
@@ -74,15 +80,24 @@ const Navbar = () => {
 
 const Tab = forwardRef<
   HTMLLIElement,
-  { children: React.ReactNode; setPosition: any }
+  {
+    children: React.ReactNode;
+    setPosition: Dispatch<
+      SetStateAction<{
+        left: number;
+        width: number;
+        opacity: number;
+      }>
+    >;
+  }
 >(({ children, setPosition }, ref) => {
   const internalRef = useRef<HTMLLIElement | null>(null);
-  const [scope, animate] = useAnimate();
+  const animState = useAnimate();
   const resolvedRef = (ref as React.RefObject<HTMLLIElement>) ?? internalRef;
 
   const moveCursor = async () => {
     if (!resolvedRef.current) return;
-    await animate(
+    await animState[1](
       resolvedRef.current,
       {
         scale: [0.9, 1],
@@ -115,8 +130,9 @@ const Tab = forwardRef<
     </motion.li>
   );
 });
-
-const Cursor = ({ position }) => {
+Tab.displayName = "Tab";
+type CursorPosition = { left: number; width: number; opacity: number };
+const Cursor = ({ position }: { position: CursorPosition }) => {
   return (
     <motion.li
       animate={{ ...position }}

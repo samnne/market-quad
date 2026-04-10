@@ -78,8 +78,21 @@ export async function PUT(req: NextRequest) {
         message: "Must provide a listing",
       });
     }
-    const { seller, lid, conversations, ...everthingElse } = listing;
-    const updatedListing = await updateListing(listing.lid, everthingElse);
+
+    const updatedListing = await updateListing(listing.lid, {
+      archived: listing.archived,
+      category: listing.category,
+      condition: listing.condition,
+      createdAt: listing.createdAt,
+      description: listing.description,
+      imageUrls: listing.imageUrls,
+      latitude: listing.latitude,
+      longitude: listing.longitude,
+      price: listing.price,
+      sold: listing.sold,
+      title: listing.title,
+      views: listing.views,
+    });
 
     return NextResponse.json(
       {

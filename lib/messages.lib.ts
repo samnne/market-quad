@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "../db/db";
-import { Conversation, User } from "../src/generated/prisma/client";
+import { User } from "../src/generated/prisma/client";
 
 
 interface NewMessageProps {

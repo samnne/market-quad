@@ -48,6 +48,6 @@ export async function getConvos(uid: string) {
     },
   });
 
-  if (!convos) return false;
+  if (!convos) return convos;
   return convos;
 }

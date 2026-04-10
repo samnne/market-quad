@@ -2,28 +2,28 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import UserListings from "./UserListings";
 import { useState } from "react";
 import { redirect } from "next/navigation";
-import { useConvos, useListings, useUser } from "@/app/store/zustand";
+import { useConvos,  useUser } from "@/app/store/zustand";
 
 const ProfileSections = ({
   displayText,
   sideIcon,
   props,
-  badge,
+
 }: {
   displayText: string;
   sideIcon: React.ReactNode;
-  props?: object;
-  badge: number;
+  props?: {type: string};
+
 }) => {
   const { userListings } = useUser();
-  const { setSelectedListing } = useListings();
+
   const modalType = props?.type;
   const { convos } = useConvos();
 
   const [modals, setModals] = useState({
     userModal: false,
   });
-  function openModal(type: string, data: any[]) {
+  function openModal(type: string) {
     switch (type) {
       case "ulist":
         setModals((prev) => ({ ...prev, userModal: true }));
@@ -39,7 +39,7 @@ const ProfileSections = ({
   return (
     <>
       <li
-        onClick={() => openModal(modalType, userListings)}
+        onClick={() => openModal(modalType!)}
         className="flex justify-between  overflow-x-hidden"
       >
         <div className="flex p-4 items-center gap-2">
