@@ -17,9 +17,8 @@ import {
   useUser,
 } from "../../store/zustand";
 
-import { cleanUP, getUserSupabase } from "../../client-utils/functions";
+import { cleanUP, getUserSupabase, mapToUserSession } from "../../client-utils/functions";
 import { supabase } from "@/supabase/authHelper";
-import { mapToUserSession } from "@/app/types";
 
 function getInitials(name?: string, email?: string) {
   if (name) {

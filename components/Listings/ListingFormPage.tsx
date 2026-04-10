@@ -24,12 +24,15 @@ import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 
 import { motion, stagger, useAnimate } from "motion/react";
-import { getUserSupabase, uploadImages } from "@/app/client-utils/functions";
+import {
+  getUserSupabase,
+  mapToUserSession,
+  uploadImages,
+} from "@/app/client-utils/functions";
 import { deleteImages } from "@/cloudinary/cloudinary";
 
 import LocationInput from "@/components/Inputs/LocationInput";
 import { useRouter } from "next/navigation";
-import { mapToUserSession } from "@/app/types";
 
 const ListingForm = z.object({
   title: z.string().min(4, "Title Too Short"),
@@ -60,11 +63,7 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   const router = useRouter();
   const [rows, setInputRows] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    selectedListing,
-    setSelectedListing,
-
-  } = useListings();
+  const { selectedListing, setSelectedListing } = useListings();
   const { setError, setSuccess } = useMessage();
   const [scope, animate] = useAnimate();
 
@@ -86,7 +85,6 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
   });
 
   useEffect(() => {
-    
     if (!scope.current) return;
     animate("#sect", { y: [50, 0], opacity: [0, 1] }, { delay: stagger(0.1) });
     animate(
@@ -104,8 +102,8 @@ const ListingFormPage = ({ type }: { type: "new" | "edit" }) => {
         redirect("/sign-in");
       }
 
-    const sessionUser = mapToUserSession(user, app_user);
-setUser(sessionUser);
+      const sessionUser = mapToUserSession(user, app_user);
+      setUser(sessionUser);
     }
     mountUser();
   }, [setError, setUser]);

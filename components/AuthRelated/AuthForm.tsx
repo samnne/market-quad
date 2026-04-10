@@ -10,7 +10,8 @@ import { useMessage, useType, useUser } from "../../app/store/zustand";
 
 import { signUpUser } from "@/supabase/supabase";
 import { supabase } from "@/supabase/authHelper";
-import { FormType, mapToUserSession } from "@/app/types";
+import { FormType } from "@/app/types";
+
 import {
   InputOTP,
   InputOTPGroup,
@@ -20,7 +21,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { setVerifiedUser } from "@/db/user.db";
 import { motion } from "motion/react";
-import { getUserSupabase, matchUVIC } from "@/app/client-utils/functions";
+import { getUserSupabase, mapToUserSession, matchUVIC } from "@/app/client-utils/functions";
 import { useRouter } from "next/navigation";
 
 interface LoginUserForm {

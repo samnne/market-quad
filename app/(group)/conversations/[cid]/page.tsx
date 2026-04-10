@@ -9,7 +9,7 @@ import {
   useUser,
   useReviewModal,
 } from "@/app/store/zustand";
-import { mapToUserSession } from "@/app/types";
+
 import { getMessagesForConvo, sendMessage } from "@/lib/messages.lib";
 import { Listing, Message } from "@/src/generated/prisma/client";
 

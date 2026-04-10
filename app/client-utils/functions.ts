@@ -9,14 +9,45 @@ import {
 } from "@/lib/listing.lib";
 import { supabase } from "@/supabase/authHelper";
 import pLimit from "p-limit";
+import { User as SupabaseUser } from "@supabase/supabase-js";
+import { User as PrismaUser } from "@/src/generated/prisma/client";
 
 import { ImageLoaderProps } from "next/image";
 import {  Listing } from "@/src/generated/prisma/client";
 import { ConvoWithRelations } from "../types";
+import { UserSession } from "../store/zustand";
 
 export const cloudinaryLoader = ({ src, width, quality }: ImageLoaderProps) => {
   const transforms = `c_fill,w_${width},q_${quality ?? 75},f_auto`;
   return src.replace("/upload/", `/upload/${transforms}/`);
+};
+
+export const mapToUserSession = (
+  user: SupabaseUser,
+  app_user?: PrismaUser
+): UserSession => {
+  return {
+    uid: user.id,
+    id: app_user?.uid, // optional
+    email: user.email ?? "",
+
+    name:
+      app_user?.name ||
+      user.user_metadata?.name ||
+      "",
+
+    profileURL:
+      app_user?.profileURL ||
+      user.user_metadata?.avatar_url ||
+      "",
+
+    isVerified: app_user?.isVerified ?? false,
+    rating: app_user?.rating ?? 0,
+    createdAt: app_user?.createdAt ?? new Date(),
+
+    app_user,
+    user_metadata: user.user_metadata,
+  };
 };
 
 export function cleanUP(

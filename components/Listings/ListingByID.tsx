@@ -17,7 +17,7 @@ import Carousel from "../Carousel";
 
 import { createConvo } from "@/lib/conversations.lib";
 import { getUserSupabase } from "@/app/client-utils/functions";
-import { ConvoWithRelations, ListingWithIncludes, mapToUserSession } from "@/app/types";
+import { ConvoWithRelations, ListingWithIncludes } from "@/app/types";
 
 const getRandomFirstMessage = (): string => {
   const msgs = [
