@@ -42,7 +42,7 @@ export async function getListingByID(
   lid: string,
 ): Promise<ListingWithIncludes | null> {
   return prisma.listing.findUnique({
-    where: { lid, archived: false },
+    where: { lid },
     include: { seller: true, conversations: true },
   });
 }

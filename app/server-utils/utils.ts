@@ -17,18 +17,6 @@ export function simplifyUserData(user: User & UserInclude): SafeUser {
 }
 
 
-export function ErrorMessage(
-  message: string,
-  status: number,
-  ...args: Array<string | number | null>
-): object {
-  return {
-    message,
-    status,
-    ...args,
-  };
-}
-
 // export async function hashPassword(password: string): Promise<string> {
 //   const saltRounds = 8;
 //   return await bcrypt.hashSync(password, saltRounds);

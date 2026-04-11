@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteListing, getListingByID, updateListing } from "@/db/listings.db";
 
-import { ErrorMessage } from "@/app/server-utils/utils";
 
 import { deleteImages } from "@/cloudinary/cloudinary";
 
+function ErrorMessage(message: string, code: number) {
+  return { message, code, success: false };
+}
+
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ lid: string }> },
 ) {
   const { lid } = await params;
@@ -17,8 +20,9 @@ export async function GET(
       });
     }
     let listing = await getListingByID(lid);
-
+    
     if (!listing) {
+      console.log(listing)
       return NextResponse.json(ErrorMessage("Failed to Fetch Listing", 500), {
         status: 500,
       });
