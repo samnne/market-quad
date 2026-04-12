@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   // Email admins
   await resend.emails.send({
-    from: "alerts@yourmarketplace.com",
+    from: process.env.ALERTS_EMAIL!,
     to: process.env.ADMIN_EMAIL!,
     subject: `New User Report — ${reason}`,
     html: `
