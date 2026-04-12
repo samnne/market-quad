@@ -1,11 +1,16 @@
 import { sendMessage } from "@/lib/messages.lib";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ mid: string }> },
 ) {
-  const session = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const session = auth.user.uid
   const body = await req.json();
   const { mid } = await params;
  

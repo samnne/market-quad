@@ -1,10 +1,15 @@
 import { prisma } from "@/db/db";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ cid: string }> },
 ) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
   const session = req.headers.get("authorization");
 
   if (!session) {
@@ -46,6 +51,10 @@ export async function GET(
   }
 }
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
   const session = req.headers.get("authorization");
 
   if (!session) {
@@ -92,7 +101,11 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ cid: string }> }
 ) {
-  const userId = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const userId = auth.user.uid;
 
   const { cid } = await params;
   if (!userId || !cid) {

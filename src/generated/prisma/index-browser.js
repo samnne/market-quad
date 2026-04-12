@@ -166,7 +166,8 @@ exports.Prisma.UserScalarFieldEnum = {
   profileURL: 'profileURL',
   isVerified: 'isVerified',
   createdAt: 'createdAt',
-  rating: 'rating'
+  rating: 'rating',
+  hidden: 'hidden'
 };
 
 exports.Prisma.ConversationScalarFieldEnum = {
@@ -197,6 +198,21 @@ exports.Prisma.WaitlistTableScalarFieldEnum = {
   intent: 'intent'
 };
 
+exports.Prisma.ReportScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  reason: 'reason',
+  description: 'description',
+  status: 'status',
+  adminNote: 'adminNote',
+  autoHidden: 'autoHidden',
+  resolvedAt: 'resolvedAt',
+  reporterId: 'reporterId',
+  targetUserId: 'targetUserId',
+  resolvedById: 'resolvedById'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -216,6 +232,22 @@ exports.ReviewRole = exports.$Enums.ReviewRole = {
   SELLER: 'SELLER'
 };
 
+exports.ReportReason = exports.$Enums.ReportReason = {
+  SPAM: 'SPAM',
+  FAKE_LISTING: 'FAKE_LISTING',
+  HARASSMENT: 'HARASSMENT',
+  SCAM: 'SCAM',
+  INAPPROPRIATE_CONTENT: 'INAPPROPRIATE_CONTENT',
+  OTHER: 'OTHER'
+};
+
+exports.ReportStatus = exports.$Enums.ReportStatus = {
+  PENDING: 'PENDING',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  RESOLVED: 'RESOLVED',
+  DISMISSED: 'DISMISSED'
+};
+
 exports.Prisma.ModelName = {
   Listing: 'Listing',
   UserPreferences: 'UserPreferences',
@@ -223,7 +255,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   Conversation: 'Conversation',
   Message: 'Message',
-  WaitlistTable: 'WaitlistTable'
+  WaitlistTable: 'WaitlistTable',
+  Report: 'Report'
 };
 
 /**

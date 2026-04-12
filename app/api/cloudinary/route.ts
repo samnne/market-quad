@@ -1,5 +1,6 @@
 import { deleteImages, getCloudinarySignature } from "@/cloudinary/cloudinary";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const { timestamp, signature, cloudName, apiKey } =
@@ -14,7 +15,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const userId = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const userId = auth.user.uid;
   const images = await req.json();
   if (!userId) {
     return NextResponse.json({

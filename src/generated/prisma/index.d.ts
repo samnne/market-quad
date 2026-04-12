@@ -48,12 +48,39 @@ export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
  */
 export type WaitlistTable = $Result.DefaultSelection<Prisma.$WaitlistTablePayload>
+/**
+ * Model Report
+ * 
+ */
+export type Report = $Result.DefaultSelection<Prisma.$ReportPayload>
 
 /**
  * Enums
  */
 export namespace $Enums {
-  export const ReviewRole: {
+  export const ReportStatus: {
+  PENDING: 'PENDING',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  RESOLVED: 'RESOLVED',
+  DISMISSED: 'DISMISSED'
+};
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+
+export const ReportReason: {
+  SPAM: 'SPAM',
+  FAKE_LISTING: 'FAKE_LISTING',
+  HARASSMENT: 'HARASSMENT',
+  SCAM: 'SCAM',
+  INAPPROPRIATE_CONTENT: 'INAPPROPRIATE_CONTENT',
+  OTHER: 'OTHER'
+};
+
+export type ReportReason = (typeof ReportReason)[keyof typeof ReportReason]
+
+
+export const ReviewRole: {
   BUYER: 'BUYER',
   SELLER: 'SELLER'
 };
@@ -61,6 +88,14 @@ export namespace $Enums {
 export type ReviewRole = (typeof ReviewRole)[keyof typeof ReviewRole]
 
 }
+
+export type ReportStatus = $Enums.ReportStatus
+
+export const ReportStatus: typeof $Enums.ReportStatus
+
+export type ReportReason = $Enums.ReportReason
+
+export const ReportReason: typeof $Enums.ReportReason
 
 export type ReviewRole = $Enums.ReviewRole
 
@@ -252,6 +287,16 @@ export class PrismaClient<
     * ```
     */
   get waitlistTable(): Prisma.WaitlistTableDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.report`: Exposes CRUD operations for the **Report** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Reports
+    * const reports = await prisma.report.findMany()
+    * ```
+    */
+  get report(): Prisma.ReportDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -692,7 +737,8 @@ export namespace Prisma {
     User: 'User',
     Conversation: 'Conversation',
     Message: 'Message',
-    WaitlistTable: 'WaitlistTable'
+    WaitlistTable: 'WaitlistTable',
+    Report: 'Report'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -708,7 +754,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "listing" | "userPreferences" | "review" | "user" | "conversation" | "message" | "waitlistTable"
+      modelProps: "listing" | "userPreferences" | "review" | "user" | "conversation" | "message" | "waitlistTable" | "report"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1230,6 +1276,80 @@ export namespace Prisma {
           }
         }
       }
+      Report: {
+        payload: Prisma.$ReportPayload<ExtArgs>
+        fields: Prisma.ReportFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReportFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReportFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>
+          }
+          findFirst: {
+            args: Prisma.ReportFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReportFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>
+          }
+          findMany: {
+            args: Prisma.ReportFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>[]
+          }
+          create: {
+            args: Prisma.ReportCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>
+          }
+          createMany: {
+            args: Prisma.ReportCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ReportCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>[]
+          }
+          delete: {
+            args: Prisma.ReportDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>
+          }
+          update: {
+            args: Prisma.ReportUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReportDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReportUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ReportUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>[]
+          }
+          upsert: {
+            args: Prisma.ReportUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReportPayload>
+          }
+          aggregate: {
+            args: Prisma.ReportAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReport>
+          }
+          groupBy: {
+            args: Prisma.ReportGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ReportGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReportCountArgs<ExtArgs>
+            result: $Utils.Optional<ReportCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1345,6 +1465,7 @@ export namespace Prisma {
     conversation?: ConversationOmit
     message?: MessageOmit
     waitlistTable?: WaitlistTableOmit
+    report?: ReportOmit
   }
 
   /* Types for Logging */
@@ -1460,6 +1581,8 @@ export namespace Prisma {
     sellerConversations: number
     listings: number
     messages: number
+    reportsFiled: number
+    reportsReceived: number
     reviewsReceived: number
     reviewsGiven: number
   }
@@ -1469,6 +1592,8 @@ export namespace Prisma {
     sellerConversations?: boolean | UserCountOutputTypeCountSellerConversationsArgs
     listings?: boolean | UserCountOutputTypeCountListingsArgs
     messages?: boolean | UserCountOutputTypeCountMessagesArgs
+    reportsFiled?: boolean | UserCountOutputTypeCountReportsFiledArgs
+    reportsReceived?: boolean | UserCountOutputTypeCountReportsReceivedArgs
     reviewsReceived?: boolean | UserCountOutputTypeCountReviewsReceivedArgs
     reviewsGiven?: boolean | UserCountOutputTypeCountReviewsGivenArgs
   }
@@ -1510,6 +1635,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReportsFiledArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReportWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReportsReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReportWhereInput
   }
 
   /**
@@ -5111,6 +5250,7 @@ export namespace Prisma {
     isVerified: boolean | null
     createdAt: Date | null
     rating: number | null
+    hidden: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -5121,6 +5261,7 @@ export namespace Prisma {
     isVerified: boolean | null
     createdAt: Date | null
     rating: number | null
+    hidden: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -5131,6 +5272,7 @@ export namespace Prisma {
     isVerified: number
     createdAt: number
     rating: number
+    hidden: number
     _all: number
   }
 
@@ -5151,6 +5293,7 @@ export namespace Prisma {
     isVerified?: true
     createdAt?: true
     rating?: true
+    hidden?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -5161,6 +5304,7 @@ export namespace Prisma {
     isVerified?: true
     createdAt?: true
     rating?: true
+    hidden?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -5171,6 +5315,7 @@ export namespace Prisma {
     isVerified?: true
     createdAt?: true
     rating?: true
+    hidden?: true
     _all?: true
   }
 
@@ -5268,6 +5413,7 @@ export namespace Prisma {
     isVerified: boolean
     createdAt: Date
     rating: number
+    hidden: boolean
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -5297,10 +5443,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
+    hidden?: boolean
     buyerConversations?: boolean | User$buyerConversationsArgs<ExtArgs>
     sellerConversations?: boolean | User$sellerConversationsArgs<ExtArgs>
     listings?: boolean | User$listingsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
+    reportsFiled?: boolean | User$reportsFiledArgs<ExtArgs>
+    reportsReceived?: boolean | User$reportsReceivedArgs<ExtArgs>
     reviewsReceived?: boolean | User$reviewsReceivedArgs<ExtArgs>
     reviewsGiven?: boolean | User$reviewsGivenArgs<ExtArgs>
     preferences?: boolean | User$preferencesArgs<ExtArgs>
@@ -5315,6 +5464,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
+    hidden?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5325,6 +5475,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
+    hidden?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -5335,14 +5486,17 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
+    hidden?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"uid" | "email" | "name" | "profileURL" | "isVerified" | "createdAt" | "rating", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"uid" | "email" | "name" | "profileURL" | "isVerified" | "createdAt" | "rating" | "hidden", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyerConversations?: boolean | User$buyerConversationsArgs<ExtArgs>
     sellerConversations?: boolean | User$sellerConversationsArgs<ExtArgs>
     listings?: boolean | User$listingsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
+    reportsFiled?: boolean | User$reportsFiledArgs<ExtArgs>
+    reportsReceived?: boolean | User$reportsReceivedArgs<ExtArgs>
     reviewsReceived?: boolean | User$reviewsReceivedArgs<ExtArgs>
     reviewsGiven?: boolean | User$reviewsGivenArgs<ExtArgs>
     preferences?: boolean | User$preferencesArgs<ExtArgs>
@@ -5358,6 +5512,8 @@ export namespace Prisma {
       sellerConversations: Prisma.$ConversationPayload<ExtArgs>[]
       listings: Prisma.$ListingPayload<ExtArgs>[]
       messages: Prisma.$MessagePayload<ExtArgs>[]
+      reportsFiled: Prisma.$ReportPayload<ExtArgs>[]
+      reportsReceived: Prisma.$ReportPayload<ExtArgs>[]
       reviewsReceived: Prisma.$ReviewPayload<ExtArgs>[]
       reviewsGiven: Prisma.$ReviewPayload<ExtArgs>[]
       preferences: Prisma.$UserPreferencesPayload<ExtArgs> | null
@@ -5370,6 +5526,7 @@ export namespace Prisma {
       isVerified: boolean
       createdAt: Date
       rating: number
+      hidden: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -5768,6 +5925,8 @@ export namespace Prisma {
     sellerConversations<T extends User$sellerConversationsArgs<ExtArgs> = {}>(args?: Subset<T, User$sellerConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     listings<T extends User$listingsArgs<ExtArgs> = {}>(args?: Subset<T, User$listingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reportsFiled<T extends User$reportsFiledArgs<ExtArgs> = {}>(args?: Subset<T, User$reportsFiledArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reportsReceived<T extends User$reportsReceivedArgs<ExtArgs> = {}>(args?: Subset<T, User$reportsReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviewsReceived<T extends User$reviewsReceivedArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviewsGiven<T extends User$reviewsGivenArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsGivenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     preferences<T extends User$preferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$preferencesArgs<ExtArgs>>): Prisma__UserPreferencesClient<$Result.GetResult<Prisma.$UserPreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -5807,6 +5966,7 @@ export namespace Prisma {
     readonly isVerified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly rating: FieldRef<"User", 'Float'>
+    readonly hidden: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -6288,6 +6448,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * User.reportsFiled
+   */
+  export type User$reportsFiledArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    where?: ReportWhereInput
+    orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
+    cursor?: ReportWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
+  }
+
+  /**
+   * User.reportsReceived
+   */
+  export type User$reportsReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    where?: ReportWhereInput
+    orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
+    cursor?: ReportWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
   }
 
   /**
@@ -9666,6 +9874,1163 @@ export namespace Prisma {
 
 
   /**
+   * Model Report
+   */
+
+  export type AggregateReport = {
+    _count: ReportCountAggregateOutputType | null
+    _min: ReportMinAggregateOutputType | null
+    _max: ReportMaxAggregateOutputType | null
+  }
+
+  export type ReportMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    reason: $Enums.ReportReason | null
+    description: string | null
+    status: $Enums.ReportStatus | null
+    adminNote: string | null
+    autoHidden: boolean | null
+    resolvedAt: Date | null
+    reporterId: string | null
+    targetUserId: string | null
+    resolvedById: string | null
+  }
+
+  export type ReportMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    reason: $Enums.ReportReason | null
+    description: string | null
+    status: $Enums.ReportStatus | null
+    adminNote: string | null
+    autoHidden: boolean | null
+    resolvedAt: Date | null
+    reporterId: string | null
+    targetUserId: string | null
+    resolvedById: string | null
+  }
+
+  export type ReportCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    reason: number
+    description: number
+    status: number
+    adminNote: number
+    autoHidden: number
+    resolvedAt: number
+    reporterId: number
+    targetUserId: number
+    resolvedById: number
+    _all: number
+  }
+
+
+  export type ReportMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    reason?: true
+    description?: true
+    status?: true
+    adminNote?: true
+    autoHidden?: true
+    resolvedAt?: true
+    reporterId?: true
+    targetUserId?: true
+    resolvedById?: true
+  }
+
+  export type ReportMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    reason?: true
+    description?: true
+    status?: true
+    adminNote?: true
+    autoHidden?: true
+    resolvedAt?: true
+    reporterId?: true
+    targetUserId?: true
+    resolvedById?: true
+  }
+
+  export type ReportCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    reason?: true
+    description?: true
+    status?: true
+    adminNote?: true
+    autoHidden?: true
+    resolvedAt?: true
+    reporterId?: true
+    targetUserId?: true
+    resolvedById?: true
+    _all?: true
+  }
+
+  export type ReportAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Report to aggregate.
+     */
+    where?: ReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reports to fetch.
+     */
+    orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Reports
+    **/
+    _count?: true | ReportCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReportMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReportMaxAggregateInputType
+  }
+
+  export type GetReportAggregateType<T extends ReportAggregateArgs> = {
+        [P in keyof T & keyof AggregateReport]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReport[P]>
+      : GetScalarType<T[P], AggregateReport[P]>
+  }
+
+
+
+
+  export type ReportGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReportWhereInput
+    orderBy?: ReportOrderByWithAggregationInput | ReportOrderByWithAggregationInput[]
+    by: ReportScalarFieldEnum[] | ReportScalarFieldEnum
+    having?: ReportScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReportCountAggregateInputType | true
+    _min?: ReportMinAggregateInputType
+    _max?: ReportMaxAggregateInputType
+  }
+
+  export type ReportGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    reason: $Enums.ReportReason
+    description: string | null
+    status: $Enums.ReportStatus
+    adminNote: string | null
+    autoHidden: boolean
+    resolvedAt: Date | null
+    reporterId: string
+    targetUserId: string
+    resolvedById: string | null
+    _count: ReportCountAggregateOutputType | null
+    _min: ReportMinAggregateOutputType | null
+    _max: ReportMaxAggregateOutputType | null
+  }
+
+  type GetReportGroupByPayload<T extends ReportGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReportGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReportGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReportGroupByOutputType[P]>
+            : GetScalarType<T[P], ReportGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReportSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    reason?: boolean
+    description?: boolean
+    status?: boolean
+    adminNote?: boolean
+    autoHidden?: boolean
+    resolvedAt?: boolean
+    reporterId?: boolean
+    targetUserId?: boolean
+    resolvedById?: boolean
+    reporter?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["report"]>
+
+  export type ReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    reason?: boolean
+    description?: boolean
+    status?: boolean
+    adminNote?: boolean
+    autoHidden?: boolean
+    resolvedAt?: boolean
+    reporterId?: boolean
+    targetUserId?: boolean
+    resolvedById?: boolean
+    reporter?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["report"]>
+
+  export type ReportSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    reason?: boolean
+    description?: boolean
+    status?: boolean
+    adminNote?: boolean
+    autoHidden?: boolean
+    resolvedAt?: boolean
+    reporterId?: boolean
+    targetUserId?: boolean
+    resolvedById?: boolean
+    reporter?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["report"]>
+
+  export type ReportSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    reason?: boolean
+    description?: boolean
+    status?: boolean
+    adminNote?: boolean
+    autoHidden?: boolean
+    resolvedAt?: boolean
+    reporterId?: boolean
+    targetUserId?: boolean
+    resolvedById?: boolean
+  }
+
+  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "reason" | "description" | "status" | "adminNote" | "autoHidden" | "resolvedAt" | "reporterId" | "targetUserId" | "resolvedById", ExtArgs["result"]["report"]>
+  export type ReportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reporter?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ReportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reporter?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ReportIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reporter?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Report"
+    objects: {
+      reporter: Prisma.$UserPayload<ExtArgs>
+      targetUser: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      reason: $Enums.ReportReason
+      description: string | null
+      status: $Enums.ReportStatus
+      adminNote: string | null
+      autoHidden: boolean
+      resolvedAt: Date | null
+      reporterId: string
+      targetUserId: string
+      resolvedById: string | null
+    }, ExtArgs["result"]["report"]>
+    composites: {}
+  }
+
+  type ReportGetPayload<S extends boolean | null | undefined | ReportDefaultArgs> = $Result.GetResult<Prisma.$ReportPayload, S>
+
+  type ReportCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ReportFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ReportCountAggregateInputType | true
+    }
+
+  export interface ReportDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Report'], meta: { name: 'Report' } }
+    /**
+     * Find zero or one Report that matches the filter.
+     * @param {ReportFindUniqueArgs} args - Arguments to find a Report
+     * @example
+     * // Get one Report
+     * const report = await prisma.report.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ReportFindUniqueArgs>(args: SelectSubset<T, ReportFindUniqueArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Report that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ReportFindUniqueOrThrowArgs} args - Arguments to find a Report
+     * @example
+     * // Get one Report
+     * const report = await prisma.report.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ReportFindUniqueOrThrowArgs>(args: SelectSubset<T, ReportFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Report that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportFindFirstArgs} args - Arguments to find a Report
+     * @example
+     * // Get one Report
+     * const report = await prisma.report.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ReportFindFirstArgs>(args?: SelectSubset<T, ReportFindFirstArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Report that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportFindFirstOrThrowArgs} args - Arguments to find a Report
+     * @example
+     * // Get one Report
+     * const report = await prisma.report.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ReportFindFirstOrThrowArgs>(args?: SelectSubset<T, ReportFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Reports that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Reports
+     * const reports = await prisma.report.findMany()
+     * 
+     * // Get first 10 Reports
+     * const reports = await prisma.report.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const reportWithIdOnly = await prisma.report.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ReportFindManyArgs>(args?: SelectSubset<T, ReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Report.
+     * @param {ReportCreateArgs} args - Arguments to create a Report.
+     * @example
+     * // Create one Report
+     * const Report = await prisma.report.create({
+     *   data: {
+     *     // ... data to create a Report
+     *   }
+     * })
+     * 
+     */
+    create<T extends ReportCreateArgs>(args: SelectSubset<T, ReportCreateArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Reports.
+     * @param {ReportCreateManyArgs} args - Arguments to create many Reports.
+     * @example
+     * // Create many Reports
+     * const report = await prisma.report.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ReportCreateManyArgs>(args?: SelectSubset<T, ReportCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Reports and returns the data saved in the database.
+     * @param {ReportCreateManyAndReturnArgs} args - Arguments to create many Reports.
+     * @example
+     * // Create many Reports
+     * const report = await prisma.report.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Reports and only return the `id`
+     * const reportWithIdOnly = await prisma.report.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ReportCreateManyAndReturnArgs>(args?: SelectSubset<T, ReportCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Report.
+     * @param {ReportDeleteArgs} args - Arguments to delete one Report.
+     * @example
+     * // Delete one Report
+     * const Report = await prisma.report.delete({
+     *   where: {
+     *     // ... filter to delete one Report
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ReportDeleteArgs>(args: SelectSubset<T, ReportDeleteArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Report.
+     * @param {ReportUpdateArgs} args - Arguments to update one Report.
+     * @example
+     * // Update one Report
+     * const report = await prisma.report.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ReportUpdateArgs>(args: SelectSubset<T, ReportUpdateArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Reports.
+     * @param {ReportDeleteManyArgs} args - Arguments to filter Reports to delete.
+     * @example
+     * // Delete a few Reports
+     * const { count } = await prisma.report.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ReportDeleteManyArgs>(args?: SelectSubset<T, ReportDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Reports
+     * const report = await prisma.report.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ReportUpdateManyArgs>(args: SelectSubset<T, ReportUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reports and returns the data updated in the database.
+     * @param {ReportUpdateManyAndReturnArgs} args - Arguments to update many Reports.
+     * @example
+     * // Update many Reports
+     * const report = await prisma.report.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Reports and only return the `id`
+     * const reportWithIdOnly = await prisma.report.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ReportUpdateManyAndReturnArgs>(args: SelectSubset<T, ReportUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Report.
+     * @param {ReportUpsertArgs} args - Arguments to update or create a Report.
+     * @example
+     * // Update or create a Report
+     * const report = await prisma.report.upsert({
+     *   create: {
+     *     // ... data to create a Report
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Report we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ReportUpsertArgs>(args: SelectSubset<T, ReportUpsertArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Reports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportCountArgs} args - Arguments to filter Reports to count.
+     * @example
+     * // Count the number of Reports
+     * const count = await prisma.report.count({
+     *   where: {
+     *     // ... the filter for the Reports we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReportCountArgs>(
+      args?: Subset<T, ReportCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReportCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Report.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReportAggregateArgs>(args: Subset<T, ReportAggregateArgs>): Prisma.PrismaPromise<GetReportAggregateType<T>>
+
+    /**
+     * Group by Report.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReportGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReportGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReportGroupByArgs['orderBy'] }
+        : { orderBy?: ReportGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReportGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReportGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Report model
+   */
+  readonly fields: ReportFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Report.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReportClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    reporter<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    targetUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Report model
+   */
+  interface ReportFieldRefs {
+    readonly id: FieldRef<"Report", 'String'>
+    readonly createdAt: FieldRef<"Report", 'DateTime'>
+    readonly updatedAt: FieldRef<"Report", 'DateTime'>
+    readonly reason: FieldRef<"Report", 'ReportReason'>
+    readonly description: FieldRef<"Report", 'String'>
+    readonly status: FieldRef<"Report", 'ReportStatus'>
+    readonly adminNote: FieldRef<"Report", 'String'>
+    readonly autoHidden: FieldRef<"Report", 'Boolean'>
+    readonly resolvedAt: FieldRef<"Report", 'DateTime'>
+    readonly reporterId: FieldRef<"Report", 'String'>
+    readonly targetUserId: FieldRef<"Report", 'String'>
+    readonly resolvedById: FieldRef<"Report", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Report findUnique
+   */
+  export type ReportFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * Filter, which Report to fetch.
+     */
+    where: ReportWhereUniqueInput
+  }
+
+  /**
+   * Report findUniqueOrThrow
+   */
+  export type ReportFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * Filter, which Report to fetch.
+     */
+    where: ReportWhereUniqueInput
+  }
+
+  /**
+   * Report findFirst
+   */
+  export type ReportFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * Filter, which Report to fetch.
+     */
+    where?: ReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reports to fetch.
+     */
+    orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reports.
+     */
+    cursor?: ReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reports.
+     */
+    distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
+  }
+
+  /**
+   * Report findFirstOrThrow
+   */
+  export type ReportFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * Filter, which Report to fetch.
+     */
+    where?: ReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reports to fetch.
+     */
+    orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reports.
+     */
+    cursor?: ReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reports.
+     */
+    distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
+  }
+
+  /**
+   * Report findMany
+   */
+  export type ReportFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * Filter, which Reports to fetch.
+     */
+    where?: ReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reports to fetch.
+     */
+    orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Reports.
+     */
+    cursor?: ReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reports.
+     */
+    skip?: number
+    distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
+  }
+
+  /**
+   * Report create
+   */
+  export type ReportCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Report.
+     */
+    data: XOR<ReportCreateInput, ReportUncheckedCreateInput>
+  }
+
+  /**
+   * Report createMany
+   */
+  export type ReportCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Reports.
+     */
+    data: ReportCreateManyInput | ReportCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Report createManyAndReturn
+   */
+  export type ReportCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * The data used to create many Reports.
+     */
+    data: ReportCreateManyInput | ReportCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Report update
+   */
+  export type ReportUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Report.
+     */
+    data: XOR<ReportUpdateInput, ReportUncheckedUpdateInput>
+    /**
+     * Choose, which Report to update.
+     */
+    where: ReportWhereUniqueInput
+  }
+
+  /**
+   * Report updateMany
+   */
+  export type ReportUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Reports.
+     */
+    data: XOR<ReportUpdateManyMutationInput, ReportUncheckedUpdateManyInput>
+    /**
+     * Filter which Reports to update
+     */
+    where?: ReportWhereInput
+    /**
+     * Limit how many Reports to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Report updateManyAndReturn
+   */
+  export type ReportUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * The data used to update Reports.
+     */
+    data: XOR<ReportUpdateManyMutationInput, ReportUncheckedUpdateManyInput>
+    /**
+     * Filter which Reports to update
+     */
+    where?: ReportWhereInput
+    /**
+     * Limit how many Reports to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Report upsert
+   */
+  export type ReportUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Report to update in case it exists.
+     */
+    where: ReportWhereUniqueInput
+    /**
+     * In case the Report found by the `where` argument doesn't exist, create a new Report with this data.
+     */
+    create: XOR<ReportCreateInput, ReportUncheckedCreateInput>
+    /**
+     * In case the Report was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReportUpdateInput, ReportUncheckedUpdateInput>
+  }
+
+  /**
+   * Report delete
+   */
+  export type ReportDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+    /**
+     * Filter which Report to delete.
+     */
+    where: ReportWhereUniqueInput
+  }
+
+  /**
+   * Report deleteMany
+   */
+  export type ReportDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Reports to delete
+     */
+    where?: ReportWhereInput
+    /**
+     * Limit how many Reports to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Report without action
+   */
+  export type ReportDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Report
+     */
+    select?: ReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Report
+     */
+    omit?: ReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReportInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -9734,7 +11099,8 @@ export namespace Prisma {
     profileURL: 'profileURL',
     isVerified: 'isVerified',
     createdAt: 'createdAt',
-    rating: 'rating'
+    rating: 'rating',
+    hidden: 'hidden'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -9775,6 +11141,24 @@ export namespace Prisma {
   };
 
   export type WaitlistTableScalarFieldEnum = (typeof WaitlistTableScalarFieldEnum)[keyof typeof WaitlistTableScalarFieldEnum]
+
+
+  export const ReportScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    reason: 'reason',
+    description: 'description',
+    status: 'status',
+    adminNote: 'adminNote',
+    autoHidden: 'autoHidden',
+    resolvedAt: 'resolvedAt',
+    reporterId: 'reporterId',
+    targetUserId: 'targetUserId',
+    resolvedById: 'resolvedById'
+  };
+
+  export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -9894,6 +11278,34 @@ export namespace Prisma {
    * Reference to a field of type 'BigInt[]'
    */
   export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportReason'
+   */
+  export type EnumReportReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportReason'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportReason[]'
+   */
+  export type ListEnumReportReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportReason[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportStatus'
+   */
+  export type EnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportStatus[]'
+   */
+  export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus[]'>
     
   /**
    * Deep Input Types
@@ -10164,10 +11576,13 @@ export namespace Prisma {
     isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     rating?: FloatFilter<"User"> | number
+    hidden?: BoolFilter<"User"> | boolean
     buyerConversations?: ConversationListRelationFilter
     sellerConversations?: ConversationListRelationFilter
     listings?: ListingListRelationFilter
     messages?: MessageListRelationFilter
+    reportsFiled?: ReportListRelationFilter
+    reportsReceived?: ReportListRelationFilter
     reviewsReceived?: ReviewListRelationFilter
     reviewsGiven?: ReviewListRelationFilter
     preferences?: XOR<UserPreferencesNullableScalarRelationFilter, UserPreferencesWhereInput> | null
@@ -10181,10 +11596,13 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
+    hidden?: SortOrder
     buyerConversations?: ConversationOrderByRelationAggregateInput
     sellerConversations?: ConversationOrderByRelationAggregateInput
     listings?: ListingOrderByRelationAggregateInput
     messages?: MessageOrderByRelationAggregateInput
+    reportsFiled?: ReportOrderByRelationAggregateInput
+    reportsReceived?: ReportOrderByRelationAggregateInput
     reviewsReceived?: ReviewOrderByRelationAggregateInput
     reviewsGiven?: ReviewOrderByRelationAggregateInput
     preferences?: UserPreferencesOrderByWithRelationInput
@@ -10201,10 +11619,13 @@ export namespace Prisma {
     isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     rating?: FloatFilter<"User"> | number
+    hidden?: BoolFilter<"User"> | boolean
     buyerConversations?: ConversationListRelationFilter
     sellerConversations?: ConversationListRelationFilter
     listings?: ListingListRelationFilter
     messages?: MessageListRelationFilter
+    reportsFiled?: ReportListRelationFilter
+    reportsReceived?: ReportListRelationFilter
     reviewsReceived?: ReviewListRelationFilter
     reviewsGiven?: ReviewListRelationFilter
     preferences?: XOR<UserPreferencesNullableScalarRelationFilter, UserPreferencesWhereInput> | null
@@ -10218,6 +11639,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
+    hidden?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -10236,6 +11658,7 @@ export namespace Prisma {
     isVerified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     rating?: FloatWithAggregatesFilter<"User"> | number
+    hidden?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type ConversationWhereInput = {
@@ -10433,6 +11856,99 @@ export namespace Prisma {
     full_name?: StringWithAggregatesFilter<"WaitlistTable"> | string
     uvic_email?: StringWithAggregatesFilter<"WaitlistTable"> | string
     intent?: StringWithAggregatesFilter<"WaitlistTable"> | string
+  }
+
+  export type ReportWhereInput = {
+    AND?: ReportWhereInput | ReportWhereInput[]
+    OR?: ReportWhereInput[]
+    NOT?: ReportWhereInput | ReportWhereInput[]
+    id?: StringFilter<"Report"> | string
+    createdAt?: DateTimeFilter<"Report"> | Date | string
+    updatedAt?: DateTimeFilter<"Report"> | Date | string
+    reason?: EnumReportReasonFilter<"Report"> | $Enums.ReportReason
+    description?: StringNullableFilter<"Report"> | string | null
+    status?: EnumReportStatusFilter<"Report"> | $Enums.ReportStatus
+    adminNote?: StringNullableFilter<"Report"> | string | null
+    autoHidden?: BoolFilter<"Report"> | boolean
+    resolvedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
+    reporterId?: UuidFilter<"Report"> | string
+    targetUserId?: UuidFilter<"Report"> | string
+    resolvedById?: UuidNullableFilter<"Report"> | string | null
+    reporter?: XOR<UserScalarRelationFilter, UserWhereInput>
+    targetUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ReportOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    reason?: SortOrder
+    description?: SortOrderInput | SortOrder
+    status?: SortOrder
+    adminNote?: SortOrderInput | SortOrder
+    autoHidden?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    reporterId?: SortOrder
+    targetUserId?: SortOrder
+    resolvedById?: SortOrderInput | SortOrder
+    reporter?: UserOrderByWithRelationInput
+    targetUser?: UserOrderByWithRelationInput
+  }
+
+  export type ReportWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ReportWhereInput | ReportWhereInput[]
+    OR?: ReportWhereInput[]
+    NOT?: ReportWhereInput | ReportWhereInput[]
+    createdAt?: DateTimeFilter<"Report"> | Date | string
+    updatedAt?: DateTimeFilter<"Report"> | Date | string
+    reason?: EnumReportReasonFilter<"Report"> | $Enums.ReportReason
+    description?: StringNullableFilter<"Report"> | string | null
+    status?: EnumReportStatusFilter<"Report"> | $Enums.ReportStatus
+    adminNote?: StringNullableFilter<"Report"> | string | null
+    autoHidden?: BoolFilter<"Report"> | boolean
+    resolvedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
+    reporterId?: UuidFilter<"Report"> | string
+    targetUserId?: UuidFilter<"Report"> | string
+    resolvedById?: UuidNullableFilter<"Report"> | string | null
+    reporter?: XOR<UserScalarRelationFilter, UserWhereInput>
+    targetUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type ReportOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    reason?: SortOrder
+    description?: SortOrderInput | SortOrder
+    status?: SortOrder
+    adminNote?: SortOrderInput | SortOrder
+    autoHidden?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    reporterId?: SortOrder
+    targetUserId?: SortOrder
+    resolvedById?: SortOrderInput | SortOrder
+    _count?: ReportCountOrderByAggregateInput
+    _max?: ReportMaxOrderByAggregateInput
+    _min?: ReportMinOrderByAggregateInput
+  }
+
+  export type ReportScalarWhereWithAggregatesInput = {
+    AND?: ReportScalarWhereWithAggregatesInput | ReportScalarWhereWithAggregatesInput[]
+    OR?: ReportScalarWhereWithAggregatesInput[]
+    NOT?: ReportScalarWhereWithAggregatesInput | ReportScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Report"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Report"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Report"> | Date | string
+    reason?: EnumReportReasonWithAggregatesFilter<"Report"> | $Enums.ReportReason
+    description?: StringNullableWithAggregatesFilter<"Report"> | string | null
+    status?: EnumReportStatusWithAggregatesFilter<"Report"> | $Enums.ReportStatus
+    adminNote?: StringNullableWithAggregatesFilter<"Report"> | string | null
+    autoHidden?: BoolWithAggregatesFilter<"Report"> | boolean
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"Report"> | Date | string | null
+    reporterId?: UuidWithAggregatesFilter<"Report"> | string
+    targetUserId?: UuidWithAggregatesFilter<"Report"> | string
+    resolvedById?: UuidNullableWithAggregatesFilter<"Report"> | string | null
   }
 
   export type ListingCreateInput = {
@@ -10716,10 +12232,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
@@ -10733,10 +12252,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
@@ -10750,10 +12272,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
@@ -10767,10 +12292,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
@@ -10784,6 +12312,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -10794,6 +12323,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -10804,6 +12334,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ConversationCreateInput = {
@@ -10999,6 +12530,109 @@ export namespace Prisma {
     full_name?: StringFieldUpdateOperationsInput | string
     uvic_email?: StringFieldUpdateOperationsInput | string
     intent?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ReportCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    resolvedById?: string | null
+    reporter: UserCreateNestedOneWithoutReportsFiledInput
+    targetUser: UserCreateNestedOneWithoutReportsReceivedInput
+  }
+
+  export type ReportUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    reporterId: string
+    targetUserId: string
+    resolvedById?: string | null
+  }
+
+  export type ReportUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reporter?: UserUpdateOneRequiredWithoutReportsFiledNestedInput
+    targetUser?: UserUpdateOneRequiredWithoutReportsReceivedNestedInput
+  }
+
+  export type ReportUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReportCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    reporterId: string
+    targetUserId: string
+    resolvedById?: string | null
+  }
+
+  export type ReportUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReportUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -11407,6 +13041,12 @@ export namespace Prisma {
     none?: MessageWhereInput
   }
 
+  export type ReportListRelationFilter = {
+    every?: ReportWhereInput
+    some?: ReportWhereInput
+    none?: ReportWhereInput
+  }
+
   export type ReviewListRelationFilter = {
     every?: ReviewWhereInput
     some?: ReviewWhereInput
@@ -11426,6 +13066,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ReportOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ReviewOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -11438,6 +13082,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
+    hidden?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -11452,6 +13097,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
+    hidden?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -11462,6 +13108,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
+    hidden?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -11675,6 +13322,85 @@ export namespace Prisma {
     _max?: NestedBigIntFilter<$PrismaModel>
   }
 
+  export type EnumReportReasonFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonFilter<$PrismaModel> | $Enums.ReportReason
+  }
+
+  export type EnumReportStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusFilter<$PrismaModel> | $Enums.ReportStatus
+  }
+
+  export type ReportCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    reason?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    adminNote?: SortOrder
+    autoHidden?: SortOrder
+    resolvedAt?: SortOrder
+    reporterId?: SortOrder
+    targetUserId?: SortOrder
+    resolvedById?: SortOrder
+  }
+
+  export type ReportMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    reason?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    adminNote?: SortOrder
+    autoHidden?: SortOrder
+    resolvedAt?: SortOrder
+    reporterId?: SortOrder
+    targetUserId?: SortOrder
+    resolvedById?: SortOrder
+  }
+
+  export type ReportMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    reason?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    adminNote?: SortOrder
+    autoHidden?: SortOrder
+    resolvedAt?: SortOrder
+    reporterId?: SortOrder
+    targetUserId?: SortOrder
+    resolvedById?: SortOrder
+  }
+
+  export type EnumReportReasonWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonWithAggregatesFilter<$PrismaModel> | $Enums.ReportReason
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportReasonFilter<$PrismaModel>
+    _max?: NestedEnumReportReasonFilter<$PrismaModel>
+  }
+
+  export type EnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReportStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportStatusFilter<$PrismaModel>
+    _max?: NestedEnumReportStatusFilter<$PrismaModel>
+  }
+
   export type ListingCreateimageUrlsInput = {
     set: string[]
   }
@@ -11846,6 +13572,20 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type ReportCreateNestedManyWithoutReporterInput = {
+    create?: XOR<ReportCreateWithoutReporterInput, ReportUncheckedCreateWithoutReporterInput> | ReportCreateWithoutReporterInput[] | ReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutReporterInput | ReportCreateOrConnectWithoutReporterInput[]
+    createMany?: ReportCreateManyReporterInputEnvelope
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+  }
+
+  export type ReportCreateNestedManyWithoutTargetUserInput = {
+    create?: XOR<ReportCreateWithoutTargetUserInput, ReportUncheckedCreateWithoutTargetUserInput> | ReportCreateWithoutTargetUserInput[] | ReportUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutTargetUserInput | ReportCreateOrConnectWithoutTargetUserInput[]
+    createMany?: ReportCreateManyTargetUserInputEnvelope
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+  }
+
   export type ReviewCreateNestedManyWithoutRevieweeInput = {
     create?: XOR<ReviewCreateWithoutRevieweeInput, ReviewUncheckedCreateWithoutRevieweeInput> | ReviewCreateWithoutRevieweeInput[] | ReviewUncheckedCreateWithoutRevieweeInput[]
     connectOrCreate?: ReviewCreateOrConnectWithoutRevieweeInput | ReviewCreateOrConnectWithoutRevieweeInput[]
@@ -11892,6 +13632,20 @@ export namespace Prisma {
     connectOrCreate?: MessageCreateOrConnectWithoutSenderInput | MessageCreateOrConnectWithoutSenderInput[]
     createMany?: MessageCreateManySenderInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type ReportUncheckedCreateNestedManyWithoutReporterInput = {
+    create?: XOR<ReportCreateWithoutReporterInput, ReportUncheckedCreateWithoutReporterInput> | ReportCreateWithoutReporterInput[] | ReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutReporterInput | ReportCreateOrConnectWithoutReporterInput[]
+    createMany?: ReportCreateManyReporterInputEnvelope
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+  }
+
+  export type ReportUncheckedCreateNestedManyWithoutTargetUserInput = {
+    create?: XOR<ReportCreateWithoutTargetUserInput, ReportUncheckedCreateWithoutTargetUserInput> | ReportCreateWithoutTargetUserInput[] | ReportUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutTargetUserInput | ReportCreateOrConnectWithoutTargetUserInput[]
+    createMany?: ReportCreateManyTargetUserInputEnvelope
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
   }
 
   export type ReviewUncheckedCreateNestedManyWithoutRevieweeInput = {
@@ -11976,6 +13730,34 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutSenderInput | MessageUpdateWithWhereUniqueWithoutSenderInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutSenderInput | MessageUpdateManyWithWhereWithoutSenderInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type ReportUpdateManyWithoutReporterNestedInput = {
+    create?: XOR<ReportCreateWithoutReporterInput, ReportUncheckedCreateWithoutReporterInput> | ReportCreateWithoutReporterInput[] | ReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutReporterInput | ReportCreateOrConnectWithoutReporterInput[]
+    upsert?: ReportUpsertWithWhereUniqueWithoutReporterInput | ReportUpsertWithWhereUniqueWithoutReporterInput[]
+    createMany?: ReportCreateManyReporterInputEnvelope
+    set?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    disconnect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    delete?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    update?: ReportUpdateWithWhereUniqueWithoutReporterInput | ReportUpdateWithWhereUniqueWithoutReporterInput[]
+    updateMany?: ReportUpdateManyWithWhereWithoutReporterInput | ReportUpdateManyWithWhereWithoutReporterInput[]
+    deleteMany?: ReportScalarWhereInput | ReportScalarWhereInput[]
+  }
+
+  export type ReportUpdateManyWithoutTargetUserNestedInput = {
+    create?: XOR<ReportCreateWithoutTargetUserInput, ReportUncheckedCreateWithoutTargetUserInput> | ReportCreateWithoutTargetUserInput[] | ReportUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutTargetUserInput | ReportCreateOrConnectWithoutTargetUserInput[]
+    upsert?: ReportUpsertWithWhereUniqueWithoutTargetUserInput | ReportUpsertWithWhereUniqueWithoutTargetUserInput[]
+    createMany?: ReportCreateManyTargetUserInputEnvelope
+    set?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    disconnect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    delete?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    update?: ReportUpdateWithWhereUniqueWithoutTargetUserInput | ReportUpdateWithWhereUniqueWithoutTargetUserInput[]
+    updateMany?: ReportUpdateManyWithWhereWithoutTargetUserInput | ReportUpdateManyWithWhereWithoutTargetUserInput[]
+    deleteMany?: ReportScalarWhereInput | ReportScalarWhereInput[]
   }
 
   export type ReviewUpdateManyWithoutRevieweeNestedInput = {
@@ -12070,6 +13852,34 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutSenderInput | MessageUpdateWithWhereUniqueWithoutSenderInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutSenderInput | MessageUpdateManyWithWhereWithoutSenderInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type ReportUncheckedUpdateManyWithoutReporterNestedInput = {
+    create?: XOR<ReportCreateWithoutReporterInput, ReportUncheckedCreateWithoutReporterInput> | ReportCreateWithoutReporterInput[] | ReportUncheckedCreateWithoutReporterInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutReporterInput | ReportCreateOrConnectWithoutReporterInput[]
+    upsert?: ReportUpsertWithWhereUniqueWithoutReporterInput | ReportUpsertWithWhereUniqueWithoutReporterInput[]
+    createMany?: ReportCreateManyReporterInputEnvelope
+    set?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    disconnect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    delete?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    update?: ReportUpdateWithWhereUniqueWithoutReporterInput | ReportUpdateWithWhereUniqueWithoutReporterInput[]
+    updateMany?: ReportUpdateManyWithWhereWithoutReporterInput | ReportUpdateManyWithWhereWithoutReporterInput[]
+    deleteMany?: ReportScalarWhereInput | ReportScalarWhereInput[]
+  }
+
+  export type ReportUncheckedUpdateManyWithoutTargetUserNestedInput = {
+    create?: XOR<ReportCreateWithoutTargetUserInput, ReportUncheckedCreateWithoutTargetUserInput> | ReportCreateWithoutTargetUserInput[] | ReportUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ReportCreateOrConnectWithoutTargetUserInput | ReportCreateOrConnectWithoutTargetUserInput[]
+    upsert?: ReportUpsertWithWhereUniqueWithoutTargetUserInput | ReportUpsertWithWhereUniqueWithoutTargetUserInput[]
+    createMany?: ReportCreateManyTargetUserInputEnvelope
+    set?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    disconnect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    delete?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    connect?: ReportWhereUniqueInput | ReportWhereUniqueInput[]
+    update?: ReportUpdateWithWhereUniqueWithoutTargetUserInput | ReportUpdateWithWhereUniqueWithoutTargetUserInput[]
+    updateMany?: ReportUpdateManyWithWhereWithoutTargetUserInput | ReportUpdateManyWithWhereWithoutTargetUserInput[]
+    deleteMany?: ReportScalarWhereInput | ReportScalarWhereInput[]
   }
 
   export type ReviewUncheckedUpdateManyWithoutRevieweeNestedInput = {
@@ -12236,6 +14046,42 @@ export namespace Prisma {
     decrement?: bigint | number
     multiply?: bigint | number
     divide?: bigint | number
+  }
+
+  export type UserCreateNestedOneWithoutReportsFiledInput = {
+    create?: XOR<UserCreateWithoutReportsFiledInput, UserUncheckedCreateWithoutReportsFiledInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReportsFiledInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReportsReceivedInput = {
+    create?: XOR<UserCreateWithoutReportsReceivedInput, UserUncheckedCreateWithoutReportsReceivedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReportsReceivedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumReportReasonFieldUpdateOperationsInput = {
+    set?: $Enums.ReportReason
+  }
+
+  export type EnumReportStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ReportStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutReportsFiledNestedInput = {
+    create?: XOR<UserCreateWithoutReportsFiledInput, UserUncheckedCreateWithoutReportsFiledInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReportsFiledInput
+    upsert?: UserUpsertWithoutReportsFiledInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReportsFiledInput, UserUpdateWithoutReportsFiledInput>, UserUncheckedUpdateWithoutReportsFiledInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutReportsReceivedNestedInput = {
+    create?: XOR<UserCreateWithoutReportsReceivedInput, UserUncheckedCreateWithoutReportsReceivedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReportsReceivedInput
+    upsert?: UserUpsertWithoutReportsReceivedInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReportsReceivedInput, UserUpdateWithoutReportsReceivedInput>, UserUncheckedUpdateWithoutReportsReceivedInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -12549,6 +14395,40 @@ export namespace Prisma {
     _max?: NestedBigIntFilter<$PrismaModel>
   }
 
+  export type NestedEnumReportReasonFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonFilter<$PrismaModel> | $Enums.ReportReason
+  }
+
+  export type NestedEnumReportStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusFilter<$PrismaModel> | $Enums.ReportStatus
+  }
+
+  export type NestedEnumReportReasonWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportReason | EnumReportReasonFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportReason[] | ListEnumReportReasonFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportReasonWithAggregatesFilter<$PrismaModel> | $Enums.ReportReason
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportReasonFilter<$PrismaModel>
+    _max?: NestedEnumReportReasonFilter<$PrismaModel>
+  }
+
+  export type NestedEnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReportStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportStatusFilter<$PrismaModel>
+    _max?: NestedEnumReportStatusFilter<$PrismaModel>
+  }
+
   export type ConversationCreateWithoutListingInput = {
     cid?: string
     createdAt?: Date | string
@@ -12585,9 +14465,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
@@ -12601,9 +14484,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
@@ -12661,9 +14547,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
@@ -12677,9 +14566,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
@@ -12693,10 +14585,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
   }
@@ -12709,10 +14604,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
   }
@@ -12741,10 +14639,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
   }
@@ -12757,10 +14658,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
   }
@@ -12773,10 +14677,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
   }
@@ -12789,10 +14696,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
   }
@@ -12810,10 +14720,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
   }
@@ -12826,10 +14739,13 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
   }
@@ -12858,10 +14774,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
   }
@@ -12874,10 +14793,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
   }
@@ -12901,10 +14823,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
   }
@@ -12917,10 +14842,13 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
   }
@@ -13052,6 +14980,82 @@ export namespace Prisma {
 
   export type MessageCreateManySenderInputEnvelope = {
     data: MessageCreateManySenderInput | MessageCreateManySenderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReportCreateWithoutReporterInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    resolvedById?: string | null
+    targetUser: UserCreateNestedOneWithoutReportsReceivedInput
+  }
+
+  export type ReportUncheckedCreateWithoutReporterInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    targetUserId: string
+    resolvedById?: string | null
+  }
+
+  export type ReportCreateOrConnectWithoutReporterInput = {
+    where: ReportWhereUniqueInput
+    create: XOR<ReportCreateWithoutReporterInput, ReportUncheckedCreateWithoutReporterInput>
+  }
+
+  export type ReportCreateManyReporterInputEnvelope = {
+    data: ReportCreateManyReporterInput | ReportCreateManyReporterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReportCreateWithoutTargetUserInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    resolvedById?: string | null
+    reporter: UserCreateNestedOneWithoutReportsFiledInput
+  }
+
+  export type ReportUncheckedCreateWithoutTargetUserInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    reporterId: string
+    resolvedById?: string | null
+  }
+
+  export type ReportCreateOrConnectWithoutTargetUserInput = {
+    where: ReportWhereUniqueInput
+    create: XOR<ReportCreateWithoutTargetUserInput, ReportUncheckedCreateWithoutTargetUserInput>
+  }
+
+  export type ReportCreateManyTargetUserInputEnvelope = {
+    data: ReportCreateManyTargetUserInput | ReportCreateManyTargetUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -13236,6 +15240,56 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Message"> | Date | string
   }
 
+  export type ReportUpsertWithWhereUniqueWithoutReporterInput = {
+    where: ReportWhereUniqueInput
+    update: XOR<ReportUpdateWithoutReporterInput, ReportUncheckedUpdateWithoutReporterInput>
+    create: XOR<ReportCreateWithoutReporterInput, ReportUncheckedCreateWithoutReporterInput>
+  }
+
+  export type ReportUpdateWithWhereUniqueWithoutReporterInput = {
+    where: ReportWhereUniqueInput
+    data: XOR<ReportUpdateWithoutReporterInput, ReportUncheckedUpdateWithoutReporterInput>
+  }
+
+  export type ReportUpdateManyWithWhereWithoutReporterInput = {
+    where: ReportScalarWhereInput
+    data: XOR<ReportUpdateManyMutationInput, ReportUncheckedUpdateManyWithoutReporterInput>
+  }
+
+  export type ReportScalarWhereInput = {
+    AND?: ReportScalarWhereInput | ReportScalarWhereInput[]
+    OR?: ReportScalarWhereInput[]
+    NOT?: ReportScalarWhereInput | ReportScalarWhereInput[]
+    id?: StringFilter<"Report"> | string
+    createdAt?: DateTimeFilter<"Report"> | Date | string
+    updatedAt?: DateTimeFilter<"Report"> | Date | string
+    reason?: EnumReportReasonFilter<"Report"> | $Enums.ReportReason
+    description?: StringNullableFilter<"Report"> | string | null
+    status?: EnumReportStatusFilter<"Report"> | $Enums.ReportStatus
+    adminNote?: StringNullableFilter<"Report"> | string | null
+    autoHidden?: BoolFilter<"Report"> | boolean
+    resolvedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
+    reporterId?: UuidFilter<"Report"> | string
+    targetUserId?: UuidFilter<"Report"> | string
+    resolvedById?: UuidNullableFilter<"Report"> | string | null
+  }
+
+  export type ReportUpsertWithWhereUniqueWithoutTargetUserInput = {
+    where: ReportWhereUniqueInput
+    update: XOR<ReportUpdateWithoutTargetUserInput, ReportUncheckedUpdateWithoutTargetUserInput>
+    create: XOR<ReportCreateWithoutTargetUserInput, ReportUncheckedCreateWithoutTargetUserInput>
+  }
+
+  export type ReportUpdateWithWhereUniqueWithoutTargetUserInput = {
+    where: ReportWhereUniqueInput
+    data: XOR<ReportUpdateWithoutTargetUserInput, ReportUncheckedUpdateWithoutTargetUserInput>
+  }
+
+  export type ReportUpdateManyWithWhereWithoutTargetUserInput = {
+    where: ReportScalarWhereInput
+    data: XOR<ReportUpdateManyMutationInput, ReportUncheckedUpdateManyWithoutTargetUserInput>
+  }
+
   export type ReviewUpsertWithWhereUniqueWithoutRevieweeInput = {
     where: ReviewWhereUniqueInput
     update: XOR<ReviewUpdateWithoutRevieweeInput, ReviewUncheckedUpdateWithoutRevieweeInput>
@@ -13322,9 +15376,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
@@ -13338,9 +15395,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
@@ -13398,9 +15458,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
@@ -13414,9 +15477,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
@@ -13476,9 +15542,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
@@ -13492,9 +15561,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
@@ -13564,9 +15636,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
@@ -13580,9 +15655,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
@@ -13635,9 +15713,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesCreateNestedOneWithoutUserInput
@@ -13651,9 +15732,12 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
+    hidden?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
     reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
@@ -13712,9 +15796,12 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
@@ -13728,9 +15815,196 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
+    reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
+    reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutReportsFiledInput = {
+    uid: string
+    email: string
+    name: string
+    profileURL: string
+    isVerified?: boolean
+    createdAt?: Date | string
+    rating?: number
+    hidden?: boolean
+    buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
+    sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
+    listings?: ListingCreateNestedManyWithoutSellerInput
+    messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsReceived?: ReportCreateNestedManyWithoutTargetUserInput
+    reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
+    reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
+    preferences?: UserPreferencesCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReportsFiledInput = {
+    uid: string
+    email: string
+    name: string
+    profileURL: string
+    isVerified?: boolean
+    createdAt?: Date | string
+    rating?: number
+    hidden?: boolean
+    buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
+    sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
+    listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
+    messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsReceived?: ReportUncheckedCreateNestedManyWithoutTargetUserInput
+    reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
+    reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
+    preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReportsFiledInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReportsFiledInput, UserUncheckedCreateWithoutReportsFiledInput>
+  }
+
+  export type UserCreateWithoutReportsReceivedInput = {
+    uid: string
+    email: string
+    name: string
+    profileURL: string
+    isVerified?: boolean
+    createdAt?: Date | string
+    rating?: number
+    hidden?: boolean
+    buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
+    sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
+    listings?: ListingCreateNestedManyWithoutSellerInput
+    messages?: MessageCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportCreateNestedManyWithoutReporterInput
+    reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
+    reviewsGiven?: ReviewCreateNestedManyWithoutReviewerInput
+    preferences?: UserPreferencesCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutReportsReceivedInput = {
+    uid: string
+    email: string
+    name: string
+    profileURL: string
+    isVerified?: boolean
+    createdAt?: Date | string
+    rating?: number
+    hidden?: boolean
+    buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
+    sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
+    listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
+    messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
+    reportsFiled?: ReportUncheckedCreateNestedManyWithoutReporterInput
+    reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
+    reviewsGiven?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
+    preferences?: UserPreferencesUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutReportsReceivedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReportsReceivedInput, UserUncheckedCreateWithoutReportsReceivedInput>
+  }
+
+  export type UserUpsertWithoutReportsFiledInput = {
+    update: XOR<UserUpdateWithoutReportsFiledInput, UserUncheckedUpdateWithoutReportsFiledInput>
+    create: XOR<UserCreateWithoutReportsFiledInput, UserUncheckedCreateWithoutReportsFiledInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReportsFiledInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReportsFiledInput, UserUncheckedUpdateWithoutReportsFiledInput>
+  }
+
+  export type UserUpdateWithoutReportsFiledInput = {
+    uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    profileURL?: StringFieldUpdateOperationsInput | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
+    buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
+    sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
+    listings?: ListingUpdateManyWithoutSellerNestedInput
+    messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsReceived?: ReportUpdateManyWithoutTargetUserNestedInput
+    reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
+    reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
+    preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReportsFiledInput = {
+    uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    profileURL?: StringFieldUpdateOperationsInput | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
+    buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
+    sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
+    listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsReceived?: ReportUncheckedUpdateManyWithoutTargetUserNestedInput
+    reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
+    reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithoutReportsReceivedInput = {
+    update: XOR<UserUpdateWithoutReportsReceivedInput, UserUncheckedUpdateWithoutReportsReceivedInput>
+    create: XOR<UserCreateWithoutReportsReceivedInput, UserUncheckedCreateWithoutReportsReceivedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReportsReceivedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReportsReceivedInput, UserUncheckedUpdateWithoutReportsReceivedInput>
+  }
+
+  export type UserUpdateWithoutReportsReceivedInput = {
+    uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    profileURL?: StringFieldUpdateOperationsInput | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
+    buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
+    sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
+    listings?: ListingUpdateManyWithoutSellerNestedInput
+    messages?: MessageUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUpdateManyWithoutReporterNestedInput
+    reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
+    reviewsGiven?: ReviewUpdateManyWithoutReviewerNestedInput
+    preferences?: UserPreferencesUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReportsReceivedInput = {
+    uid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    profileURL?: StringFieldUpdateOperationsInput | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rating?: FloatFieldUpdateOperationsInput | number
+    hidden?: BoolFieldUpdateOperationsInput | boolean
+    buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
+    sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
+    listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
+    reportsFiled?: ReportUncheckedUpdateManyWithoutReporterNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
     reviewsGiven?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     preferences?: UserPreferencesUncheckedUpdateOneWithoutUserNestedInput
@@ -13810,6 +16084,34 @@ export namespace Prisma {
     createdAt?: Date | string
     readAt?: Date | string | null
     updatedAt?: Date | string
+  }
+
+  export type ReportCreateManyReporterInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    targetUserId: string
+    resolvedById?: string | null
+  }
+
+  export type ReportCreateManyTargetUserInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reason: $Enums.ReportReason
+    description?: string | null
+    status?: $Enums.ReportStatus
+    adminNote?: string | null
+    autoHidden?: boolean
+    resolvedAt?: Date | string | null
+    reporterId: string
+    resolvedById?: string | null
   }
 
   export type ReviewCreateManyRevieweeInput = {
@@ -13960,6 +16262,90 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReportUpdateWithoutReporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    targetUser?: UserUpdateOneRequiredWithoutReportsReceivedNestedInput
+  }
+
+  export type ReportUncheckedUpdateWithoutReporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReportUncheckedUpdateManyWithoutReporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReportUpdateWithoutTargetUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reporter?: UserUpdateOneRequiredWithoutReportsFiledNestedInput
+  }
+
+  export type ReportUncheckedUpdateWithoutTargetUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterId?: StringFieldUpdateOperationsInput | string
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ReportUncheckedUpdateManyWithoutTargetUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reason?: EnumReportReasonFieldUpdateOperationsInput | $Enums.ReportReason
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    adminNote?: NullableStringFieldUpdateOperationsInput | string | null
+    autoHidden?: BoolFieldUpdateOperationsInput | boolean
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterId?: StringFieldUpdateOperationsInput | string
+    resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReviewUpdateWithoutRevieweeInput = {

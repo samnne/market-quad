@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 import { deleteListing, getListingByID, updateListing } from "@/db/listings.db";
 
 
@@ -48,7 +49,11 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ lid: string }> },
 ) {
-  const session = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const session = auth.user.uid;
 
   if (!session) {
     return NextResponse.json(ErrorMessage("Unauthorized", 401), {
@@ -86,7 +91,11 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ lid: string }> },
 ) {
-  const session = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const session = auth.user.uid;
 
   if (!session) {
     return NextResponse.json(ErrorMessage("Unauthorized", 401), {

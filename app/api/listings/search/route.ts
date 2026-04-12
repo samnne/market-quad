@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/db/db";
 
 export async function GET(req: NextRequest) {
@@ -6,7 +7,11 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const query = searchParams.get("q");
     const category = searchParams.get("cat");
-    const userId = req.headers.get("authorization");
+    const auth = await requireAuth(req);
+    if (!auth.ok) {
+      return auth.response;
+    }
+    const userId = auth.user.uid;
     if (!userId) {
       return NextResponse.json(
         { message: "User ID is required", listings: [], success: false },

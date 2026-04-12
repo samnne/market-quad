@@ -1,9 +1,14 @@
 import { prisma } from "@/db/db";
 import { updateReviewCount } from "@/db/reviews.db";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const userID = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const userID = auth.user.uid;
   if (!userID) {
     return NextResponse.json({
       message: "Must be Authorized",
@@ -23,7 +28,11 @@ export async function GET(req: NextRequest) {
   });
 }
 export async function POST(req: NextRequest) {
-  const userID = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const userID = auth.user.uid;
   if (!userID) {
     return NextResponse.json({
       message: "Must be Authorized",

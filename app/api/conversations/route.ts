@@ -1,18 +1,17 @@
 import { prisma } from "@/db/db";
 import { getConvos } from "@/lib/conversations.lib";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const session = req.headers.get("authorization");
-
-  if (!session) {
-    return NextResponse.json(
-      { message: "Not Authorized", success: false, convos: null },
-      { status: 401 },
-    );
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
   }
 
-  const convos = await getConvos(session);
+
+
+  const convos = await getConvos(auth.user.uid);
   if (!convos) {
     return NextResponse.json(
       { message: "Failed to get convos", success: false, convos: null },
@@ -27,14 +26,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = req.headers.get("authorization");
-
-  if (!session) {
-    return NextResponse.json(
-      { message: "Not Authorized", success: false, convo: null },
-      { status: 401 },
-    );
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
   }
+
 
   const body = await req.json();
 

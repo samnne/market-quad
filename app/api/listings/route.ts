@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server.js";
+import { NextRequest, NextResponse } from "next/server.js"
+import { getUserId, requireAuth } from "@/lib/auth";
 import {
   createNewListing,
   getListings,
@@ -7,10 +8,10 @@ import {
 } from "@/db/listings.db";
 
 import { Listing } from "@/src/generated/prisma/client";
-import { ListingInclude } from "@/src/generated/prisma/models";
+import { ListingWithIncludes } from "@/app/types";
 
 export async function GET(req: NextRequest) {
-  const userId = req.headers.get("authorization");
+  const userId = await getUserId(req)
 
   try {
     if (userId) {
@@ -61,7 +62,11 @@ export async function POST(req: NextRequest) {
  * PUT by ID but we will send the id withing the listing with this route
  */
 export async function PUT(req: NextRequest) {
-  const userID = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const userID = auth.user.uid;
 
   if (!userID) {
     return NextResponse.json({
@@ -71,7 +76,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const listing: Listing & ListingInclude = await req.json();
+    const listing: Listing & ListingWithIncludes = await req.json();
     if (!listing) {
       return NextResponse.json({
         success: false,

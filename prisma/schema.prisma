@@ -1,12 +1,13 @@
 generator client {
-  provider   = "prisma-client-js" // Change this to the standard provider
+  provider   = "prisma-client-js"
   output     = "../src/generated/prisma"
-  engineType = "library" 
+  engineType = "library"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
 
 model Listing {
   lid           String         @id @default(uuid()) @db.Uuid
@@ -62,10 +63,13 @@ model User {
   isVerified          Boolean          @default(false)
   createdAt           DateTime         @default(now())
   rating              Float            @default(0)
+  hidden              Boolean          @default(false)
   buyerConversations  Conversation[]   @relation("ConversationBuyer")
   sellerConversations Conversation[]   @relation("ConversationSeller")
   listings            Listing[]
   messages            Message[]
+  reportsFiled        Report[]         @relation("ReportsFiled")
+  reportsReceived     Report[]         @relation("ReportsReceived")
   reviewsReceived     Review[]         @relation("ReviewsReceived")
   reviewsGiven        Review[]         @relation("ReviewsGiven")
   preferences         UserPreferences?
@@ -74,12 +78,12 @@ model User {
 model Conversation {
   cid       String    @id @default(uuid()) @db.Uuid
   listingId String    @db.Uuid
-  buyerId   String?   @db.Uuid  // ← nullable
+  buyerId   String?   @db.Uuid
   createdAt DateTime  @default(now())
-  sellerId  String?   @db.Uuid  // ← nullable
+  sellerId  String?   @db.Uuid
   updatedAt DateTime  @updatedAt
-  buyer     User?     @relation("ConversationBuyer",  fields: [buyerId],  references: [uid])
-  listing   Listing   @relation(fields: [listingId],  references: [lid],  onDelete: Cascade)
+  buyer     User?     @relation("ConversationBuyer", fields: [buyerId], references: [uid])
+  listing   Listing   @relation(fields: [listingId], references: [lid], onDelete: Cascade)
   seller    User?     @relation("ConversationSeller", fields: [sellerId], references: [uid])
   messages  Message[]
 
@@ -108,7 +112,44 @@ model WaitlistTable {
   intent     String
 }
 
+enum ReportStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportReason {
+  SPAM
+  FAKE_LISTING
+  HARASSMENT
+  SCAM
+  INAPPROPRIATE_CONTENT
+  OTHER
+}
+
 enum ReviewRole {
   BUYER
   SELLER
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  reason       ReportReason
+  description  String?
+  status       ReportStatus @default(PENDING)
+  adminNote    String?
+  autoHidden   Boolean      @default(false)
+  resolvedAt   DateTime?
+  reporterId   String       @db.Uuid
+  targetUserId String       @db.Uuid
+  resolvedById String?      @db.Uuid
+  reporter     User         @relation("ReportsFiled", fields: [reporterId], references: [uid])
+  targetUser   User         @relation("ReportsReceived", fields: [targetUserId], references: [uid])
+
+  @@index([targetUserId])
+  @@index([reporterId])
+  @@index([status])
 }

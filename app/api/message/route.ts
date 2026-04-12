@@ -2,9 +2,14 @@ import { prisma } from "@/db/db";
 import { getConvos } from "@/lib/conversations.lib";
 import { getMessagesForConvo } from "@/lib/messages.lib";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const session = req.headers.get("authorization");
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
+  const session = auth.user.uid
   if (!session) {
       return NextResponse.json({
           message: "Not Authorized",
@@ -34,6 +39,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) {
+    return auth.response;
+  }
   const session = req.headers.get("authorization");
 
   if (!session) {
