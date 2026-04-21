@@ -7,8 +7,6 @@ import {
   updateListing,
 } from "@/db/listings.db";
 
-import { Listing } from "@/src/generated/prisma/client";
-import { ListingWithIncludes } from "@/app/types";
 import { listingSchema, parseBody } from "@/lib/sanatize.lib";
 
 export async function GET(req: NextRequest) {
@@ -93,7 +91,7 @@ export async function PUT(req: NextRequest) {
       });
     }
 
-    const updatedListing = await updateListing(listing.lid, {
+    const updatedListing = await updateListing(listing.lid!, {
       archived: listing.archived,
       category: listing.category,
       condition: listing.condition,

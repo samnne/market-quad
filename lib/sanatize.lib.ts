@@ -1,4 +1,4 @@
-import { User } from "@/src/generated/prisma";
+
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -50,6 +50,11 @@ export const listingSchema = z.object({
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
   imageUrls: z.array(z.string().url()).max(10).optional(),
+  archived: z.boolean().default(false).optional(),
+  sold: z.boolean().default(false).optional(),
+  views: z.number().int().min(0).default(0).optional(),
+  createdAt: z.date().default(() => new Date()).optional(),
+  lid: z.string().uuid().optional()
 });
 
 export const accountSchema = z.object({
