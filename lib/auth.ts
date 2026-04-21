@@ -28,7 +28,7 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult> {
       response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
-
+  
   const user = await prisma.user.findUnique({
     where: { uid: userId },
   });

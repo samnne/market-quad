@@ -5,23 +5,26 @@ const UUID_REGEX =
 
 // Routes that don't require auth
 const PUBLIC_ROUTES = [
-  "/api/auth",
+  "/api/auth/login",
+  "api/auth/register"
  
 ];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
   // Skip public routes
   const isPublic = PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+  
+  
   if (isPublic) return NextResponse.next();
-
   // Only protect /api routes
   if (!pathname.startsWith("/api")) return NextResponse.next();
 
   const authHeader = req.headers.get("authorization");
-//   console.log(authHeader)
+  // console.log(authHeader)
+
   const userId = authHeader;
+
 
   if (!userId || !UUID_REGEX.test(userId)) {
     

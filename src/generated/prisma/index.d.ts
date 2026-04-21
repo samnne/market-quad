@@ -5559,7 +5559,7 @@ export namespace Prisma {
     rating: number
     comment: string | null
     role: $Enums.ReviewRole
-    reviewerId: string
+    reviewerId: string | null
     revieweeId: string
     createdAt: Date
     _count: ReviewCountAggregateOutputType | null
@@ -5592,7 +5592,7 @@ export namespace Prisma {
     revieweeId?: boolean
     createdAt?: boolean
     reviewee?: boolean | UserDefaultArgs<ExtArgs>
-    reviewer?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5604,7 +5604,7 @@ export namespace Prisma {
     revieweeId?: boolean
     createdAt?: boolean
     reviewee?: boolean | UserDefaultArgs<ExtArgs>
-    reviewer?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5616,7 +5616,7 @@ export namespace Prisma {
     revieweeId?: boolean
     createdAt?: boolean
     reviewee?: boolean | UserDefaultArgs<ExtArgs>
-    reviewer?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
   export type ReviewSelectScalar = {
@@ -5632,29 +5632,29 @@ export namespace Prisma {
   export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"rid" | "rating" | "comment" | "role" | "reviewerId" | "revieweeId" | "createdAt", ExtArgs["result"]["review"]>
   export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reviewee?: boolean | UserDefaultArgs<ExtArgs>
-    reviewer?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }
   export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reviewee?: boolean | UserDefaultArgs<ExtArgs>
-    reviewer?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }
   export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reviewee?: boolean | UserDefaultArgs<ExtArgs>
-    reviewer?: boolean | UserDefaultArgs<ExtArgs>
+    reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }
 
   export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Review"
     objects: {
       reviewee: Prisma.$UserPayload<ExtArgs>
-      reviewer: Prisma.$UserPayload<ExtArgs>
+      reviewer: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       rid: string
       rating: number
       comment: string | null
       role: $Enums.ReviewRole
-      reviewerId: string
+      reviewerId: string | null
       revieweeId: string
       createdAt: Date
     }, ExtArgs["result"]["review"]>
@@ -6052,7 +6052,7 @@ export namespace Prisma {
   export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     reviewee<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    reviewer<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    reviewer<T extends Review$reviewerArgs<ExtArgs> = {}>(args?: Subset<T, Review$reviewerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6482,6 +6482,25 @@ export namespace Prisma {
      * Limit how many Reviews to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Review.reviewer
+   */
+  export type Review$reviewerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -13998,11 +14017,11 @@ export namespace Prisma {
     rating?: IntFilter<"Review"> | number
     comment?: StringNullableFilter<"Review"> | string | null
     role?: EnumReviewRoleFilter<"Review"> | $Enums.ReviewRole
-    reviewerId?: UuidFilter<"Review"> | string
+    reviewerId?: UuidNullableFilter<"Review"> | string | null
     revieweeId?: UuidFilter<"Review"> | string
     createdAt?: DateTimeFilter<"Review"> | Date | string
     reviewee?: XOR<UserScalarRelationFilter, UserWhereInput>
-    reviewer?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type ReviewOrderByWithRelationInput = {
@@ -14010,7 +14029,7 @@ export namespace Prisma {
     rating?: SortOrder
     comment?: SortOrderInput | SortOrder
     role?: SortOrder
-    reviewerId?: SortOrder
+    reviewerId?: SortOrderInput | SortOrder
     revieweeId?: SortOrder
     createdAt?: SortOrder
     reviewee?: UserOrderByWithRelationInput
@@ -14026,11 +14045,11 @@ export namespace Prisma {
     rating?: IntFilter<"Review"> | number
     comment?: StringNullableFilter<"Review"> | string | null
     role?: EnumReviewRoleFilter<"Review"> | $Enums.ReviewRole
-    reviewerId?: UuidFilter<"Review"> | string
+    reviewerId?: UuidNullableFilter<"Review"> | string | null
     revieweeId?: UuidFilter<"Review"> | string
     createdAt?: DateTimeFilter<"Review"> | Date | string
     reviewee?: XOR<UserScalarRelationFilter, UserWhereInput>
-    reviewer?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "rid" | "reviewerId_revieweeId_role">
 
   export type ReviewOrderByWithAggregationInput = {
@@ -14038,7 +14057,7 @@ export namespace Prisma {
     rating?: SortOrder
     comment?: SortOrderInput | SortOrder
     role?: SortOrder
-    reviewerId?: SortOrder
+    reviewerId?: SortOrderInput | SortOrder
     revieweeId?: SortOrder
     createdAt?: SortOrder
     _count?: ReviewCountOrderByAggregateInput
@@ -14056,7 +14075,7 @@ export namespace Prisma {
     rating?: IntWithAggregatesFilter<"Review"> | number
     comment?: StringNullableWithAggregatesFilter<"Review"> | string | null
     role?: EnumReviewRoleWithAggregatesFilter<"Review"> | $Enums.ReviewRole
-    reviewerId?: UuidWithAggregatesFilter<"Review"> | string
+    reviewerId?: UuidNullableWithAggregatesFilter<"Review"> | string | null
     revieweeId?: UuidWithAggregatesFilter<"Review"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Review"> | Date | string
   }
@@ -14781,7 +14800,7 @@ export namespace Prisma {
     role: $Enums.ReviewRole
     createdAt?: Date | string
     reviewee: UserCreateNestedOneWithoutReviewsReceivedInput
-    reviewer: UserCreateNestedOneWithoutReviewsGivenInput
+    reviewer?: UserCreateNestedOneWithoutReviewsGivenInput
   }
 
   export type ReviewUncheckedCreateInput = {
@@ -14789,7 +14808,7 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     role: $Enums.ReviewRole
-    reviewerId: string
+    reviewerId?: string | null
     revieweeId: string
     createdAt?: Date | string
   }
@@ -14801,7 +14820,7 @@ export namespace Prisma {
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reviewee?: UserUpdateOneRequiredWithoutReviewsReceivedNestedInput
-    reviewer?: UserUpdateOneRequiredWithoutReviewsGivenNestedInput
+    reviewer?: UserUpdateOneWithoutReviewsGivenNestedInput
   }
 
   export type ReviewUncheckedUpdateInput = {
@@ -14809,7 +14828,7 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
-    reviewerId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
     revieweeId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14819,7 +14838,7 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     role: $Enums.ReviewRole
-    reviewerId: string
+    reviewerId?: string | null
     revieweeId: string
     createdAt?: Date | string
   }
@@ -14837,7 +14856,7 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
-    reviewerId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
     revieweeId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15700,6 +15719,23 @@ export namespace Prisma {
     not?: NestedEnumReviewRoleFilter<$PrismaModel> | $Enums.ReviewRole
   }
 
+  export type UuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type ReviewReviewerIdRevieweeIdRoleCompoundUniqueInput = {
     reviewerId: string
     revieweeId: string
@@ -15752,6 +15788,21 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumReviewRoleFilter<$PrismaModel>
     _max?: NestedEnumReviewRoleFilter<$PrismaModel>
+  }
+
+  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -15872,23 +15923,6 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type UuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
-  }
-
   export type ConversationListingIdBuyerIdCompoundUniqueInput = {
     listingId: string
     buyerId: string
@@ -15919,21 +15953,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     sellerId?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -16372,10 +16391,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewsReceivedInput, UserUpdateWithoutReviewsReceivedInput>, UserUncheckedUpdateWithoutReviewsReceivedInput>
   }
 
-  export type UserUpdateOneRequiredWithoutReviewsGivenNestedInput = {
+  export type UserUpdateOneWithoutReviewsGivenNestedInput = {
     create?: XOR<UserCreateWithoutReviewsGivenInput, UserUncheckedCreateWithoutReviewsGivenInput>
     connectOrCreate?: UserCreateOrConnectWithoutReviewsGivenInput
     upsert?: UserUpsertWithoutReviewsGivenInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewsGivenInput, UserUpdateWithoutReviewsGivenInput>, UserUncheckedUpdateWithoutReviewsGivenInput>
   }
@@ -17216,6 +17237,17 @@ export namespace Prisma {
     not?: NestedEnumReviewRoleFilter<$PrismaModel> | $Enums.ReviewRole
   }
 
+  export type NestedUuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedEnumReviewRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ReviewRole | EnumReviewRoleFieldRefInput<$PrismaModel>
     in?: $Enums.ReviewRole[] | ListEnumReviewRoleFieldRefInput<$PrismaModel>
@@ -17224,6 +17256,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumReviewRoleFilter<$PrismaModel>
     _max?: NestedEnumReviewRoleFilter<$PrismaModel>
+  }
+
+  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -17240,31 +17286,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedUuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -18281,7 +18302,7 @@ export namespace Prisma {
     comment?: string | null
     role: $Enums.ReviewRole
     createdAt?: Date | string
-    reviewer: UserCreateNestedOneWithoutReviewsGivenInput
+    reviewer?: UserCreateNestedOneWithoutReviewsGivenInput
   }
 
   export type ReviewUncheckedCreateWithoutRevieweeInput = {
@@ -18289,7 +18310,7 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     role: $Enums.ReviewRole
-    reviewerId: string
+    reviewerId?: string | null
     createdAt?: Date | string
   }
 
@@ -18565,7 +18586,7 @@ export namespace Prisma {
     rating?: IntFilter<"Review"> | number
     comment?: StringNullableFilter<"Review"> | string | null
     role?: EnumReviewRoleFilter<"Review"> | $Enums.ReviewRole
-    reviewerId?: UuidFilter<"Review"> | string
+    reviewerId?: UuidNullableFilter<"Review"> | string | null
     revieweeId?: UuidFilter<"Review"> | string
     createdAt?: DateTimeFilter<"Review"> | Date | string
   }
@@ -19569,7 +19590,7 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     role: $Enums.ReviewRole
-    reviewerId: string
+    reviewerId?: string | null
     createdAt?: Date | string
   }
 
@@ -19824,7 +19845,7 @@ export namespace Prisma {
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    reviewer?: UserUpdateOneRequiredWithoutReviewsGivenNestedInput
+    reviewer?: UserUpdateOneWithoutReviewsGivenNestedInput
   }
 
   export type ReviewUncheckedUpdateWithoutRevieweeInput = {
@@ -19832,7 +19853,7 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
-    reviewerId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19841,7 +19862,7 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
-    reviewerId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

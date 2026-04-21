@@ -58,11 +58,11 @@ model Review {
   rating     Int
   comment    String?
   role       ReviewRole
-  reviewerId String     @db.Uuid
+  reviewerId String?     @db.Uuid
   revieweeId String     @db.Uuid
   createdAt  DateTime   @default(now())
   reviewee   User       @relation("ReviewsReceived", fields: [revieweeId], references: [uid], onDelete: Cascade)
-  reviewer   User       @relation("ReviewsGiven", fields: [reviewerId], references: [uid], onDelete: Cascade)
+  reviewer   User?      @relation("ReviewsGiven", fields: [reviewerId], references: [uid], onDelete: SetNull)
 
   @@unique([reviewerId, revieweeId, role])
 }
@@ -96,9 +96,9 @@ model Conversation {
   createdAt DateTime  @default(now())
   sellerId  String?   @db.Uuid
   updatedAt DateTime  @updatedAt
-  buyer     User?     @relation("ConversationBuyer", fields: [buyerId], references: [uid])
+  buyer     User?     @relation("ConversationBuyer", fields: [buyerId], references: [uid], onDelete: SetNull)
   listing   Listing   @relation(fields: [listingId], references: [lid], onDelete: Cascade)
-  seller    User?     @relation("ConversationSeller", fields: [sellerId], references: [uid])
+  seller    User?     @relation("ConversationSeller", fields: [sellerId], references: [uid], onDelete: SetNull)
   messages  Message[]
 
   @@unique([listingId, buyerId])
@@ -152,8 +152,8 @@ model Report {
   reporterId   String       @db.Uuid
   targetUserId String       @db.Uuid
   resolvedById String?      @db.Uuid
-  reporter     User         @relation("ReportsFiled", fields: [reporterId], references: [uid])
-  targetUser   User         @relation("ReportsReceived", fields: [targetUserId], references: [uid])
+  reporter     User         @relation("ReportsFiled", fields: [reporterId], references: [uid], onDelete: Cascade)
+  targetUser   User         @relation("ReportsReceived", fields: [targetUserId], references: [uid], onDelete: Cascade)
 
   @@index([targetUserId])
   @@index([reporterId])

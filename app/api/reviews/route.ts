@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   }
   const reviews = await prisma.review.findMany({
     where: {
-      OR: [{ revieweeId: userID }],
+      OR: [{ revieweeId: userID }, { reviewerId: userID }],
     },
   });
 
