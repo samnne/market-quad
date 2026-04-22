@@ -14,7 +14,7 @@ model Listing {
   description   String
   price         Int
   imageUrls     String[]
-  sellerId      String         @db.Uuid
+  sellerId      String?        @db.Uuid
   createdAt     DateTime       @default(now())
   archived      Boolean        @default(false)
   sold          Boolean        @default(false)
@@ -25,17 +25,17 @@ model Listing {
   category      String?
   likes         Like[]
   conversations Conversation[]
-  seller        User           @relation(fields: [sellerId], references: [uid], onDelete: Cascade)
+  seller        User?          @relation(fields: [sellerId], references: [uid], onDelete: SetNull)
 }
 
 model Like {
   id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
-  listingId String   @db.Uuid
+  userId    String?  @db.Uuid
+  listingId String?  @db.Uuid
   createdAt DateTime @default(now())
 
-  user    User    @relation(fields: [userId], references: [uid], onDelete: Cascade)
-  listing Listing @relation(fields: [listingId], references: [lid], onDelete: Cascade)
+  user    User?    @relation(fields: [userId], references: [uid], onDelete: SetNull)
+  listing Listing? @relation(fields: [listingId], references: [lid], onDelete: SetNull)
 
   @@unique([userId, listingId])
 }
@@ -59,45 +59,54 @@ model Review {
   comment    String?
   role       ReviewRole
   reviewerId String?    @db.Uuid
-  revieweeId String     @db.Uuid
+  revieweeId String?    @db.Uuid
   createdAt  DateTime   @default(now())
-  reviewee   User       @relation("ReviewsReceived", fields: [revieweeId], references: [uid], onDelete: Cascade)
+  reviewee   User?      @relation("ReviewsReceived", fields: [revieweeId], references: [uid], onDelete: SetNull)
   reviewer   User?      @relation("ReviewsGiven", fields: [reviewerId], references: [uid], onDelete: SetNull)
 
   @@unique([reviewerId, revieweeId, role])
 }
 
 model User {
-  uid                 String           @id @db.Uuid
-  email               String           @unique
-  name                String
-  profileURL          String
-  isVerified          Boolean          @default(false)
-  createdAt           DateTime         @default(now())
-  rating              Float            @default(0)
-  hidden              Boolean          @default(false)
-  buyerConversations  Conversation[]   @relation("ConversationBuyer")
-  sellerConversations Conversation[]   @relation("ConversationSeller")
-  listings            Listing[]
-  messages            Message[]
-  likes               Like[]
-  reportsFiled        Report[]         @relation("ReportsFiled")
-  reportsReceived     Report[]         @relation("ReportsReceived")
-  reviewsReceived     Review[]         @relation("ReviewsReceived")
-  reviewsGiven        Review[]         @relation("ReviewsGiven")
-  preferences         UserPreferences?
-  pushToken           PushToken?
+  uid                   String           @id @db.Uuid
+  email                 String           @unique
+  name                  String
+  username              String?          @unique
+  profileURL            String
+  isVerified            Boolean          @default(false)
+  createdAt             DateTime         @default(now())
+  rating                Float            @default(0)
+  hidden                Boolean          @default(false)
+  buyerConversations    Conversation[]   @relation("ConversationBuyer")
+  sellerConversations   Conversation[]   @relation("ConversationSeller")
+  listings              Listing[]
+  messages              Message[]
+  likes                 Like[]
+  reportsFiled          Report[]         @relation("ReportsFiled")
+  reportsReceived       Report[]         @relation("ReportsReceived")
+  reviewsReceived       Review[]         @relation("ReviewsReceived")
+  reviewsGiven          Review[]         @relation("ReviewsGiven")
+  preferences           UserPreferences?
+  pushToken             PushToken?
+  faculty               String?
+  year                  Int?
+  intent                String?
+  bio                   String?
+  category_interests    String[]
+  campus_area           String?
+  enabled_notifications Boolean          @default(false)
+  onboarding_completed  Boolean          @default(false)
 }
 
 model Conversation {
   cid       String    @id @default(uuid()) @db.Uuid
-  listingId String    @db.Uuid
+  listingId String?   @db.Uuid
   buyerId   String?   @db.Uuid
   createdAt DateTime  @default(now())
   sellerId  String?   @db.Uuid
   updatedAt DateTime  @updatedAt
   buyer     User?     @relation("ConversationBuyer", fields: [buyerId], references: [uid], onDelete: SetNull)
-  listing   Listing   @relation(fields: [listingId], references: [lid], onDelete: Cascade)
+  listing   Listing?  @relation(fields: [listingId], references: [lid], onDelete: SetNull)
   seller    User?     @relation("ConversationSeller", fields: [sellerId], references: [uid], onDelete: SetNull)
   messages  Message[]
 
@@ -111,10 +120,10 @@ model Message {
   conversationId String       @db.Uuid
   createdAt      DateTime     @default(now())
   readAt         DateTime?
-  senderId       String       @db.Uuid
+  senderId       String?      @db.Uuid
   updatedAt      DateTime     @updatedAt
   conversation   Conversation @relation(fields: [conversationId], references: [cid], onDelete: Cascade)
-  sender         User         @relation(fields: [senderId], references: [uid])
+  sender         User?        @relation(fields: [senderId], references: [uid], onDelete: SetNull)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -140,20 +149,22 @@ model PushToken {
 }
 
 model Report {
-  id           String       @id @default(cuid())
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  reason       ReportReason
-  description  String?
-  status       ReportStatus @default(PENDING)
-  adminNote    String?
-  autoHidden   Boolean      @default(false)
-  resolvedAt   DateTime?
-  reporterId   String       @db.Uuid
-  targetUserId String       @db.Uuid
-  resolvedById String?      @db.Uuid
-  reporter     User         @relation("ReportsFiled", fields: [reporterId], references: [uid], onDelete: Cascade)
-  targetUser   User         @relation("ReportsReceived", fields: [targetUserId], references: [uid], onDelete: Cascade)
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  reason      ReportReason
+  description String?
+  status      ReportStatus @default(PENDING)
+  adminNote   String?
+  autoHidden  Boolean      @default(false)
+  resolvedAt  DateTime?
+
+  resolvedById String? @db.Uuid
+
+  reporterId   String? @db.Uuid // ← make nullable
+  targetUserId String? @db.Uuid // ← make nullable
+  reporter     User?   @relation("ReportsFiled", fields: [reporterId], references: [uid], onDelete: SetNull)
+  targetUser   User?   @relation("ReportsReceived", fields: [targetUserId], references: [uid], onDelete: SetNull)
 
   @@index([targetUserId])
   @@index([reporterId])

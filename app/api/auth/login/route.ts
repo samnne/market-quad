@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(req: NextRequest) {
   const body = await parseBody(req, loginSchema)
-  console.log(body)
+
   if ("error" in body){
     return body.error
   }

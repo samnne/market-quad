@@ -30,6 +30,9 @@ export async function GET(
           where: {
             archived: false,
           },
+          include: {
+            likes: true
+          }
         },
         reviewsReceived: true,
       },

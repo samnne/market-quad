@@ -53,13 +53,26 @@ export const listingSchema = z.object({
   archived: z.boolean().default(false).optional(),
   sold: z.boolean().default(false).optional(),
   views: z.number().int().min(0).default(0).optional(),
-  createdAt: z.date().default(() => new Date()).optional(),
+  createdAt: z.string().optional(),
   lid: z.string().uuid().optional()
 });
 
 export const accountSchema = z.object({
   uid: z.string().uuid(),
 });
+
+export const onBoardingSchema = z.object({
+    username: z.string().optional(),
+    bio: z.string().optional(),
+    faculty: z.string().optional(),
+    year: z.number().optional(),
+    intent: z.string().optional(),
+    categories: z.string().array().optional(),
+    notifications: z.boolean().optional(),
+    name: z.string().optional()
+
+})
+
 
 export const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -79,18 +92,7 @@ export const messageSchema = z.object({
   conversationId: z.string().uuid(),
   text: z.string().min(1).max(2000).trim(),
   senderId: z.string().uuid(),
-  user: z
-    .object({
-      uid: z.string().uuid(),
-      createdAt: z.date(),
-      email: z.string(),
-      hidden: z.boolean(),
-      isVerified: z.boolean(),
-      name: z.string(),
-      profileURL: z.string(),
-      rating: z.number(),
-    })
-    .nullable(),
+  
 });
 
 export const editMessageSchema = z.object({
@@ -106,14 +108,16 @@ export const parseBody = async <T>(
 ): Promise<{ data: T } | { error: NextResponse }> => {
   try {
     const raw = await req.json();
+   
     const sanitized = sanitizeBody(raw as Record<string, unknown>);
     const parsed = schema.safeParse(sanitized);
 
     if (!parsed.success) {
+        console.log( parsed.error.flatten())
       return {
         error: NextResponse.json(
           { error: "Validation failed", details: parsed.error.flatten() },
-          { status: 400 },
+          { status: 400 }
         ),
       };
     }

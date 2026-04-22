@@ -54,7 +54,7 @@ const UpdatePassword = () => {
             setTimeout(() => router.push("/home"), 2000);
         }
         setLoading(false);
-        console.log("hey")
+       
     };
 
     return (

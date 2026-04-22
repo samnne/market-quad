@@ -2134,7 +2134,7 @@ export namespace Prisma {
     description: string
     price: number
     imageUrls: string[]
-    sellerId: string
+    sellerId: string | null
     createdAt: Date
     archived: boolean
     sold: boolean
@@ -2181,7 +2181,7 @@ export namespace Prisma {
     category?: boolean
     likes?: boolean | Listing$likesArgs<ExtArgs>
     conversations?: boolean | Listing$conversationsArgs<ExtArgs>
-    seller?: boolean | UserDefaultArgs<ExtArgs>
+    seller?: boolean | Listing$sellerArgs<ExtArgs>
     _count?: boolean | ListingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["listing"]>
 
@@ -2200,7 +2200,7 @@ export namespace Prisma {
     views?: boolean
     condition?: boolean
     category?: boolean
-    seller?: boolean | UserDefaultArgs<ExtArgs>
+    seller?: boolean | Listing$sellerArgs<ExtArgs>
   }, ExtArgs["result"]["listing"]>
 
   export type ListingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2218,7 +2218,7 @@ export namespace Prisma {
     views?: boolean
     condition?: boolean
     category?: boolean
-    seller?: boolean | UserDefaultArgs<ExtArgs>
+    seller?: boolean | Listing$sellerArgs<ExtArgs>
   }, ExtArgs["result"]["listing"]>
 
   export type ListingSelectScalar = {
@@ -2242,14 +2242,14 @@ export namespace Prisma {
   export type ListingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     likes?: boolean | Listing$likesArgs<ExtArgs>
     conversations?: boolean | Listing$conversationsArgs<ExtArgs>
-    seller?: boolean | UserDefaultArgs<ExtArgs>
+    seller?: boolean | Listing$sellerArgs<ExtArgs>
     _count?: boolean | ListingCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ListingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    seller?: boolean | UserDefaultArgs<ExtArgs>
+    seller?: boolean | Listing$sellerArgs<ExtArgs>
   }
   export type ListingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    seller?: boolean | UserDefaultArgs<ExtArgs>
+    seller?: boolean | Listing$sellerArgs<ExtArgs>
   }
 
   export type $ListingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2257,7 +2257,7 @@ export namespace Prisma {
     objects: {
       likes: Prisma.$LikePayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
-      seller: Prisma.$UserPayload<ExtArgs>
+      seller: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       lid: string
@@ -2265,7 +2265,7 @@ export namespace Prisma {
       description: string
       price: number
       imageUrls: string[]
-      sellerId: string
+      sellerId: string | null
       createdAt: Date
       archived: boolean
       sold: boolean
@@ -2670,7 +2670,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     likes<T extends Listing$likesArgs<ExtArgs> = {}>(args?: Subset<T, Listing$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends Listing$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, Listing$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    seller<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    seller<T extends Listing$sellerArgs<ExtArgs> = {}>(args?: Subset<T, Listing$sellerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3158,6 +3158,25 @@ export namespace Prisma {
   }
 
   /**
+   * Listing.seller
+   */
+  export type Listing$sellerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Listing without action
    */
   export type ListingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3305,8 +3324,8 @@ export namespace Prisma {
 
   export type LikeGroupByOutputType = {
     id: string
-    userId: string
-    listingId: string
+    userId: string | null
+    listingId: string | null
     createdAt: Date
     _count: LikeCountAggregateOutputType | null
     _min: LikeMinAggregateOutputType | null
@@ -3332,8 +3351,8 @@ export namespace Prisma {
     userId?: boolean
     listingId?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    user?: boolean | Like$userArgs<ExtArgs>
+    listing?: boolean | Like$listingArgs<ExtArgs>
   }, ExtArgs["result"]["like"]>
 
   export type LikeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3341,8 +3360,8 @@ export namespace Prisma {
     userId?: boolean
     listingId?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    user?: boolean | Like$userArgs<ExtArgs>
+    listing?: boolean | Like$listingArgs<ExtArgs>
   }, ExtArgs["result"]["like"]>
 
   export type LikeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3350,8 +3369,8 @@ export namespace Prisma {
     userId?: boolean
     listingId?: boolean
     createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    user?: boolean | Like$userArgs<ExtArgs>
+    listing?: boolean | Like$listingArgs<ExtArgs>
   }, ExtArgs["result"]["like"]>
 
   export type LikeSelectScalar = {
@@ -3363,28 +3382,28 @@ export namespace Prisma {
 
   export type LikeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "listingId" | "createdAt", ExtArgs["result"]["like"]>
   export type LikeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    user?: boolean | Like$userArgs<ExtArgs>
+    listing?: boolean | Like$listingArgs<ExtArgs>
   }
   export type LikeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    user?: boolean | Like$userArgs<ExtArgs>
+    listing?: boolean | Like$listingArgs<ExtArgs>
   }
   export type LikeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    user?: boolean | Like$userArgs<ExtArgs>
+    listing?: boolean | Like$listingArgs<ExtArgs>
   }
 
   export type $LikePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Like"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-      listing: Prisma.$ListingPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
+      listing: Prisma.$ListingPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: string
-      listingId: string
+      userId: string | null
+      listingId: string | null
       createdAt: Date
     }, ExtArgs["result"]["like"]>
     composites: {}
@@ -3780,8 +3799,8 @@ export namespace Prisma {
    */
   export interface Prisma__LikeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    listing<T extends ListingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ListingDefaultArgs<ExtArgs>>): Prisma__ListingClient<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends Like$userArgs<ExtArgs> = {}>(args?: Subset<T, Like$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    listing<T extends Like$listingArgs<ExtArgs> = {}>(args?: Subset<T, Like$listingArgs<ExtArgs>>): Prisma__ListingClient<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4033,7 +4052,7 @@ export namespace Prisma {
     /**
      * The data needed to create a Like.
      */
-    data: XOR<LikeCreateInput, LikeUncheckedCreateInput>
+    data?: XOR<LikeCreateInput, LikeUncheckedCreateInput>
   }
 
   /**
@@ -4208,6 +4227,44 @@ export namespace Prisma {
      * Limit how many Likes to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Like.user
+   */
+  export type Like$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Like.listing
+   */
+  export type Like$listingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Listing
+     */
+    select?: ListingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Listing
+     */
+    omit?: ListingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ListingInclude<ExtArgs> | null
+    where?: ListingWhereInput
   }
 
   /**
@@ -5560,7 +5617,7 @@ export namespace Prisma {
     comment: string | null
     role: $Enums.ReviewRole
     reviewerId: string | null
-    revieweeId: string
+    revieweeId: string | null
     createdAt: Date
     _count: ReviewCountAggregateOutputType | null
     _avg: ReviewAvgAggregateOutputType | null
@@ -5591,7 +5648,7 @@ export namespace Prisma {
     reviewerId?: boolean
     revieweeId?: boolean
     createdAt?: boolean
-    reviewee?: boolean | UserDefaultArgs<ExtArgs>
+    reviewee?: boolean | Review$revieweeArgs<ExtArgs>
     reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
@@ -5603,7 +5660,7 @@ export namespace Prisma {
     reviewerId?: boolean
     revieweeId?: boolean
     createdAt?: boolean
-    reviewee?: boolean | UserDefaultArgs<ExtArgs>
+    reviewee?: boolean | Review$revieweeArgs<ExtArgs>
     reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
@@ -5615,7 +5672,7 @@ export namespace Prisma {
     reviewerId?: boolean
     revieweeId?: boolean
     createdAt?: boolean
-    reviewee?: boolean | UserDefaultArgs<ExtArgs>
+    reviewee?: boolean | Review$revieweeArgs<ExtArgs>
     reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }, ExtArgs["result"]["review"]>
 
@@ -5631,22 +5688,22 @@ export namespace Prisma {
 
   export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"rid" | "rating" | "comment" | "role" | "reviewerId" | "revieweeId" | "createdAt", ExtArgs["result"]["review"]>
   export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reviewee?: boolean | UserDefaultArgs<ExtArgs>
+    reviewee?: boolean | Review$revieweeArgs<ExtArgs>
     reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }
   export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reviewee?: boolean | UserDefaultArgs<ExtArgs>
+    reviewee?: boolean | Review$revieweeArgs<ExtArgs>
     reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }
   export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reviewee?: boolean | UserDefaultArgs<ExtArgs>
+    reviewee?: boolean | Review$revieweeArgs<ExtArgs>
     reviewer?: boolean | Review$reviewerArgs<ExtArgs>
   }
 
   export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Review"
     objects: {
-      reviewee: Prisma.$UserPayload<ExtArgs>
+      reviewee: Prisma.$UserPayload<ExtArgs> | null
       reviewer: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5655,7 +5712,7 @@ export namespace Prisma {
       comment: string | null
       role: $Enums.ReviewRole
       reviewerId: string | null
-      revieweeId: string
+      revieweeId: string | null
       createdAt: Date
     }, ExtArgs["result"]["review"]>
     composites: {}
@@ -6051,7 +6108,7 @@ export namespace Prisma {
    */
   export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    reviewee<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    reviewee<T extends Review$revieweeArgs<ExtArgs> = {}>(args?: Subset<T, Review$revieweeArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     reviewer<T extends Review$reviewerArgs<ExtArgs> = {}>(args?: Subset<T, Review$reviewerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6485,6 +6542,25 @@ export namespace Prisma {
   }
 
   /**
+   * Review.reviewee
+   */
+  export type Review$revieweeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Review.reviewer
    */
   export type Review$reviewerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6536,86 +6612,140 @@ export namespace Prisma {
 
   export type UserAvgAggregateOutputType = {
     rating: number | null
+    year: number | null
   }
 
   export type UserSumAggregateOutputType = {
     rating: number | null
+    year: number | null
   }
 
   export type UserMinAggregateOutputType = {
     uid: string | null
     email: string | null
     name: string | null
+    username: string | null
     profileURL: string | null
     isVerified: boolean | null
     createdAt: Date | null
     rating: number | null
     hidden: boolean | null
+    faculty: string | null
+    year: number | null
+    intent: string | null
+    bio: string | null
+    campus_area: string | null
+    enabled_notifications: boolean | null
+    onboarding_completed: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
     uid: string | null
     email: string | null
     name: string | null
+    username: string | null
     profileURL: string | null
     isVerified: boolean | null
     createdAt: Date | null
     rating: number | null
     hidden: boolean | null
+    faculty: string | null
+    year: number | null
+    intent: string | null
+    bio: string | null
+    campus_area: string | null
+    enabled_notifications: boolean | null
+    onboarding_completed: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
     uid: number
     email: number
     name: number
+    username: number
     profileURL: number
     isVerified: number
     createdAt: number
     rating: number
     hidden: number
+    faculty: number
+    year: number
+    intent: number
+    bio: number
+    category_interests: number
+    campus_area: number
+    enabled_notifications: number
+    onboarding_completed: number
     _all: number
   }
 
 
   export type UserAvgAggregateInputType = {
     rating?: true
+    year?: true
   }
 
   export type UserSumAggregateInputType = {
     rating?: true
+    year?: true
   }
 
   export type UserMinAggregateInputType = {
     uid?: true
     email?: true
     name?: true
+    username?: true
     profileURL?: true
     isVerified?: true
     createdAt?: true
     rating?: true
     hidden?: true
+    faculty?: true
+    year?: true
+    intent?: true
+    bio?: true
+    campus_area?: true
+    enabled_notifications?: true
+    onboarding_completed?: true
   }
 
   export type UserMaxAggregateInputType = {
     uid?: true
     email?: true
     name?: true
+    username?: true
     profileURL?: true
     isVerified?: true
     createdAt?: true
     rating?: true
     hidden?: true
+    faculty?: true
+    year?: true
+    intent?: true
+    bio?: true
+    campus_area?: true
+    enabled_notifications?: true
+    onboarding_completed?: true
   }
 
   export type UserCountAggregateInputType = {
     uid?: true
     email?: true
     name?: true
+    username?: true
     profileURL?: true
     isVerified?: true
     createdAt?: true
     rating?: true
     hidden?: true
+    faculty?: true
+    year?: true
+    intent?: true
+    bio?: true
+    category_interests?: true
+    campus_area?: true
+    enabled_notifications?: true
+    onboarding_completed?: true
     _all?: true
   }
 
@@ -6709,11 +6839,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username: string | null
     profileURL: string
     isVerified: boolean
     createdAt: Date
     rating: number
     hidden: boolean
+    faculty: string | null
+    year: number | null
+    intent: string | null
+    bio: string | null
+    category_interests: string[]
+    campus_area: string | null
+    enabled_notifications: boolean
+    onboarding_completed: boolean
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -6739,11 +6878,20 @@ export namespace Prisma {
     uid?: boolean
     email?: boolean
     name?: boolean
+    username?: boolean
     profileURL?: boolean
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
     hidden?: boolean
+    faculty?: boolean
+    year?: boolean
+    intent?: boolean
+    bio?: boolean
+    category_interests?: boolean
+    campus_area?: boolean
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: boolean | User$buyerConversationsArgs<ExtArgs>
     sellerConversations?: boolean | User$sellerConversationsArgs<ExtArgs>
     listings?: boolean | User$listingsArgs<ExtArgs>
@@ -6762,36 +6910,63 @@ export namespace Prisma {
     uid?: boolean
     email?: boolean
     name?: boolean
+    username?: boolean
     profileURL?: boolean
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
     hidden?: boolean
+    faculty?: boolean
+    year?: boolean
+    intent?: boolean
+    bio?: boolean
+    category_interests?: boolean
+    campus_area?: boolean
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     uid?: boolean
     email?: boolean
     name?: boolean
+    username?: boolean
     profileURL?: boolean
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
     hidden?: boolean
+    faculty?: boolean
+    year?: boolean
+    intent?: boolean
+    bio?: boolean
+    category_interests?: boolean
+    campus_area?: boolean
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
     uid?: boolean
     email?: boolean
     name?: boolean
+    username?: boolean
     profileURL?: boolean
     isVerified?: boolean
     createdAt?: boolean
     rating?: boolean
     hidden?: boolean
+    faculty?: boolean
+    year?: boolean
+    intent?: boolean
+    bio?: boolean
+    category_interests?: boolean
+    campus_area?: boolean
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"uid" | "email" | "name" | "profileURL" | "isVerified" | "createdAt" | "rating" | "hidden", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"uid" | "email" | "name" | "username" | "profileURL" | "isVerified" | "createdAt" | "rating" | "hidden" | "faculty" | "year" | "intent" | "bio" | "category_interests" | "campus_area" | "enabled_notifications" | "onboarding_completed", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyerConversations?: boolean | User$buyerConversationsArgs<ExtArgs>
     sellerConversations?: boolean | User$sellerConversationsArgs<ExtArgs>
@@ -6828,11 +7003,20 @@ export namespace Prisma {
       uid: string
       email: string
       name: string
+      username: string | null
       profileURL: string
       isVerified: boolean
       createdAt: Date
       rating: number
       hidden: boolean
+      faculty: string | null
+      year: number | null
+      intent: string | null
+      bio: string | null
+      category_interests: string[]
+      campus_area: string | null
+      enabled_notifications: boolean
+      onboarding_completed: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -7270,11 +7454,20 @@ export namespace Prisma {
     readonly uid: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
+    readonly username: FieldRef<"User", 'String'>
     readonly profileURL: FieldRef<"User", 'String'>
     readonly isVerified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly rating: FieldRef<"User", 'Float'>
     readonly hidden: FieldRef<"User", 'Boolean'>
+    readonly faculty: FieldRef<"User", 'String'>
+    readonly year: FieldRef<"User", 'Int'>
+    readonly intent: FieldRef<"User", 'String'>
+    readonly bio: FieldRef<"User", 'String'>
+    readonly category_interests: FieldRef<"User", 'String[]'>
+    readonly campus_area: FieldRef<"User", 'String'>
+    readonly enabled_notifications: FieldRef<"User", 'Boolean'>
+    readonly onboarding_completed: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -8076,7 +8269,7 @@ export namespace Prisma {
 
   export type ConversationGroupByOutputType = {
     cid: string
-    listingId: string
+    listingId: string | null
     buyerId: string | null
     createdAt: Date
     sellerId: string | null
@@ -8108,7 +8301,7 @@ export namespace Prisma {
     sellerId?: boolean
     updatedAt?: boolean
     buyer?: boolean | Conversation$buyerArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    listing?: boolean | Conversation$listingArgs<ExtArgs>
     seller?: boolean | Conversation$sellerArgs<ExtArgs>
     messages?: boolean | Conversation$messagesArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
@@ -8122,7 +8315,7 @@ export namespace Prisma {
     sellerId?: boolean
     updatedAt?: boolean
     buyer?: boolean | Conversation$buyerArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    listing?: boolean | Conversation$listingArgs<ExtArgs>
     seller?: boolean | Conversation$sellerArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -8134,7 +8327,7 @@ export namespace Prisma {
     sellerId?: boolean
     updatedAt?: boolean
     buyer?: boolean | Conversation$buyerArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    listing?: boolean | Conversation$listingArgs<ExtArgs>
     seller?: boolean | Conversation$sellerArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -8150,19 +8343,19 @@ export namespace Prisma {
   export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"cid" | "listingId" | "buyerId" | "createdAt" | "sellerId" | "updatedAt", ExtArgs["result"]["conversation"]>
   export type ConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyer?: boolean | Conversation$buyerArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    listing?: boolean | Conversation$listingArgs<ExtArgs>
     seller?: boolean | Conversation$sellerArgs<ExtArgs>
     messages?: boolean | Conversation$messagesArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyer?: boolean | Conversation$buyerArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    listing?: boolean | Conversation$listingArgs<ExtArgs>
     seller?: boolean | Conversation$sellerArgs<ExtArgs>
   }
   export type ConversationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     buyer?: boolean | Conversation$buyerArgs<ExtArgs>
-    listing?: boolean | ListingDefaultArgs<ExtArgs>
+    listing?: boolean | Conversation$listingArgs<ExtArgs>
     seller?: boolean | Conversation$sellerArgs<ExtArgs>
   }
 
@@ -8170,13 +8363,13 @@ export namespace Prisma {
     name: "Conversation"
     objects: {
       buyer: Prisma.$UserPayload<ExtArgs> | null
-      listing: Prisma.$ListingPayload<ExtArgs>
+      listing: Prisma.$ListingPayload<ExtArgs> | null
       seller: Prisma.$UserPayload<ExtArgs> | null
       messages: Prisma.$MessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       cid: string
-      listingId: string
+      listingId: string | null
       buyerId: string | null
       createdAt: Date
       sellerId: string | null
@@ -8576,7 +8769,7 @@ export namespace Prisma {
   export interface Prisma__ConversationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     buyer<T extends Conversation$buyerArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$buyerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    listing<T extends ListingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ListingDefaultArgs<ExtArgs>>): Prisma__ListingClient<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    listing<T extends Conversation$listingArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$listingArgs<ExtArgs>>): Prisma__ListingClient<$Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     seller<T extends Conversation$sellerArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$sellerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     messages<T extends Conversation$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -9029,6 +9222,25 @@ export namespace Prisma {
   }
 
   /**
+   * Conversation.listing
+   */
+  export type Conversation$listingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Listing
+     */
+    select?: ListingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Listing
+     */
+    omit?: ListingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ListingInclude<ExtArgs> | null
+    where?: ListingWhereInput
+  }
+
+  /**
    * Conversation.seller
    */
   export type Conversation$sellerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9248,7 +9460,7 @@ export namespace Prisma {
     conversationId: string
     createdAt: Date
     readAt: Date | null
-    senderId: string
+    senderId: string | null
     updatedAt: Date
     _count: MessageCountAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
@@ -9279,7 +9491,7 @@ export namespace Prisma {
     senderId?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
-    sender?: boolean | UserDefaultArgs<ExtArgs>
+    sender?: boolean | Message$senderArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
   export type MessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9292,7 +9504,7 @@ export namespace Prisma {
     senderId?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
-    sender?: boolean | UserDefaultArgs<ExtArgs>
+    sender?: boolean | Message$senderArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
   export type MessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9305,7 +9517,7 @@ export namespace Prisma {
     senderId?: boolean
     updatedAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
-    sender?: boolean | UserDefaultArgs<ExtArgs>
+    sender?: boolean | Message$senderArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
   export type MessageSelectScalar = {
@@ -9322,22 +9534,22 @@ export namespace Prisma {
   export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"mid" | "text" | "edited" | "conversationId" | "createdAt" | "readAt" | "senderId" | "updatedAt", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
-    sender?: boolean | UserDefaultArgs<ExtArgs>
+    sender?: boolean | Message$senderArgs<ExtArgs>
   }
   export type MessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
-    sender?: boolean | UserDefaultArgs<ExtArgs>
+    sender?: boolean | Message$senderArgs<ExtArgs>
   }
   export type MessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
-    sender?: boolean | UserDefaultArgs<ExtArgs>
+    sender?: boolean | Message$senderArgs<ExtArgs>
   }
 
   export type $MessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Message"
     objects: {
       conversation: Prisma.$ConversationPayload<ExtArgs>
-      sender: Prisma.$UserPayload<ExtArgs>
+      sender: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       mid: string
@@ -9346,7 +9558,7 @@ export namespace Prisma {
       conversationId: string
       createdAt: Date
       readAt: Date | null
-      senderId: string
+      senderId: string | null
       updatedAt: Date
     }, ExtArgs["result"]["message"]>
     composites: {}
@@ -9743,7 +9955,7 @@ export namespace Prisma {
   export interface Prisma__MessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     conversation<T extends ConversationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConversationDefaultArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    sender<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    sender<T extends Message$senderArgs<ExtArgs> = {}>(args?: Subset<T, Message$senderArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10174,6 +10386,25 @@ export namespace Prisma {
      * Limit how many Messages to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Message.sender
+   */
+  export type Message$senderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -12328,9 +12559,9 @@ export namespace Prisma {
     adminNote: string | null
     autoHidden: boolean | null
     resolvedAt: Date | null
+    resolvedById: string | null
     reporterId: string | null
     targetUserId: string | null
-    resolvedById: string | null
   }
 
   export type ReportMaxAggregateOutputType = {
@@ -12343,9 +12574,9 @@ export namespace Prisma {
     adminNote: string | null
     autoHidden: boolean | null
     resolvedAt: Date | null
+    resolvedById: string | null
     reporterId: string | null
     targetUserId: string | null
-    resolvedById: string | null
   }
 
   export type ReportCountAggregateOutputType = {
@@ -12358,9 +12589,9 @@ export namespace Prisma {
     adminNote: number
     autoHidden: number
     resolvedAt: number
+    resolvedById: number
     reporterId: number
     targetUserId: number
-    resolvedById: number
     _all: number
   }
 
@@ -12375,9 +12606,9 @@ export namespace Prisma {
     adminNote?: true
     autoHidden?: true
     resolvedAt?: true
+    resolvedById?: true
     reporterId?: true
     targetUserId?: true
-    resolvedById?: true
   }
 
   export type ReportMaxAggregateInputType = {
@@ -12390,9 +12621,9 @@ export namespace Prisma {
     adminNote?: true
     autoHidden?: true
     resolvedAt?: true
+    resolvedById?: true
     reporterId?: true
     targetUserId?: true
-    resolvedById?: true
   }
 
   export type ReportCountAggregateInputType = {
@@ -12405,9 +12636,9 @@ export namespace Prisma {
     adminNote?: true
     autoHidden?: true
     resolvedAt?: true
+    resolvedById?: true
     reporterId?: true
     targetUserId?: true
-    resolvedById?: true
     _all?: true
   }
 
@@ -12493,9 +12724,9 @@ export namespace Prisma {
     adminNote: string | null
     autoHidden: boolean
     resolvedAt: Date | null
-    reporterId: string
-    targetUserId: string
     resolvedById: string | null
+    reporterId: string | null
+    targetUserId: string | null
     _count: ReportCountAggregateOutputType | null
     _min: ReportMinAggregateOutputType | null
     _max: ReportMaxAggregateOutputType | null
@@ -12525,11 +12756,11 @@ export namespace Prisma {
     adminNote?: boolean
     autoHidden?: boolean
     resolvedAt?: boolean
+    resolvedById?: boolean
     reporterId?: boolean
     targetUserId?: boolean
-    resolvedById?: boolean
-    reporter?: boolean | UserDefaultArgs<ExtArgs>
-    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+    reporter?: boolean | Report$reporterArgs<ExtArgs>
+    targetUser?: boolean | Report$targetUserArgs<ExtArgs>
   }, ExtArgs["result"]["report"]>
 
   export type ReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12542,11 +12773,11 @@ export namespace Prisma {
     adminNote?: boolean
     autoHidden?: boolean
     resolvedAt?: boolean
+    resolvedById?: boolean
     reporterId?: boolean
     targetUserId?: boolean
-    resolvedById?: boolean
-    reporter?: boolean | UserDefaultArgs<ExtArgs>
-    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+    reporter?: boolean | Report$reporterArgs<ExtArgs>
+    targetUser?: boolean | Report$targetUserArgs<ExtArgs>
   }, ExtArgs["result"]["report"]>
 
   export type ReportSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12559,11 +12790,11 @@ export namespace Prisma {
     adminNote?: boolean
     autoHidden?: boolean
     resolvedAt?: boolean
+    resolvedById?: boolean
     reporterId?: boolean
     targetUserId?: boolean
-    resolvedById?: boolean
-    reporter?: boolean | UserDefaultArgs<ExtArgs>
-    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+    reporter?: boolean | Report$reporterArgs<ExtArgs>
+    targetUser?: boolean | Report$targetUserArgs<ExtArgs>
   }, ExtArgs["result"]["report"]>
 
   export type ReportSelectScalar = {
@@ -12576,30 +12807,30 @@ export namespace Prisma {
     adminNote?: boolean
     autoHidden?: boolean
     resolvedAt?: boolean
+    resolvedById?: boolean
     reporterId?: boolean
     targetUserId?: boolean
-    resolvedById?: boolean
   }
 
-  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "reason" | "description" | "status" | "adminNote" | "autoHidden" | "resolvedAt" | "reporterId" | "targetUserId" | "resolvedById", ExtArgs["result"]["report"]>
+  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "reason" | "description" | "status" | "adminNote" | "autoHidden" | "resolvedAt" | "resolvedById" | "reporterId" | "targetUserId", ExtArgs["result"]["report"]>
   export type ReportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reporter?: boolean | UserDefaultArgs<ExtArgs>
-    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+    reporter?: boolean | Report$reporterArgs<ExtArgs>
+    targetUser?: boolean | Report$targetUserArgs<ExtArgs>
   }
   export type ReportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reporter?: boolean | UserDefaultArgs<ExtArgs>
-    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+    reporter?: boolean | Report$reporterArgs<ExtArgs>
+    targetUser?: boolean | Report$targetUserArgs<ExtArgs>
   }
   export type ReportIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reporter?: boolean | UserDefaultArgs<ExtArgs>
-    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+    reporter?: boolean | Report$reporterArgs<ExtArgs>
+    targetUser?: boolean | Report$targetUserArgs<ExtArgs>
   }
 
   export type $ReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Report"
     objects: {
-      reporter: Prisma.$UserPayload<ExtArgs>
-      targetUser: Prisma.$UserPayload<ExtArgs>
+      reporter: Prisma.$UserPayload<ExtArgs> | null
+      targetUser: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12611,9 +12842,9 @@ export namespace Prisma {
       adminNote: string | null
       autoHidden: boolean
       resolvedAt: Date | null
-      reporterId: string
-      targetUserId: string
       resolvedById: string | null
+      reporterId: string | null
+      targetUserId: string | null
     }, ExtArgs["result"]["report"]>
     composites: {}
   }
@@ -13008,8 +13239,8 @@ export namespace Prisma {
    */
   export interface Prisma__ReportClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    reporter<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    targetUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    reporter<T extends Report$reporterArgs<ExtArgs> = {}>(args?: Subset<T, Report$reporterArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    targetUser<T extends Report$targetUserArgs<ExtArgs> = {}>(args?: Subset<T, Report$targetUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13048,9 +13279,9 @@ export namespace Prisma {
     readonly adminNote: FieldRef<"Report", 'String'>
     readonly autoHidden: FieldRef<"Report", 'Boolean'>
     readonly resolvedAt: FieldRef<"Report", 'DateTime'>
+    readonly resolvedById: FieldRef<"Report", 'String'>
     readonly reporterId: FieldRef<"Report", 'String'>
     readonly targetUserId: FieldRef<"Report", 'String'>
-    readonly resolvedById: FieldRef<"Report", 'String'>
   }
     
 
@@ -13447,6 +13678,44 @@ export namespace Prisma {
   }
 
   /**
+   * Report.reporter
+   */
+  export type Report$reporterArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Report.targetUser
+   */
+  export type Report$targetUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Report without action
    */
   export type ReportDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13541,11 +13810,20 @@ export namespace Prisma {
     uid: 'uid',
     email: 'email',
     name: 'name',
+    username: 'username',
     profileURL: 'profileURL',
     isVerified: 'isVerified',
     createdAt: 'createdAt',
     rating: 'rating',
-    hidden: 'hidden'
+    hidden: 'hidden',
+    faculty: 'faculty',
+    year: 'year',
+    intent: 'intent',
+    bio: 'bio',
+    category_interests: 'category_interests',
+    campus_area: 'campus_area',
+    enabled_notifications: 'enabled_notifications',
+    onboarding_completed: 'onboarding_completed'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -13611,9 +13889,9 @@ export namespace Prisma {
     adminNote: 'adminNote',
     autoHidden: 'autoHidden',
     resolvedAt: 'resolvedAt',
+    resolvedById: 'resolvedById',
     reporterId: 'reporterId',
-    targetUserId: 'targetUserId',
-    resolvedById: 'resolvedById'
+    targetUserId: 'targetUserId'
   };
 
   export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
@@ -13779,7 +14057,7 @@ export namespace Prisma {
     description?: StringFilter<"Listing"> | string
     price?: IntFilter<"Listing"> | number
     imageUrls?: StringNullableListFilter<"Listing">
-    sellerId?: UuidFilter<"Listing"> | string
+    sellerId?: UuidNullableFilter<"Listing"> | string | null
     createdAt?: DateTimeFilter<"Listing"> | Date | string
     archived?: BoolFilter<"Listing"> | boolean
     sold?: BoolFilter<"Listing"> | boolean
@@ -13790,7 +14068,7 @@ export namespace Prisma {
     category?: StringNullableFilter<"Listing"> | string | null
     likes?: LikeListRelationFilter
     conversations?: ConversationListRelationFilter
-    seller?: XOR<UserScalarRelationFilter, UserWhereInput>
+    seller?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type ListingOrderByWithRelationInput = {
@@ -13799,7 +14077,7 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     imageUrls?: SortOrder
-    sellerId?: SortOrder
+    sellerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     archived?: SortOrder
     sold?: SortOrder
@@ -13822,7 +14100,7 @@ export namespace Prisma {
     description?: StringFilter<"Listing"> | string
     price?: IntFilter<"Listing"> | number
     imageUrls?: StringNullableListFilter<"Listing">
-    sellerId?: UuidFilter<"Listing"> | string
+    sellerId?: UuidNullableFilter<"Listing"> | string | null
     createdAt?: DateTimeFilter<"Listing"> | Date | string
     archived?: BoolFilter<"Listing"> | boolean
     sold?: BoolFilter<"Listing"> | boolean
@@ -13833,7 +14111,7 @@ export namespace Prisma {
     category?: StringNullableFilter<"Listing"> | string | null
     likes?: LikeListRelationFilter
     conversations?: ConversationListRelationFilter
-    seller?: XOR<UserScalarRelationFilter, UserWhereInput>
+    seller?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "lid">
 
   export type ListingOrderByWithAggregationInput = {
@@ -13842,7 +14120,7 @@ export namespace Prisma {
     description?: SortOrder
     price?: SortOrder
     imageUrls?: SortOrder
-    sellerId?: SortOrder
+    sellerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     archived?: SortOrder
     sold?: SortOrder
@@ -13867,7 +14145,7 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"Listing"> | string
     price?: IntWithAggregatesFilter<"Listing"> | number
     imageUrls?: StringNullableListFilter<"Listing">
-    sellerId?: UuidWithAggregatesFilter<"Listing"> | string
+    sellerId?: UuidNullableWithAggregatesFilter<"Listing"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Listing"> | Date | string
     archived?: BoolWithAggregatesFilter<"Listing"> | boolean
     sold?: BoolWithAggregatesFilter<"Listing"> | boolean
@@ -13883,17 +14161,17 @@ export namespace Prisma {
     OR?: LikeWhereInput[]
     NOT?: LikeWhereInput | LikeWhereInput[]
     id?: UuidFilter<"Like"> | string
-    userId?: UuidFilter<"Like"> | string
-    listingId?: UuidFilter<"Like"> | string
+    userId?: UuidNullableFilter<"Like"> | string | null
+    listingId?: UuidNullableFilter<"Like"> | string | null
     createdAt?: DateTimeFilter<"Like"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    listing?: XOR<ListingScalarRelationFilter, ListingWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    listing?: XOR<ListingNullableScalarRelationFilter, ListingWhereInput> | null
   }
 
   export type LikeOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
-    listingId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    listingId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     listing?: ListingOrderByWithRelationInput
@@ -13905,17 +14183,17 @@ export namespace Prisma {
     AND?: LikeWhereInput | LikeWhereInput[]
     OR?: LikeWhereInput[]
     NOT?: LikeWhereInput | LikeWhereInput[]
-    userId?: UuidFilter<"Like"> | string
-    listingId?: UuidFilter<"Like"> | string
+    userId?: UuidNullableFilter<"Like"> | string | null
+    listingId?: UuidNullableFilter<"Like"> | string | null
     createdAt?: DateTimeFilter<"Like"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    listing?: XOR<ListingScalarRelationFilter, ListingWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    listing?: XOR<ListingNullableScalarRelationFilter, ListingWhereInput> | null
   }, "id" | "userId_listingId">
 
   export type LikeOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
-    listingId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    listingId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: LikeCountOrderByAggregateInput
     _max?: LikeMaxOrderByAggregateInput
@@ -13927,8 +14205,8 @@ export namespace Prisma {
     OR?: LikeScalarWhereWithAggregatesInput[]
     NOT?: LikeScalarWhereWithAggregatesInput | LikeScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Like"> | string
-    userId?: UuidWithAggregatesFilter<"Like"> | string
-    listingId?: UuidWithAggregatesFilter<"Like"> | string
+    userId?: UuidNullableWithAggregatesFilter<"Like"> | string | null
+    listingId?: UuidNullableWithAggregatesFilter<"Like"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Like"> | Date | string
   }
 
@@ -14018,9 +14296,9 @@ export namespace Prisma {
     comment?: StringNullableFilter<"Review"> | string | null
     role?: EnumReviewRoleFilter<"Review"> | $Enums.ReviewRole
     reviewerId?: UuidNullableFilter<"Review"> | string | null
-    revieweeId?: UuidFilter<"Review"> | string
+    revieweeId?: UuidNullableFilter<"Review"> | string | null
     createdAt?: DateTimeFilter<"Review"> | Date | string
-    reviewee?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewee?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     reviewer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -14030,7 +14308,7 @@ export namespace Prisma {
     comment?: SortOrderInput | SortOrder
     role?: SortOrder
     reviewerId?: SortOrderInput | SortOrder
-    revieweeId?: SortOrder
+    revieweeId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     reviewee?: UserOrderByWithRelationInput
     reviewer?: UserOrderByWithRelationInput
@@ -14046,9 +14324,9 @@ export namespace Prisma {
     comment?: StringNullableFilter<"Review"> | string | null
     role?: EnumReviewRoleFilter<"Review"> | $Enums.ReviewRole
     reviewerId?: UuidNullableFilter<"Review"> | string | null
-    revieweeId?: UuidFilter<"Review"> | string
+    revieweeId?: UuidNullableFilter<"Review"> | string | null
     createdAt?: DateTimeFilter<"Review"> | Date | string
-    reviewee?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reviewee?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     reviewer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "rid" | "reviewerId_revieweeId_role">
 
@@ -14058,7 +14336,7 @@ export namespace Prisma {
     comment?: SortOrderInput | SortOrder
     role?: SortOrder
     reviewerId?: SortOrderInput | SortOrder
-    revieweeId?: SortOrder
+    revieweeId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: ReviewCountOrderByAggregateInput
     _avg?: ReviewAvgOrderByAggregateInput
@@ -14076,7 +14354,7 @@ export namespace Prisma {
     comment?: StringNullableWithAggregatesFilter<"Review"> | string | null
     role?: EnumReviewRoleWithAggregatesFilter<"Review"> | $Enums.ReviewRole
     reviewerId?: UuidNullableWithAggregatesFilter<"Review"> | string | null
-    revieweeId?: UuidWithAggregatesFilter<"Review"> | string
+    revieweeId?: UuidNullableWithAggregatesFilter<"Review"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Review"> | Date | string
   }
 
@@ -14087,11 +14365,20 @@ export namespace Prisma {
     uid?: UuidFilter<"User"> | string
     email?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
+    username?: StringNullableFilter<"User"> | string | null
     profileURL?: StringFilter<"User"> | string
     isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     rating?: FloatFilter<"User"> | number
     hidden?: BoolFilter<"User"> | boolean
+    faculty?: StringNullableFilter<"User"> | string | null
+    year?: IntNullableFilter<"User"> | number | null
+    intent?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    category_interests?: StringNullableListFilter<"User">
+    campus_area?: StringNullableFilter<"User"> | string | null
+    enabled_notifications?: BoolFilter<"User"> | boolean
+    onboarding_completed?: BoolFilter<"User"> | boolean
     buyerConversations?: ConversationListRelationFilter
     sellerConversations?: ConversationListRelationFilter
     listings?: ListingListRelationFilter
@@ -14109,11 +14396,20 @@ export namespace Prisma {
     uid?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    username?: SortOrderInput | SortOrder
     profileURL?: SortOrder
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
     hidden?: SortOrder
+    faculty?: SortOrderInput | SortOrder
+    year?: SortOrderInput | SortOrder
+    intent?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    category_interests?: SortOrder
+    campus_area?: SortOrderInput | SortOrder
+    enabled_notifications?: SortOrder
+    onboarding_completed?: SortOrder
     buyerConversations?: ConversationOrderByRelationAggregateInput
     sellerConversations?: ConversationOrderByRelationAggregateInput
     listings?: ListingOrderByRelationAggregateInput
@@ -14130,6 +14426,7 @@ export namespace Prisma {
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     uid?: string
     email?: string
+    username?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
@@ -14139,6 +14436,14 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     rating?: FloatFilter<"User"> | number
     hidden?: BoolFilter<"User"> | boolean
+    faculty?: StringNullableFilter<"User"> | string | null
+    year?: IntNullableFilter<"User"> | number | null
+    intent?: StringNullableFilter<"User"> | string | null
+    bio?: StringNullableFilter<"User"> | string | null
+    category_interests?: StringNullableListFilter<"User">
+    campus_area?: StringNullableFilter<"User"> | string | null
+    enabled_notifications?: BoolFilter<"User"> | boolean
+    onboarding_completed?: BoolFilter<"User"> | boolean
     buyerConversations?: ConversationListRelationFilter
     sellerConversations?: ConversationListRelationFilter
     listings?: ListingListRelationFilter
@@ -14150,17 +14455,26 @@ export namespace Prisma {
     reviewsGiven?: ReviewListRelationFilter
     preferences?: XOR<UserPreferencesNullableScalarRelationFilter, UserPreferencesWhereInput> | null
     pushToken?: XOR<PushTokenNullableScalarRelationFilter, PushTokenWhereInput> | null
-  }, "uid" | "email">
+  }, "uid" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
     uid?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    username?: SortOrderInput | SortOrder
     profileURL?: SortOrder
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
     hidden?: SortOrder
+    faculty?: SortOrderInput | SortOrder
+    year?: SortOrderInput | SortOrder
+    intent?: SortOrderInput | SortOrder
+    bio?: SortOrderInput | SortOrder
+    category_interests?: SortOrder
+    campus_area?: SortOrderInput | SortOrder
+    enabled_notifications?: SortOrder
+    onboarding_completed?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -14175,11 +14489,20 @@ export namespace Prisma {
     uid?: UuidWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     name?: StringWithAggregatesFilter<"User"> | string
+    username?: StringNullableWithAggregatesFilter<"User"> | string | null
     profileURL?: StringWithAggregatesFilter<"User"> | string
     isVerified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     rating?: FloatWithAggregatesFilter<"User"> | number
     hidden?: BoolWithAggregatesFilter<"User"> | boolean
+    faculty?: StringNullableWithAggregatesFilter<"User"> | string | null
+    year?: IntNullableWithAggregatesFilter<"User"> | number | null
+    intent?: StringNullableWithAggregatesFilter<"User"> | string | null
+    bio?: StringNullableWithAggregatesFilter<"User"> | string | null
+    category_interests?: StringNullableListFilter<"User">
+    campus_area?: StringNullableWithAggregatesFilter<"User"> | string | null
+    enabled_notifications?: BoolWithAggregatesFilter<"User"> | boolean
+    onboarding_completed?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type ConversationWhereInput = {
@@ -14187,20 +14510,20 @@ export namespace Prisma {
     OR?: ConversationWhereInput[]
     NOT?: ConversationWhereInput | ConversationWhereInput[]
     cid?: UuidFilter<"Conversation"> | string
-    listingId?: UuidFilter<"Conversation"> | string
+    listingId?: UuidNullableFilter<"Conversation"> | string | null
     buyerId?: UuidNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     sellerId?: UuidNullableFilter<"Conversation"> | string | null
     updatedAt?: DateTimeFilter<"Conversation"> | Date | string
     buyer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    listing?: XOR<ListingScalarRelationFilter, ListingWhereInput>
+    listing?: XOR<ListingNullableScalarRelationFilter, ListingWhereInput> | null
     seller?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     messages?: MessageListRelationFilter
   }
 
   export type ConversationOrderByWithRelationInput = {
     cid?: SortOrder
-    listingId?: SortOrder
+    listingId?: SortOrderInput | SortOrder
     buyerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     sellerId?: SortOrderInput | SortOrder
@@ -14217,20 +14540,20 @@ export namespace Prisma {
     AND?: ConversationWhereInput | ConversationWhereInput[]
     OR?: ConversationWhereInput[]
     NOT?: ConversationWhereInput | ConversationWhereInput[]
-    listingId?: UuidFilter<"Conversation"> | string
+    listingId?: UuidNullableFilter<"Conversation"> | string | null
     buyerId?: UuidNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     sellerId?: UuidNullableFilter<"Conversation"> | string | null
     updatedAt?: DateTimeFilter<"Conversation"> | Date | string
     buyer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    listing?: XOR<ListingScalarRelationFilter, ListingWhereInput>
+    listing?: XOR<ListingNullableScalarRelationFilter, ListingWhereInput> | null
     seller?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     messages?: MessageListRelationFilter
   }, "cid" | "listingId_buyerId">
 
   export type ConversationOrderByWithAggregationInput = {
     cid?: SortOrder
-    listingId?: SortOrder
+    listingId?: SortOrderInput | SortOrder
     buyerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     sellerId?: SortOrderInput | SortOrder
@@ -14245,7 +14568,7 @@ export namespace Prisma {
     OR?: ConversationScalarWhereWithAggregatesInput[]
     NOT?: ConversationScalarWhereWithAggregatesInput | ConversationScalarWhereWithAggregatesInput[]
     cid?: UuidWithAggregatesFilter<"Conversation"> | string
-    listingId?: UuidWithAggregatesFilter<"Conversation"> | string
+    listingId?: UuidNullableWithAggregatesFilter<"Conversation"> | string | null
     buyerId?: UuidNullableWithAggregatesFilter<"Conversation"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
     sellerId?: UuidNullableWithAggregatesFilter<"Conversation"> | string | null
@@ -14262,10 +14585,10 @@ export namespace Prisma {
     conversationId?: UuidFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
     readAt?: DateTimeNullableFilter<"Message"> | Date | string | null
-    senderId?: UuidFilter<"Message"> | string
+    senderId?: UuidNullableFilter<"Message"> | string | null
     updatedAt?: DateTimeFilter<"Message"> | Date | string
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
-    sender?: XOR<UserScalarRelationFilter, UserWhereInput>
+    sender?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type MessageOrderByWithRelationInput = {
@@ -14275,7 +14598,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     createdAt?: SortOrder
     readAt?: SortOrderInput | SortOrder
-    senderId?: SortOrder
+    senderId?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     conversation?: ConversationOrderByWithRelationInput
     sender?: UserOrderByWithRelationInput
@@ -14291,10 +14614,10 @@ export namespace Prisma {
     conversationId?: UuidFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
     readAt?: DateTimeNullableFilter<"Message"> | Date | string | null
-    senderId?: UuidFilter<"Message"> | string
+    senderId?: UuidNullableFilter<"Message"> | string | null
     updatedAt?: DateTimeFilter<"Message"> | Date | string
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
-    sender?: XOR<UserScalarRelationFilter, UserWhereInput>
+    sender?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "mid">
 
   export type MessageOrderByWithAggregationInput = {
@@ -14304,7 +14627,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     createdAt?: SortOrder
     readAt?: SortOrderInput | SortOrder
-    senderId?: SortOrder
+    senderId?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     _count?: MessageCountOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
@@ -14321,7 +14644,7 @@ export namespace Prisma {
     conversationId?: UuidWithAggregatesFilter<"Message"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
     readAt?: DateTimeNullableWithAggregatesFilter<"Message"> | Date | string | null
-    senderId?: UuidWithAggregatesFilter<"Message"> | string
+    senderId?: UuidNullableWithAggregatesFilter<"Message"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
   }
 
@@ -14457,11 +14780,11 @@ export namespace Prisma {
     adminNote?: StringNullableFilter<"Report"> | string | null
     autoHidden?: BoolFilter<"Report"> | boolean
     resolvedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
-    reporterId?: UuidFilter<"Report"> | string
-    targetUserId?: UuidFilter<"Report"> | string
     resolvedById?: UuidNullableFilter<"Report"> | string | null
-    reporter?: XOR<UserScalarRelationFilter, UserWhereInput>
-    targetUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reporterId?: UuidNullableFilter<"Report"> | string | null
+    targetUserId?: UuidNullableFilter<"Report"> | string | null
+    reporter?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    targetUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type ReportOrderByWithRelationInput = {
@@ -14474,9 +14797,9 @@ export namespace Prisma {
     adminNote?: SortOrderInput | SortOrder
     autoHidden?: SortOrder
     resolvedAt?: SortOrderInput | SortOrder
-    reporterId?: SortOrder
-    targetUserId?: SortOrder
     resolvedById?: SortOrderInput | SortOrder
+    reporterId?: SortOrderInput | SortOrder
+    targetUserId?: SortOrderInput | SortOrder
     reporter?: UserOrderByWithRelationInput
     targetUser?: UserOrderByWithRelationInput
   }
@@ -14494,11 +14817,11 @@ export namespace Prisma {
     adminNote?: StringNullableFilter<"Report"> | string | null
     autoHidden?: BoolFilter<"Report"> | boolean
     resolvedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
-    reporterId?: UuidFilter<"Report"> | string
-    targetUserId?: UuidFilter<"Report"> | string
     resolvedById?: UuidNullableFilter<"Report"> | string | null
-    reporter?: XOR<UserScalarRelationFilter, UserWhereInput>
-    targetUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+    reporterId?: UuidNullableFilter<"Report"> | string | null
+    targetUserId?: UuidNullableFilter<"Report"> | string | null
+    reporter?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    targetUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type ReportOrderByWithAggregationInput = {
@@ -14511,9 +14834,9 @@ export namespace Prisma {
     adminNote?: SortOrderInput | SortOrder
     autoHidden?: SortOrder
     resolvedAt?: SortOrderInput | SortOrder
-    reporterId?: SortOrder
-    targetUserId?: SortOrder
     resolvedById?: SortOrderInput | SortOrder
+    reporterId?: SortOrderInput | SortOrder
+    targetUserId?: SortOrderInput | SortOrder
     _count?: ReportCountOrderByAggregateInput
     _max?: ReportMaxOrderByAggregateInput
     _min?: ReportMinOrderByAggregateInput
@@ -14532,9 +14855,9 @@ export namespace Prisma {
     adminNote?: StringNullableWithAggregatesFilter<"Report"> | string | null
     autoHidden?: BoolWithAggregatesFilter<"Report"> | boolean
     resolvedAt?: DateTimeNullableWithAggregatesFilter<"Report"> | Date | string | null
-    reporterId?: UuidWithAggregatesFilter<"Report"> | string
-    targetUserId?: UuidWithAggregatesFilter<"Report"> | string
     resolvedById?: UuidNullableWithAggregatesFilter<"Report"> | string | null
+    reporterId?: UuidNullableWithAggregatesFilter<"Report"> | string | null
+    targetUserId?: UuidNullableWithAggregatesFilter<"Report"> | string | null
   }
 
   export type ListingCreateInput = {
@@ -14553,7 +14876,7 @@ export namespace Prisma {
     category?: string | null
     likes?: LikeCreateNestedManyWithoutListingInput
     conversations?: ConversationCreateNestedManyWithoutListingInput
-    seller: UserCreateNestedOneWithoutListingsInput
+    seller?: UserCreateNestedOneWithoutListingsInput
   }
 
   export type ListingUncheckedCreateInput = {
@@ -14562,7 +14885,7 @@ export namespace Prisma {
     description: string
     price: number
     imageUrls?: ListingCreateimageUrlsInput | string[]
-    sellerId: string
+    sellerId?: string | null
     createdAt?: Date | string
     archived?: boolean
     sold?: boolean
@@ -14591,7 +14914,7 @@ export namespace Prisma {
     category?: NullableStringFieldUpdateOperationsInput | string | null
     likes?: LikeUpdateManyWithoutListingNestedInput
     conversations?: ConversationUpdateManyWithoutListingNestedInput
-    seller?: UserUpdateOneRequiredWithoutListingsNestedInput
+    seller?: UserUpdateOneWithoutListingsNestedInput
   }
 
   export type ListingUncheckedUpdateInput = {
@@ -14600,7 +14923,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     imageUrls?: ListingUpdateimageUrlsInput | string[]
-    sellerId?: StringFieldUpdateOperationsInput | string
+    sellerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archived?: BoolFieldUpdateOperationsInput | boolean
     sold?: BoolFieldUpdateOperationsInput | boolean
@@ -14619,7 +14942,7 @@ export namespace Prisma {
     description: string
     price: number
     imageUrls?: ListingCreateimageUrlsInput | string[]
-    sellerId: string
+    sellerId?: string | null
     createdAt?: Date | string
     archived?: boolean
     sold?: boolean
@@ -14652,7 +14975,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     imageUrls?: ListingUpdateimageUrlsInput | string[]
-    sellerId?: StringFieldUpdateOperationsInput | string
+    sellerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archived?: BoolFieldUpdateOperationsInput | boolean
     sold?: BoolFieldUpdateOperationsInput | boolean
@@ -14666,35 +14989,35 @@ export namespace Prisma {
   export type LikeCreateInput = {
     id?: string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
-    listing: ListingCreateNestedOneWithoutLikesInput
+    user?: UserCreateNestedOneWithoutLikesInput
+    listing?: ListingCreateNestedOneWithoutLikesInput
   }
 
   export type LikeUncheckedCreateInput = {
     id?: string
-    userId: string
-    listingId: string
+    userId?: string | null
+    listingId?: string | null
     createdAt?: Date | string
   }
 
   export type LikeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
-    listing?: ListingUpdateOneRequiredWithoutLikesNestedInput
+    user?: UserUpdateOneWithoutLikesNestedInput
+    listing?: ListingUpdateOneWithoutLikesNestedInput
   }
 
   export type LikeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LikeCreateManyInput = {
     id?: string
-    userId: string
-    listingId: string
+    userId?: string | null
+    listingId?: string | null
     createdAt?: Date | string
   }
 
@@ -14705,8 +15028,8 @@ export namespace Prisma {
 
   export type LikeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14799,7 +15122,7 @@ export namespace Prisma {
     comment?: string | null
     role: $Enums.ReviewRole
     createdAt?: Date | string
-    reviewee: UserCreateNestedOneWithoutReviewsReceivedInput
+    reviewee?: UserCreateNestedOneWithoutReviewsReceivedInput
     reviewer?: UserCreateNestedOneWithoutReviewsGivenInput
   }
 
@@ -14809,7 +15132,7 @@ export namespace Prisma {
     comment?: string | null
     role: $Enums.ReviewRole
     reviewerId?: string | null
-    revieweeId: string
+    revieweeId?: string | null
     createdAt?: Date | string
   }
 
@@ -14819,7 +15142,7 @@ export namespace Prisma {
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    reviewee?: UserUpdateOneRequiredWithoutReviewsReceivedNestedInput
+    reviewee?: UserUpdateOneWithoutReviewsReceivedNestedInput
     reviewer?: UserUpdateOneWithoutReviewsGivenNestedInput
   }
 
@@ -14829,7 +15152,7 @@ export namespace Prisma {
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
     reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
-    revieweeId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14839,7 +15162,7 @@ export namespace Prisma {
     comment?: string | null
     role: $Enums.ReviewRole
     reviewerId?: string | null
-    revieweeId: string
+    revieweeId?: string | null
     createdAt?: Date | string
   }
 
@@ -14857,7 +15180,7 @@ export namespace Prisma {
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
     reviewerId?: NullableStringFieldUpdateOperationsInput | string | null
-    revieweeId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14865,11 +15188,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -14887,11 +15219,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -14909,11 +15250,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -14931,11 +15281,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -14953,33 +15312,60 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ConversationCreateInput = {
@@ -14987,14 +15373,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     buyer?: UserCreateNestedOneWithoutBuyerConversationsInput
-    listing: ListingCreateNestedOneWithoutConversationsInput
+    listing?: ListingCreateNestedOneWithoutConversationsInput
     seller?: UserCreateNestedOneWithoutSellerConversationsInput
     messages?: MessageCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     buyerId?: string | null
     createdAt?: Date | string
     sellerId?: string | null
@@ -15007,14 +15393,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     buyer?: UserUpdateOneWithoutBuyerConversationsNestedInput
-    listing?: ListingUpdateOneRequiredWithoutConversationsNestedInput
+    listing?: ListingUpdateOneWithoutConversationsNestedInput
     seller?: UserUpdateOneWithoutSellerConversationsNestedInput
     messages?: MessageUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     buyerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sellerId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15024,7 +15410,7 @@ export namespace Prisma {
 
   export type ConversationCreateManyInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     buyerId?: string | null
     createdAt?: Date | string
     sellerId?: string | null
@@ -15039,7 +15425,7 @@ export namespace Prisma {
 
   export type ConversationUncheckedUpdateManyInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     buyerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sellerId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15054,7 +15440,7 @@ export namespace Prisma {
     readAt?: Date | string | null
     updatedAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutMessagesInput
-    sender: UserCreateNestedOneWithoutMessagesInput
+    sender?: UserCreateNestedOneWithoutMessagesInput
   }
 
   export type MessageUncheckedCreateInput = {
@@ -15064,7 +15450,7 @@ export namespace Prisma {
     conversationId: string
     createdAt?: Date | string
     readAt?: Date | string | null
-    senderId: string
+    senderId?: string | null
     updatedAt?: Date | string
   }
 
@@ -15076,7 +15462,7 @@ export namespace Prisma {
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
-    sender?: UserUpdateOneRequiredWithoutMessagesNestedInput
+    sender?: UserUpdateOneWithoutMessagesNestedInput
   }
 
   export type MessageUncheckedUpdateInput = {
@@ -15086,7 +15472,7 @@ export namespace Prisma {
     conversationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    senderId?: StringFieldUpdateOperationsInput | string
+    senderId?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -15097,7 +15483,7 @@ export namespace Prisma {
     conversationId: string
     createdAt?: Date | string
     readAt?: Date | string | null
-    senderId: string
+    senderId?: string | null
     updatedAt?: Date | string
   }
 
@@ -15117,7 +15503,7 @@ export namespace Prisma {
     conversationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    senderId?: StringFieldUpdateOperationsInput | string
+    senderId?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -15257,8 +15643,8 @@ export namespace Prisma {
     autoHidden?: boolean
     resolvedAt?: Date | string | null
     resolvedById?: string | null
-    reporter: UserCreateNestedOneWithoutReportsFiledInput
-    targetUser: UserCreateNestedOneWithoutReportsReceivedInput
+    reporter?: UserCreateNestedOneWithoutReportsFiledInput
+    targetUser?: UserCreateNestedOneWithoutReportsReceivedInput
   }
 
   export type ReportUncheckedCreateInput = {
@@ -15271,9 +15657,9 @@ export namespace Prisma {
     adminNote?: string | null
     autoHidden?: boolean
     resolvedAt?: Date | string | null
-    reporterId: string
-    targetUserId: string
     resolvedById?: string | null
+    reporterId?: string | null
+    targetUserId?: string | null
   }
 
   export type ReportUpdateInput = {
@@ -15287,8 +15673,8 @@ export namespace Prisma {
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
-    reporter?: UserUpdateOneRequiredWithoutReportsFiledNestedInput
-    targetUser?: UserUpdateOneRequiredWithoutReportsReceivedNestedInput
+    reporter?: UserUpdateOneWithoutReportsFiledNestedInput
+    targetUser?: UserUpdateOneWithoutReportsReceivedNestedInput
   }
 
   export type ReportUncheckedUpdateInput = {
@@ -15301,9 +15687,9 @@ export namespace Prisma {
     adminNote?: NullableStringFieldUpdateOperationsInput | string | null
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reporterId?: StringFieldUpdateOperationsInput | string
-    targetUserId?: StringFieldUpdateOperationsInput | string
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReportCreateManyInput = {
@@ -15316,9 +15702,9 @@ export namespace Prisma {
     adminNote?: string | null
     autoHidden?: boolean
     resolvedAt?: Date | string | null
-    reporterId: string
-    targetUserId: string
     resolvedById?: string | null
+    reporterId?: string | null
+    targetUserId?: string | null
   }
 
   export type ReportUpdateManyMutationInput = {
@@ -15344,9 +15730,9 @@ export namespace Prisma {
     adminNote?: NullableStringFieldUpdateOperationsInput | string | null
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reporterId?: StringFieldUpdateOperationsInput | string
-    targetUserId?: StringFieldUpdateOperationsInput | string
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    targetUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -15393,6 +15779,18 @@ export namespace Prisma {
     hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
     hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
     isEmpty?: boolean
+  }
+
+  export type UuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -15449,9 +15847,9 @@ export namespace Prisma {
     none?: ConversationWhereInput
   }
 
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type SortOrderInput = {
@@ -15579,6 +15977,21 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15635,9 +16048,9 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type ListingScalarRelationFilter = {
-    is?: ListingWhereInput
-    isNot?: ListingWhereInput
+  export type ListingNullableScalarRelationFilter = {
+    is?: ListingWhereInput | null
+    isNot?: ListingWhereInput | null
   }
 
   export type LikeUserIdListingIdCompoundUniqueInput = {
@@ -15664,6 +16077,11 @@ export namespace Prisma {
     userId?: SortOrder
     listingId?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
   }
 
   export type UserPreferencesCountOrderByAggregateInput = {
@@ -15717,23 +16135,6 @@ export namespace Prisma {
     in?: $Enums.ReviewRole[] | ListEnumReviewRoleFieldRefInput<$PrismaModel>
     notIn?: $Enums.ReviewRole[] | ListEnumReviewRoleFieldRefInput<$PrismaModel>
     not?: NestedEnumReviewRoleFilter<$PrismaModel> | $Enums.ReviewRole
-  }
-
-  export type UuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
   }
 
   export type ReviewReviewerIdRevieweeIdRoleCompoundUniqueInput = {
@@ -15790,21 +16191,6 @@ export namespace Prisma {
     _max?: NestedEnumReviewRoleFilter<$PrismaModel>
   }
 
-  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -15814,6 +16200,17 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type ListingListRelationFilter = {
@@ -15870,41 +16267,68 @@ export namespace Prisma {
     uid?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    username?: SortOrder
     profileURL?: SortOrder
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
     hidden?: SortOrder
+    faculty?: SortOrder
+    year?: SortOrder
+    intent?: SortOrder
+    bio?: SortOrder
+    category_interests?: SortOrder
+    campus_area?: SortOrder
+    enabled_notifications?: SortOrder
+    onboarding_completed?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
     rating?: SortOrder
+    year?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
     uid?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    username?: SortOrder
     profileURL?: SortOrder
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
     hidden?: SortOrder
+    faculty?: SortOrder
+    year?: SortOrder
+    intent?: SortOrder
+    bio?: SortOrder
+    campus_area?: SortOrder
+    enabled_notifications?: SortOrder
+    onboarding_completed?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
     uid?: SortOrder
     email?: SortOrder
     name?: SortOrder
+    username?: SortOrder
     profileURL?: SortOrder
     isVerified?: SortOrder
     createdAt?: SortOrder
     rating?: SortOrder
     hidden?: SortOrder
+    faculty?: SortOrder
+    year?: SortOrder
+    intent?: SortOrder
+    bio?: SortOrder
+    campus_area?: SortOrder
+    enabled_notifications?: SortOrder
+    onboarding_completed?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
     rating?: SortOrder
+    year?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -15921,6 +16345,22 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type ConversationListingIdBuyerIdCompoundUniqueInput = {
@@ -16131,9 +16571,9 @@ export namespace Prisma {
     adminNote?: SortOrder
     autoHidden?: SortOrder
     resolvedAt?: SortOrder
+    resolvedById?: SortOrder
     reporterId?: SortOrder
     targetUserId?: SortOrder
-    resolvedById?: SortOrder
   }
 
   export type ReportMaxOrderByAggregateInput = {
@@ -16146,9 +16586,9 @@ export namespace Prisma {
     adminNote?: SortOrder
     autoHidden?: SortOrder
     resolvedAt?: SortOrder
+    resolvedById?: SortOrder
     reporterId?: SortOrder
     targetUserId?: SortOrder
-    resolvedById?: SortOrder
   }
 
   export type ReportMinOrderByAggregateInput = {
@@ -16161,9 +16601,9 @@ export namespace Prisma {
     adminNote?: SortOrder
     autoHidden?: SortOrder
     resolvedAt?: SortOrder
+    resolvedById?: SortOrder
     reporterId?: SortOrder
     targetUserId?: SortOrder
-    resolvedById?: SortOrder
   }
 
   export type EnumReportReasonWithAggregatesFilter<$PrismaModel = never> = {
@@ -16289,10 +16729,12 @@ export namespace Prisma {
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutListingsNestedInput = {
+  export type UserUpdateOneWithoutListingsNestedInput = {
     create?: XOR<UserCreateWithoutListingsInput, UserUncheckedCreateWithoutListingsInput>
     connectOrCreate?: UserCreateOrConnectWithoutListingsInput
     upsert?: UserUpsertWithoutListingsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutListingsInput, UserUpdateWithoutListingsInput>, UserUncheckedUpdateWithoutListingsInput>
   }
@@ -16337,18 +16779,22 @@ export namespace Prisma {
     connect?: ListingWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutLikesNestedInput = {
+  export type UserUpdateOneWithoutLikesNestedInput = {
     create?: XOR<UserCreateWithoutLikesInput, UserUncheckedCreateWithoutLikesInput>
     connectOrCreate?: UserCreateOrConnectWithoutLikesInput
     upsert?: UserUpsertWithoutLikesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLikesInput, UserUpdateWithoutLikesInput>, UserUncheckedUpdateWithoutLikesInput>
   }
 
-  export type ListingUpdateOneRequiredWithoutLikesNestedInput = {
+  export type ListingUpdateOneWithoutLikesNestedInput = {
     create?: XOR<ListingCreateWithoutLikesInput, ListingUncheckedCreateWithoutLikesInput>
     connectOrCreate?: ListingCreateOrConnectWithoutLikesInput
     upsert?: ListingUpsertWithoutLikesInput
+    disconnect?: ListingWhereInput | boolean
+    delete?: ListingWhereInput | boolean
     connect?: ListingWhereUniqueInput
     update?: XOR<XOR<ListingUpdateToOneWithWhereWithoutLikesInput, ListingUpdateWithoutLikesInput>, ListingUncheckedUpdateWithoutLikesInput>
   }
@@ -16383,10 +16829,12 @@ export namespace Prisma {
     set?: $Enums.ReviewRole
   }
 
-  export type UserUpdateOneRequiredWithoutReviewsReceivedNestedInput = {
+  export type UserUpdateOneWithoutReviewsReceivedNestedInput = {
     create?: XOR<UserCreateWithoutReviewsReceivedInput, UserUncheckedCreateWithoutReviewsReceivedInput>
     connectOrCreate?: UserCreateOrConnectWithoutReviewsReceivedInput
     upsert?: UserUpsertWithoutReviewsReceivedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewsReceivedInput, UserUpdateWithoutReviewsReceivedInput>, UserUncheckedUpdateWithoutReviewsReceivedInput>
   }
@@ -16399,6 +16847,10 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewsGivenInput, UserUpdateWithoutReviewsGivenInput>, UserUncheckedUpdateWithoutReviewsGivenInput>
+  }
+
+  export type UserCreatecategory_interestsInput = {
+    set: string[]
   }
 
   export type ConversationCreateNestedManyWithoutBuyerInput = {
@@ -16557,6 +17009,19 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdatecategory_interestsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type ConversationUpdateManyWithoutBuyerNestedInput = {
@@ -16893,10 +17358,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBuyerConversationsInput, UserUpdateWithoutBuyerConversationsInput>, UserUncheckedUpdateWithoutBuyerConversationsInput>
   }
 
-  export type ListingUpdateOneRequiredWithoutConversationsNestedInput = {
+  export type ListingUpdateOneWithoutConversationsNestedInput = {
     create?: XOR<ListingCreateWithoutConversationsInput, ListingUncheckedCreateWithoutConversationsInput>
     connectOrCreate?: ListingCreateOrConnectWithoutConversationsInput
     upsert?: ListingUpsertWithoutConversationsInput
+    disconnect?: ListingWhereInput | boolean
+    delete?: ListingWhereInput | boolean
     connect?: ListingWhereUniqueInput
     update?: XOR<XOR<ListingUpdateToOneWithWhereWithoutConversationsInput, ListingUpdateWithoutConversationsInput>, ListingUncheckedUpdateWithoutConversationsInput>
   }
@@ -16963,10 +17430,12 @@ export namespace Prisma {
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutMessagesInput, ConversationUpdateWithoutMessagesInput>, ConversationUncheckedUpdateWithoutMessagesInput>
   }
 
-  export type UserUpdateOneRequiredWithoutMessagesNestedInput = {
+  export type UserUpdateOneWithoutMessagesNestedInput = {
     create?: XOR<UserCreateWithoutMessagesInput, UserUncheckedCreateWithoutMessagesInput>
     connectOrCreate?: UserCreateOrConnectWithoutMessagesInput
     upsert?: UserUpsertWithoutMessagesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMessagesInput, UserUpdateWithoutMessagesInput>, UserUncheckedUpdateWithoutMessagesInput>
   }
@@ -17013,18 +17482,22 @@ export namespace Prisma {
     set?: $Enums.ReportStatus
   }
 
-  export type UserUpdateOneRequiredWithoutReportsFiledNestedInput = {
+  export type UserUpdateOneWithoutReportsFiledNestedInput = {
     create?: XOR<UserCreateWithoutReportsFiledInput, UserUncheckedCreateWithoutReportsFiledInput>
     connectOrCreate?: UserCreateOrConnectWithoutReportsFiledInput
     upsert?: UserUpsertWithoutReportsFiledInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReportsFiledInput, UserUpdateWithoutReportsFiledInput>, UserUncheckedUpdateWithoutReportsFiledInput>
   }
 
-  export type UserUpdateOneRequiredWithoutReportsReceivedNestedInput = {
+  export type UserUpdateOneWithoutReportsReceivedNestedInput = {
     create?: XOR<UserCreateWithoutReportsReceivedInput, UserUncheckedCreateWithoutReportsReceivedInput>
     connectOrCreate?: UserCreateOrConnectWithoutReportsReceivedInput
     upsert?: UserUpsertWithoutReportsReceivedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReportsReceivedInput, UserUpdateWithoutReportsReceivedInput>, UserUncheckedUpdateWithoutReportsReceivedInput>
   }
@@ -17063,6 +17536,17 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type NestedUuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -17164,6 +17648,31 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -17202,17 +17711,6 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -17237,17 +17735,6 @@ export namespace Prisma {
     not?: NestedEnumReviewRoleFilter<$PrismaModel> | $Enums.ReviewRole
   }
 
-  export type NestedUuidNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
-  }
-
   export type NestedEnumReviewRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ReviewRole | EnumReviewRoleFieldRefInput<$PrismaModel>
     in?: $Enums.ReviewRole[] | ListEnumReviewRoleFieldRefInput<$PrismaModel>
@@ -17256,20 +17743,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumReviewRoleFilter<$PrismaModel>
     _max?: NestedEnumReviewRoleFilter<$PrismaModel>
-  }
-
-  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -17286,6 +17759,22 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -17377,12 +17866,12 @@ export namespace Prisma {
   export type LikeCreateWithoutListingInput = {
     id?: string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutLikesInput
+    user?: UserCreateNestedOneWithoutLikesInput
   }
 
   export type LikeUncheckedCreateWithoutListingInput = {
     id?: string
-    userId: string
+    userId?: string | null
     createdAt?: Date | string
   }
 
@@ -17428,11 +17917,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
@@ -17449,11 +17947,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -17492,8 +17999,8 @@ export namespace Prisma {
     OR?: LikeScalarWhereInput[]
     NOT?: LikeScalarWhereInput | LikeScalarWhereInput[]
     id?: UuidFilter<"Like"> | string
-    userId?: UuidFilter<"Like"> | string
-    listingId?: UuidFilter<"Like"> | string
+    userId?: UuidNullableFilter<"Like"> | string | null
+    listingId?: UuidNullableFilter<"Like"> | string | null
     createdAt?: DateTimeFilter<"Like"> | Date | string
   }
 
@@ -17518,7 +18025,7 @@ export namespace Prisma {
     OR?: ConversationScalarWhereInput[]
     NOT?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
     cid?: UuidFilter<"Conversation"> | string
-    listingId?: UuidFilter<"Conversation"> | string
+    listingId?: UuidNullableFilter<"Conversation"> | string | null
     buyerId?: UuidNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     sellerId?: UuidNullableFilter<"Conversation"> | string | null
@@ -17540,11 +18047,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
@@ -17561,11 +18077,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -17582,11 +18107,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -17603,11 +18137,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -17640,7 +18183,7 @@ export namespace Prisma {
     condition?: string | null
     category?: string | null
     conversations?: ConversationCreateNestedManyWithoutListingInput
-    seller: UserCreateNestedOneWithoutListingsInput
+    seller?: UserCreateNestedOneWithoutListingsInput
   }
 
   export type ListingUncheckedCreateWithoutLikesInput = {
@@ -17649,7 +18192,7 @@ export namespace Prisma {
     description: string
     price: number
     imageUrls?: ListingCreateimageUrlsInput | string[]
-    sellerId: string
+    sellerId?: string | null
     createdAt?: Date | string
     archived?: boolean
     sold?: boolean
@@ -17681,11 +18224,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -17702,11 +18254,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -17745,7 +18306,7 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     conversations?: ConversationUpdateManyWithoutListingNestedInput
-    seller?: UserUpdateOneRequiredWithoutListingsNestedInput
+    seller?: UserUpdateOneWithoutListingsNestedInput
   }
 
   export type ListingUncheckedUpdateWithoutLikesInput = {
@@ -17754,7 +18315,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     imageUrls?: ListingUpdateimageUrlsInput | string[]
-    sellerId?: StringFieldUpdateOperationsInput | string
+    sellerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archived?: BoolFieldUpdateOperationsInput | boolean
     sold?: BoolFieldUpdateOperationsInput | boolean
@@ -17770,11 +18331,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -17791,11 +18361,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -17828,11 +18407,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -17849,11 +18437,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -17870,11 +18467,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -17891,11 +18497,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -17917,11 +18532,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -17938,11 +18562,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -17975,11 +18608,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -17996,11 +18638,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -18028,11 +18679,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -18049,11 +18709,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -18070,14 +18739,14 @@ export namespace Prisma {
     cid?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    listing: ListingCreateNestedOneWithoutConversationsInput
+    listing?: ListingCreateNestedOneWithoutConversationsInput
     seller?: UserCreateNestedOneWithoutSellerConversationsInput
     messages?: MessageCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutBuyerInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     createdAt?: Date | string
     sellerId?: string | null
     updatedAt?: Date | string
@@ -18099,13 +18768,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     buyer?: UserCreateNestedOneWithoutBuyerConversationsInput
-    listing: ListingCreateNestedOneWithoutConversationsInput
+    listing?: ListingCreateNestedOneWithoutConversationsInput
     messages?: MessageCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutSellerInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     buyerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18201,12 +18870,12 @@ export namespace Prisma {
   export type LikeCreateWithoutUserInput = {
     id?: string
     createdAt?: Date | string
-    listing: ListingCreateNestedOneWithoutLikesInput
+    listing?: ListingCreateNestedOneWithoutLikesInput
   }
 
   export type LikeUncheckedCreateWithoutUserInput = {
     id?: string
-    listingId: string
+    listingId?: string | null
     createdAt?: Date | string
   }
 
@@ -18231,7 +18900,7 @@ export namespace Prisma {
     autoHidden?: boolean
     resolvedAt?: Date | string | null
     resolvedById?: string | null
-    targetUser: UserCreateNestedOneWithoutReportsReceivedInput
+    targetUser?: UserCreateNestedOneWithoutReportsReceivedInput
   }
 
   export type ReportUncheckedCreateWithoutReporterInput = {
@@ -18244,8 +18913,8 @@ export namespace Prisma {
     adminNote?: string | null
     autoHidden?: boolean
     resolvedAt?: Date | string | null
-    targetUserId: string
     resolvedById?: string | null
+    targetUserId?: string | null
   }
 
   export type ReportCreateOrConnectWithoutReporterInput = {
@@ -18269,7 +18938,7 @@ export namespace Prisma {
     autoHidden?: boolean
     resolvedAt?: Date | string | null
     resolvedById?: string | null
-    reporter: UserCreateNestedOneWithoutReportsFiledInput
+    reporter?: UserCreateNestedOneWithoutReportsFiledInput
   }
 
   export type ReportUncheckedCreateWithoutTargetUserInput = {
@@ -18282,8 +18951,8 @@ export namespace Prisma {
     adminNote?: string | null
     autoHidden?: boolean
     resolvedAt?: Date | string | null
-    reporterId: string
     resolvedById?: string | null
+    reporterId?: string | null
   }
 
   export type ReportCreateOrConnectWithoutTargetUserInput = {
@@ -18330,7 +18999,7 @@ export namespace Prisma {
     comment?: string | null
     role: $Enums.ReviewRole
     createdAt?: Date | string
-    reviewee: UserCreateNestedOneWithoutReviewsReceivedInput
+    reviewee?: UserCreateNestedOneWithoutReviewsReceivedInput
   }
 
   export type ReviewUncheckedCreateWithoutReviewerInput = {
@@ -18338,7 +19007,7 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     role: $Enums.ReviewRole
-    revieweeId: string
+    revieweeId?: string | null
     createdAt?: Date | string
   }
 
@@ -18455,7 +19124,7 @@ export namespace Prisma {
     description?: StringFilter<"Listing"> | string
     price?: IntFilter<"Listing"> | number
     imageUrls?: StringNullableListFilter<"Listing">
-    sellerId?: UuidFilter<"Listing"> | string
+    sellerId?: UuidNullableFilter<"Listing"> | string | null
     createdAt?: DateTimeFilter<"Listing"> | Date | string
     archived?: BoolFilter<"Listing"> | boolean
     sold?: BoolFilter<"Listing"> | boolean
@@ -18492,7 +19161,7 @@ export namespace Prisma {
     conversationId?: UuidFilter<"Message"> | string
     createdAt?: DateTimeFilter<"Message"> | Date | string
     readAt?: DateTimeNullableFilter<"Message"> | Date | string | null
-    senderId?: UuidFilter<"Message"> | string
+    senderId?: UuidNullableFilter<"Message"> | string | null
     updatedAt?: DateTimeFilter<"Message"> | Date | string
   }
 
@@ -18541,9 +19210,9 @@ export namespace Prisma {
     adminNote?: StringNullableFilter<"Report"> | string | null
     autoHidden?: BoolFilter<"Report"> | boolean
     resolvedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
-    reporterId?: UuidFilter<"Report"> | string
-    targetUserId?: UuidFilter<"Report"> | string
     resolvedById?: UuidNullableFilter<"Report"> | string | null
+    reporterId?: UuidNullableFilter<"Report"> | string | null
+    targetUserId?: UuidNullableFilter<"Report"> | string | null
   }
 
   export type ReportUpsertWithWhereUniqueWithoutTargetUserInput = {
@@ -18587,7 +19256,7 @@ export namespace Prisma {
     comment?: StringNullableFilter<"Review"> | string | null
     role?: EnumReviewRoleFilter<"Review"> | $Enums.ReviewRole
     reviewerId?: UuidNullableFilter<"Review"> | string | null
-    revieweeId?: UuidFilter<"Review"> | string
+    revieweeId?: UuidNullableFilter<"Review"> | string | null
     createdAt?: DateTimeFilter<"Review"> | Date | string
   }
 
@@ -18669,11 +19338,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
@@ -18690,11 +19368,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -18727,7 +19414,7 @@ export namespace Prisma {
     condition?: string | null
     category?: string | null
     likes?: LikeCreateNestedManyWithoutListingInput
-    seller: UserCreateNestedOneWithoutListingsInput
+    seller?: UserCreateNestedOneWithoutListingsInput
   }
 
   export type ListingUncheckedCreateWithoutConversationsInput = {
@@ -18736,7 +19423,7 @@ export namespace Prisma {
     description: string
     price: number
     imageUrls?: ListingCreateimageUrlsInput | string[]
-    sellerId: string
+    sellerId?: string | null
     createdAt?: Date | string
     archived?: boolean
     sold?: boolean
@@ -18757,11 +19444,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
     messages?: MessageCreateNestedManyWithoutSenderInput
@@ -18778,11 +19474,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
     messages?: MessageUncheckedCreateNestedManyWithoutSenderInput
@@ -18807,7 +19512,7 @@ export namespace Prisma {
     createdAt?: Date | string
     readAt?: Date | string | null
     updatedAt?: Date | string
-    sender: UserCreateNestedOneWithoutMessagesInput
+    sender?: UserCreateNestedOneWithoutMessagesInput
   }
 
   export type MessageUncheckedCreateWithoutConversationInput = {
@@ -18816,7 +19521,7 @@ export namespace Prisma {
     edited?: boolean
     createdAt?: Date | string
     readAt?: Date | string | null
-    senderId: string
+    senderId?: string | null
     updatedAt?: Date | string
   }
 
@@ -18845,11 +19550,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
@@ -18866,11 +19580,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -18909,7 +19632,7 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     category?: NullableStringFieldUpdateOperationsInput | string | null
     likes?: LikeUpdateManyWithoutListingNestedInput
-    seller?: UserUpdateOneRequiredWithoutListingsNestedInput
+    seller?: UserUpdateOneWithoutListingsNestedInput
   }
 
   export type ListingUncheckedUpdateWithoutConversationsInput = {
@@ -18918,7 +19641,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     price?: IntFieldUpdateOperationsInput | number
     imageUrls?: ListingUpdateimageUrlsInput | string[]
-    sellerId?: StringFieldUpdateOperationsInput | string
+    sellerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archived?: BoolFieldUpdateOperationsInput | boolean
     sold?: BoolFieldUpdateOperationsInput | boolean
@@ -18945,11 +19668,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
     messages?: MessageUpdateManyWithoutSenderNestedInput
@@ -18966,11 +19698,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
     messages?: MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -19004,13 +19745,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     buyer?: UserCreateNestedOneWithoutBuyerConversationsInput
-    listing: ListingCreateNestedOneWithoutConversationsInput
+    listing?: ListingCreateNestedOneWithoutConversationsInput
     seller?: UserCreateNestedOneWithoutSellerConversationsInput
   }
 
   export type ConversationUncheckedCreateWithoutMessagesInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     buyerId?: string | null
     createdAt?: Date | string
     sellerId?: string | null
@@ -19026,11 +19767,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -19047,11 +19797,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -19085,13 +19844,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     buyer?: UserUpdateOneWithoutBuyerConversationsNestedInput
-    listing?: ListingUpdateOneRequiredWithoutConversationsNestedInput
+    listing?: ListingUpdateOneWithoutConversationsNestedInput
     seller?: UserUpdateOneWithoutSellerConversationsNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMessagesInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     buyerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sellerId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19113,11 +19872,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -19134,11 +19902,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -19155,11 +19932,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -19176,11 +19962,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -19213,11 +20008,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -19234,11 +20038,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -19255,11 +20068,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -19276,11 +20098,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -19302,11 +20133,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationCreateNestedManyWithoutSellerInput
     listings?: ListingCreateNestedManyWithoutSellerInput
@@ -19323,11 +20163,20 @@ export namespace Prisma {
     uid: string
     email: string
     name: string
+    username?: string | null
     profileURL: string
     isVerified?: boolean
     createdAt?: Date | string
     rating?: number
     hidden?: boolean
+    faculty?: string | null
+    year?: number | null
+    intent?: string | null
+    bio?: string | null
+    category_interests?: UserCreatecategory_interestsInput | string[]
+    campus_area?: string | null
+    enabled_notifications?: boolean
+    onboarding_completed?: boolean
     buyerConversations?: ConversationUncheckedCreateNestedManyWithoutBuyerInput
     sellerConversations?: ConversationUncheckedCreateNestedManyWithoutSellerInput
     listings?: ListingUncheckedCreateNestedManyWithoutSellerInput
@@ -19360,11 +20209,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -19381,11 +20239,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -19413,11 +20280,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUpdateManyWithoutSellerNestedInput
     listings?: ListingUpdateManyWithoutSellerNestedInput
@@ -19434,11 +20310,20 @@ export namespace Prisma {
     uid?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
     profileURL?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rating?: FloatFieldUpdateOperationsInput | number
     hidden?: BoolFieldUpdateOperationsInput | boolean
+    faculty?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    intent?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    category_interests?: UserUpdatecategory_interestsInput | string[]
+    campus_area?: NullableStringFieldUpdateOperationsInput | string | null
+    enabled_notifications?: BoolFieldUpdateOperationsInput | boolean
+    onboarding_completed?: BoolFieldUpdateOperationsInput | boolean
     buyerConversations?: ConversationUncheckedUpdateManyWithoutBuyerNestedInput
     sellerConversations?: ConversationUncheckedUpdateManyWithoutSellerNestedInput
     listings?: ListingUncheckedUpdateManyWithoutSellerNestedInput
@@ -19453,7 +20338,7 @@ export namespace Prisma {
 
   export type LikeCreateManyListingInput = {
     id?: string
-    userId: string
+    userId?: string | null
     createdAt?: Date | string
   }
 
@@ -19468,18 +20353,18 @@ export namespace Prisma {
   export type LikeUpdateWithoutListingInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutLikesNestedInput
+    user?: UserUpdateOneWithoutLikesNestedInput
   }
 
   export type LikeUncheckedUpdateWithoutListingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LikeUncheckedUpdateManyWithoutListingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19511,7 +20396,7 @@ export namespace Prisma {
 
   export type ConversationCreateManyBuyerInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     createdAt?: Date | string
     sellerId?: string | null
     updatedAt?: Date | string
@@ -19519,7 +20404,7 @@ export namespace Prisma {
 
   export type ConversationCreateManySellerInput = {
     cid?: string
-    listingId: string
+    listingId?: string | null
     buyerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19553,7 +20438,7 @@ export namespace Prisma {
 
   export type LikeCreateManyUserInput = {
     id?: string
-    listingId: string
+    listingId?: string | null
     createdAt?: Date | string
   }
 
@@ -19567,8 +20452,8 @@ export namespace Prisma {
     adminNote?: string | null
     autoHidden?: boolean
     resolvedAt?: Date | string | null
-    targetUserId: string
     resolvedById?: string | null
+    targetUserId?: string | null
   }
 
   export type ReportCreateManyTargetUserInput = {
@@ -19581,8 +20466,8 @@ export namespace Prisma {
     adminNote?: string | null
     autoHidden?: boolean
     resolvedAt?: Date | string | null
-    reporterId: string
     resolvedById?: string | null
+    reporterId?: string | null
   }
 
   export type ReviewCreateManyRevieweeInput = {
@@ -19599,7 +20484,7 @@ export namespace Prisma {
     rating: number
     comment?: string | null
     role: $Enums.ReviewRole
-    revieweeId: string
+    revieweeId?: string | null
     createdAt?: Date | string
   }
 
@@ -19607,14 +20492,14 @@ export namespace Prisma {
     cid?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    listing?: ListingUpdateOneRequiredWithoutConversationsNestedInput
+    listing?: ListingUpdateOneWithoutConversationsNestedInput
     seller?: UserUpdateOneWithoutSellerConversationsNestedInput
     messages?: MessageUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutBuyerInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sellerId?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19623,7 +20508,7 @@ export namespace Prisma {
 
   export type ConversationUncheckedUpdateManyWithoutBuyerInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sellerId?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19634,13 +20519,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     buyer?: UserUpdateOneWithoutBuyerConversationsNestedInput
-    listing?: ListingUpdateOneRequiredWithoutConversationsNestedInput
+    listing?: ListingUpdateOneWithoutConversationsNestedInput
     messages?: MessageUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutSellerInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     buyerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19649,7 +20534,7 @@ export namespace Prisma {
 
   export type ConversationUncheckedUpdateManyWithoutSellerInput = {
     cid?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     buyerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19740,18 +20625,18 @@ export namespace Prisma {
   export type LikeUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    listing?: ListingUpdateOneRequiredWithoutLikesNestedInput
+    listing?: ListingUpdateOneWithoutLikesNestedInput
   }
 
   export type LikeUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LikeUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    listingId?: StringFieldUpdateOperationsInput | string
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19766,7 +20651,7 @@ export namespace Prisma {
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
-    targetUser?: UserUpdateOneRequiredWithoutReportsReceivedNestedInput
+    targetUser?: UserUpdateOneWithoutReportsReceivedNestedInput
   }
 
   export type ReportUncheckedUpdateWithoutReporterInput = {
@@ -19779,8 +20664,8 @@ export namespace Prisma {
     adminNote?: NullableStringFieldUpdateOperationsInput | string | null
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    targetUserId?: StringFieldUpdateOperationsInput | string
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    targetUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReportUncheckedUpdateManyWithoutReporterInput = {
@@ -19793,8 +20678,8 @@ export namespace Prisma {
     adminNote?: NullableStringFieldUpdateOperationsInput | string | null
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    targetUserId?: StringFieldUpdateOperationsInput | string
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    targetUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReportUpdateWithoutTargetUserInput = {
@@ -19808,7 +20693,7 @@ export namespace Prisma {
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
-    reporter?: UserUpdateOneRequiredWithoutReportsFiledNestedInput
+    reporter?: UserUpdateOneWithoutReportsFiledNestedInput
   }
 
   export type ReportUncheckedUpdateWithoutTargetUserInput = {
@@ -19821,8 +20706,8 @@ export namespace Prisma {
     adminNote?: NullableStringFieldUpdateOperationsInput | string | null
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reporterId?: StringFieldUpdateOperationsInput | string
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reporterId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReportUncheckedUpdateManyWithoutTargetUserInput = {
@@ -19835,8 +20720,8 @@ export namespace Prisma {
     adminNote?: NullableStringFieldUpdateOperationsInput | string | null
     autoHidden?: BoolFieldUpdateOperationsInput | boolean
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    reporterId?: StringFieldUpdateOperationsInput | string
     resolvedById?: NullableStringFieldUpdateOperationsInput | string | null
+    reporterId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ReviewUpdateWithoutRevieweeInput = {
@@ -19872,7 +20757,7 @@ export namespace Prisma {
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    reviewee?: UserUpdateOneRequiredWithoutReviewsReceivedNestedInput
+    reviewee?: UserUpdateOneWithoutReviewsReceivedNestedInput
   }
 
   export type ReviewUncheckedUpdateWithoutReviewerInput = {
@@ -19880,7 +20765,7 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
-    revieweeId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19889,7 +20774,7 @@ export namespace Prisma {
     rating?: IntFieldUpdateOperationsInput | number
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumReviewRoleFieldUpdateOperationsInput | $Enums.ReviewRole
-    revieweeId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19899,7 +20784,7 @@ export namespace Prisma {
     edited?: boolean
     createdAt?: Date | string
     readAt?: Date | string | null
-    senderId: string
+    senderId?: string | null
     updatedAt?: Date | string
   }
 
@@ -19910,7 +20795,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sender?: UserUpdateOneRequiredWithoutMessagesNestedInput
+    sender?: UserUpdateOneWithoutMessagesNestedInput
   }
 
   export type MessageUncheckedUpdateWithoutConversationInput = {
@@ -19919,7 +20804,7 @@ export namespace Prisma {
     edited?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    senderId?: StringFieldUpdateOperationsInput | string
+    senderId?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19929,7 +20814,7 @@ export namespace Prisma {
     edited?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    senderId?: StringFieldUpdateOperationsInput | string
+    senderId?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

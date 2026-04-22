@@ -17,6 +17,7 @@ export async function POST(
   if ("error" in result) return result.error;
   const body = result.data;
   
+  
   const { mid } = await params;
  
   if (!session || !mid) {
@@ -27,7 +28,7 @@ export async function POST(
       convo: null,
     });
   }
-  const user: User | null = body.user 
+ 
   try {
     const response = await sendMessage(
       {
@@ -35,7 +36,7 @@ export async function POST(
         senderId: body.senderId as string,
         text: body.text as string,
       },
-      user!,
+      session,
     );
 
     return NextResponse.json({

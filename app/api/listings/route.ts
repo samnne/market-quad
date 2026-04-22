@@ -80,6 +80,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
+    
     const result = await parseBody(req, listingSchema);
     if ("error" in result) return result.error;
     const listing = result.data;

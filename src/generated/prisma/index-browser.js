@@ -170,11 +170,20 @@ exports.Prisma.UserScalarFieldEnum = {
   uid: 'uid',
   email: 'email',
   name: 'name',
+  username: 'username',
   profileURL: 'profileURL',
   isVerified: 'isVerified',
   createdAt: 'createdAt',
   rating: 'rating',
-  hidden: 'hidden'
+  hidden: 'hidden',
+  faculty: 'faculty',
+  year: 'year',
+  intent: 'intent',
+  bio: 'bio',
+  category_interests: 'category_interests',
+  campus_area: 'campus_area',
+  enabled_notifications: 'enabled_notifications',
+  onboarding_completed: 'onboarding_completed'
 };
 
 exports.Prisma.ConversationScalarFieldEnum = {
@@ -225,9 +234,9 @@ exports.Prisma.ReportScalarFieldEnum = {
   adminNote: 'adminNote',
   autoHidden: 'autoHidden',
   resolvedAt: 'resolvedAt',
+  resolvedById: 'resolvedById',
   reporterId: 'reporterId',
-  targetUserId: 'targetUserId',
-  resolvedById: 'resolvedById'
+  targetUserId: 'targetUserId'
 };
 
 exports.Prisma.SortOrder = {

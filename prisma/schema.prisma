@@ -68,25 +68,34 @@ model Review {
 }
 
 model User {
-  uid                 String           @id @db.Uuid
-  email               String           @unique
-  name                String
-  profileURL          String
-  isVerified          Boolean          @default(false)
-  createdAt           DateTime         @default(now())
-  rating              Float            @default(0)
-  hidden              Boolean          @default(false)
-  buyerConversations  Conversation[]   @relation("ConversationBuyer")
-  sellerConversations Conversation[]   @relation("ConversationSeller")
-  listings            Listing[]
-  messages            Message[]
-  likes               Like[]
-  reportsFiled        Report[]         @relation("ReportsFiled")
-  reportsReceived     Report[]         @relation("ReportsReceived")
-  reviewsReceived     Review[]         @relation("ReviewsReceived")
-  reviewsGiven        Review[]         @relation("ReviewsGiven")
-  preferences         UserPreferences?
-  pushToken           PushToken?
+  uid                   String           @id @db.Uuid
+  email                 String           @unique
+  name                  String
+  username              String?          @unique
+  profileURL            String
+  isVerified            Boolean          @default(false)
+  createdAt             DateTime         @default(now())
+  rating                Float            @default(0)
+  hidden                Boolean          @default(false)
+  buyerConversations    Conversation[]   @relation("ConversationBuyer")
+  sellerConversations   Conversation[]   @relation("ConversationSeller")
+  listings              Listing[]
+  messages              Message[]
+  likes                 Like[]
+  reportsFiled          Report[]         @relation("ReportsFiled")
+  reportsReceived       Report[]         @relation("ReportsReceived")
+  reviewsReceived       Review[]         @relation("ReviewsReceived")
+  reviewsGiven          Review[]         @relation("ReviewsGiven")
+  preferences           UserPreferences?
+  pushToken             PushToken?
+  faculty               String?
+  year                  Int?
+  intent                String?
+  bio                   String?
+  category_interests    String[]
+  campus_area           String?
+  enabled_notifications Boolean          @default(false)
+  onboarding_completed  Boolean          @default(false)
 }
 
 model Conversation {
@@ -111,10 +120,10 @@ model Message {
   conversationId String       @db.Uuid
   createdAt      DateTime     @default(now())
   readAt         DateTime?
-  senderId       String?       @db.Uuid
+  senderId       String?      @db.Uuid
   updatedAt      DateTime     @updatedAt
   conversation   Conversation @relation(fields: [conversationId], references: [cid], onDelete: Cascade)
-  sender         User?         @relation(fields: [senderId], references: [uid], onDelete: SetNull)
+  sender         User?        @relation(fields: [senderId], references: [uid], onDelete: SetNull)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

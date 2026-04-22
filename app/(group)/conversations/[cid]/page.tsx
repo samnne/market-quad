@@ -155,7 +155,7 @@ const CID = () => {
     }
 
     socket.on("connect", onConnect);
-    socket.on("typing", async (val) => {
+    socket.on("typing", async ({cid, val}) => {
       if (!val) {
         await animate(
           scope.current,
@@ -196,11 +196,13 @@ const CID = () => {
   function handleChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setMessageText(e.target.value);
     if (e.target.value.trim()) {
+     
       socket.emit("typing", { cid: params.cid, typing: true });
     } else {
       socket.emit("typing", { cid: params.cid, typing: false });
     }
   }
+  
 
   async function handleSendMessage() {
     try {

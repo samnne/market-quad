@@ -23,7 +23,7 @@ async function sendPushNotification(
       buyerId: true,
       sellerId: true,
       buyer: {
-        select: { name: true, pushToken: { select: {  token: true } } },
+        select: { name: true, pushToken: { select: { token: true } } },
       },
       seller: {
         select: { name: true, pushToken: { select: { token: true } } },
@@ -59,15 +59,19 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     console.log("Connected", socket.id);
-
+    socket.data.activeCid = null;
     socket.on("open-convo", ({ cid }) => {
+      if (socket.data.activeCid) {
+        socket.leave(socket.data.activeCid);
+      }
       socket.join(cid);
-
+      socket.data.activeCid = cid;
       socket.to(cid).emit("user_connected");
     });
 
     socket.on("typing", ({ cid, typing }) => {
-      socket.to(cid).emit("typing", typing);
+      if (socket.data.activeCid !== cid) return;
+      socket.to(cid).emit("typing", {cid, typing});
     });
 
     socket.on("message", async ({ cid, message }) => {
@@ -81,7 +85,6 @@ app.prepare().then(() => {
           (err) => console.error("Push failed:", err),
         );
       }
-    
     });
 
     socket.on("disconnect", () => {
