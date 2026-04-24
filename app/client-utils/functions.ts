@@ -135,7 +135,7 @@ export async function uploadImages(
 async function uploadPFP(file: File) {
   // 1. Get signature from your server
   const { timestamp, signature, cloudName, apiKey } =
-    await getCloudinarySignature();
+    await getCloudinarySignature("pfp");
 
   // 2. Upload directly to Cloudinary
   const formData = new FormData();
@@ -158,7 +158,7 @@ async function uploadPFP(file: File) {
 async function uploadImage(file: File) {
   // 1. Get signature from your server
   const { timestamp, signature, cloudName, apiKey } =
-    await getCloudinarySignature();
+    await getCloudinarySignature("listings");
 
   // 2. Upload directly to Cloudinary
   const formData = new FormData();
